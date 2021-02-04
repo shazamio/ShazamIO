@@ -5,7 +5,7 @@ class ShazamUrl:
     SEARCH_FROM_FILE = 'https://amp.shazam.com/discovery/v5/ru/RU/iphone/-/tag/{}/{}?sync=true&webv3=true' \
                        '&sampling=true&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb' \
                        '=true&video=v3'
-    TOP_WORLD = 'http://cdn.shazam.com/shazam/v2/en/MX/android/-/tracks/web_chart_world'
+    TOP_WORLD = 'https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/ip-global-chart?pageSize={}&startFrom=0'  # size
     ABOUT_ARTIST = 'https://www.shazam.com/discovery/v3/ru/GB/web/artist/{}?shazamapiversion=v3&video=v3'  # artist id
     TOP_TRACKS_ARTIST = 'https://cdn.shazam.com/shazam/v3/ru/GB/web/-/tracks/artisttoptracks_{}' \
                         '?startFrom=0&pageSize=20&connected=&channel='  # artist id
