@@ -14,10 +14,10 @@ from .converter import Converter
 class Shazam(Converter):
     def __init__(self, song_data: bytes):
         self.songData = song_data
-        self.audio = self.normalize_audio_data(self.songData)
 
     async def recognize_song(self) -> dict:
-        signature_generator = self.create_signature_generator(self.audio)
+        audio = self.normalize_audio_data(self.songData)
+        signature_generator = self.create_signature_generator(audio)
         while True:
             signature = signature_generator.get_next_signature()
             if not signature:
