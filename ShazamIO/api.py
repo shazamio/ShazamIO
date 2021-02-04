@@ -14,8 +14,6 @@ from .converter import Converter
 
 
 class Shazam(Converter):
-    def __init__(self, song_data: bytes):
-        self.songData = song_data
 
     @staticmethod
     async def request(method: str, url: str, **kwargs) -> aiohttp.ClientRequest:
@@ -29,8 +27,8 @@ class Shazam(Converter):
             else:
                 raise Exception('Wrong method (Accept: GET/POST')
 
-    async def recognize_song(self) -> ClientRequest:
-        audio = self.normalize_audio_data(self.songData)
+    async def recognize_song(self, song_data: bytes) -> ClientRequest:
+        audio = self.normalize_audio_data(song_data)
         signature_generator = self.create_signature_generator(audio)
         while True:
             signature = signature_generator.get_next_signature()
@@ -54,5 +52,12 @@ class Shazam(Converter):
                                       str(uuid.uuid4()).upper()),
                                   headers=Request.HEADERS, json=data)
 
-    # async def top_world_tracks():
-    #     self.r
+    async def top_world_tracks(self, tracks: int = 200, start_from: int = 0) -> ClientRequest:
+        return await self.request('GET', ShazamUrl.TOP_WORLD.format(tracks, start_from), headers=Request.HEADERS)
+
+    async def artist_about(self, artist_id: int):
+        return await self.request('GET', ShazamUrl.ARTIST_ABOUT.format(artist_id))
+
+    async def artist_top_tracks(self, artist_id: int, start_from: int, tracks: int) -> ClientRequest:
+        return await self.request('GET', ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, tracks),
+                                  headers=Request.HEADERS)
