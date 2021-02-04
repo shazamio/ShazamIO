@@ -6,21 +6,22 @@ class ShazamUrl:
                        '&sampling=true&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb' \
                        '=true&video=v3'
     TOP_TRACKS_WORLD = 'https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/ip-global-chart?pageSize={}&startFrom={}'
-    ARTIST_ABOUT = 'https://www.shazam.com/discovery/v3/ru/GB/web/artist/{}?shazamapiversion=v3&video=v3'  # artist id
+    ARTIST_ABOUT = 'https://www.shazam.com/discovery/v3/ru/GB/web/artist/{}?shazamapiversion=v3&video=v3'
     ARTIST_TOP_TRACKS = 'https://cdn.shazam.com/shazam/v3/ru/GB/web/-/tracks/artisttoptracks_{}' \
-                        '?startFrom={}&pageSize={}&connected=&channel='  # artist id, startFrom, pageSize,
+                        '?startFrom={}&pageSize={}&connected=&channel='
     ABOUT_TRACK = 'https://www.shazam.com/discovery/v5/ru/PL/web/-/track/{}?shazamapiversion=v3&video=v3'
     TOP_TRACKS_COUNTRY = 'https://www.shazam.com/shazam/v3/ru/PL/web/-/tracks/ip-country-chart-{}?pageSize={}' \
-                         '&startFrom={}'  # страна, pageSize, startFrom
+                         '&startFrom={}'
     TOP_TRACKS_CITY = 'https://www.shazam.com/shazam/v3/ru/PL/web/-/tracks/ip-city-chart-{}?pageSize={}&' \
-                      'startFrom=0'  # город, pageSize, startFrom
+                      'startFrom={}'
     CITY_IDs_EN = 'https://www.shazam.com/builds/20210126-1f29a62a-655438/intl/cities/cities-en-US.json'
     GENRE_WORLD = "https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/genre-global-chart-{}" \
-                  "?pageSize={}&startFrom={} "  # жанр, pageSize, startFrom
+                  "?pageSize={}&startFrom={}"
 
     GENRE_COUNTRY = 'https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/genre-country-chart-{}-{}?pageSize={}' \
-                    '&startFrom={} '  # 1- страна, 2 - жанр, pageSize, startFrom
-
+                    '&startFrom={}'
+    RELATED_SONGS = 'https://cdn.shazam.com/shazam/v3/ru/PL/web/-/tracks/track-similarities-id-{}?' \
+                    'startFrom={}&pageSize={}&connected=&channel=' # track, startFrom, pageSize
 
 class Request:
     LANG = 'ru'
