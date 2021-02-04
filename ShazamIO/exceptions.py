@@ -1,0 +1,2 @@
+class FailedDecodeJson(Exception):
+    pass

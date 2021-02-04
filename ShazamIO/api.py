@@ -11,7 +11,7 @@ from .algorithm import SignatureGenerator
 from .signature import DecodedMessage
 from .models import Request, ShazamUrl
 from .converter import Converter
-
+from .utils import validate_json
 
 class Shazam(Converter):
 
@@ -20,10 +20,10 @@ class Shazam(Converter):
         async with aiohttp.ClientSession() as session:
             if method.upper() == 'GET':
                 async with session.get(url, **kwargs) as resp:
-                    return await resp.json()
+                    return await validate_json(resp)
             elif method.upper() == 'POST':
                 async with session.post(url, **kwargs) as resp:
-                    return await resp.json()
+                    return await validate_json(resp)
             else:
                 raise Exception('Wrong method (Accept: GET/POST')
 
