@@ -5,7 +5,7 @@ from binascii import crc32
 from enum import IntEnum
 from io import BytesIO
 from ctypes import *
-from .enums import FrequencyBand, SampleRate
+from .models import FrequencyBand, SampleRate
 
 DATA_URI_PREFIX = 'data:audio/vnd.shazam.sig;base64,'
 

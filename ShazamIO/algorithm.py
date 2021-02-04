@@ -2,7 +2,7 @@ from numpy import fft, array as nparray, maximum, log, hanning
 from typing import List, Optional, Any
 from .signature import DecodedMessage, FrequencyPeak
 from copy import copy
-from .enums import FrequencyBand
+from .models import FrequencyBand
 
 HANNING_MATRIX = hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
