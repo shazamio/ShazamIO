@@ -1,3 +1,5 @@
+from aiohttp import ClientRequest
+
 from ShazamIO.converter import Converter
 from pydub import AudioSegment
 from io import BytesIO
@@ -15,7 +17,19 @@ class Shazam(Converter):
     def __init__(self, song_data: bytes):
         self.songData = song_data
 
-    async def recognize_song(self) -> dict:
+    @staticmethod
+    async def request(method: str, url: str, **kwargs) -> aiohttp.ClientRequest:
+        async with aiohttp.ClientSession() as session:
+            if method.upper() == 'GET':
+                async with session.get(url, **kwargs) as resp:
+                    return await resp.json()
+            elif method.upper() == 'POST':
+                async with session.post(url, **kwargs) as resp:
+                    return await resp.json()
+            else:
+                raise Exception('Wrong method (Accept: GET/POST')
+
+    async def recognize_song(self) -> ClientRequest:
         audio = self.normalize_audio_data(self.songData)
         signature_generator = self.create_signature_generator(audio)
         while True:
@@ -26,8 +40,7 @@ class Shazam(Converter):
             results = await self.send_recognize_request(signature)
             return results
 
-    @staticmethod
-    async def send_recognize_request(sig: DecodedMessage) -> dict:
+    async def send_recognize_request(self, sig: DecodedMessage) -> ClientRequest:
 
         data = Converter.data_search(
             Request.TIME_ZONE,
@@ -35,10 +48,11 @@ class Shazam(Converter):
             int(sig.number_samples / sig.sample_rate_hz * 1000),
             int(time.time() * 1000))
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                    ShazamUrl.SEARCH_FROM_FILE.format(
-                        str(uuid.uuid4()).upper(),
-                        str(uuid.uuid4()).upper()),
-                    headers=Request.HEADERS, json=data) as resp:
-                return await resp.json()
+        return await self.request('POST',
+                                  ShazamUrl.SEARCH_FROM_FILE.format(
+                                      str(uuid.uuid4()).upper(),
+                                      str(uuid.uuid4()).upper()),
+                                  headers=Request.HEADERS, json=data)
+
+    # async def top_world_tracks():
+    #     self.r
