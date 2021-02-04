@@ -44,15 +44,16 @@ class Shazam(Converter):
         return await self.request('GET', ShazamUrl.TOP_TRACKS_COUNTRY.format(country, tracks, start_from),
                                   headers=Request.HEADERS)
 
-    async def top_city_tracks(self, city: str, tracks: int = 200, start_from: int = 0) -> ClientRequest:
-        return await self.request('GET', ShazamUrl.TOP_TRACKS_COUNTRY.format(city, tracks, start_from),
+    async def top_city_tracks(self, city_id: int, tracks: int = 200, start_from: int = 0) -> ClientRequest:
+        return await self.request('GET', ShazamUrl.TOP_TRACKS_CITY.format(city_id, tracks, start_from),
                                   headers=Request.HEADERS)
 
     async def top_world_genre_tracks(self, genre: str, tracks: int = 200, start_from: int = 200) -> ClientRequest:
-        return await self.request(ShazamUrl.GENRE_WORLD.format(genre, tracks, start_from), headers=Request.HEADERS)
+        return await self.request('GET', ShazamUrl.GENRE_WORLD.format(genre, tracks, start_from),
+                                  headers=Request.HEADERS)
 
     async def top_country_genre_tracks(self, country: str, genre: int, tracks: int = 200, start_from: int = 0):
-        return await self.request(ShazamUrl.GENRE_COUNTRY.format(country, genre, tracks, start_from),
+        return await self.request('GET', ShazamUrl.GENRE_COUNTRY.format(country, genre, tracks, start_from),
                                   headers=Request.HEADERS)
 
     async def recognize_song(self, song_data: bytes) -> ClientRequest:
@@ -68,8 +69,7 @@ class Shazam(Converter):
         data = Converter.data_search(Request.TIME_ZONE, sig.encode_to_uri(),
                                      int(sig.number_samples / sig.sample_rate_hz * 1000), int(time.time() * 1000))
 
-        return await self.request('POST',
-                                  ShazamUrl.SEARCH_FROM_FILE.format(
+        return await self.request('POST', ShazamUrl.SEARCH_FROM_FILE.format(
                                       str(uuid.uuid4()).upper(),
                                       str(uuid.uuid4()).upper()),
                                   headers=Request.HEADERS, json=data)
