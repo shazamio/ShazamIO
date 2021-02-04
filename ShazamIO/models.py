@@ -5,10 +5,10 @@ class ShazamUrl:
     SEARCH_FROM_FILE = 'https://amp.shazam.com/discovery/v5/ru/RU/iphone/-/tag/{}/{}?sync=true&webv3=true' \
                        '&sampling=true&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb' \
                        '=true&video=v3'
-    TOP_WORLD = 'https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/ip-global-chart?pageSize={}&startFrom=0'  # size
-    ABOUT_ARTIST = 'https://www.shazam.com/discovery/v3/ru/GB/web/artist/{}?shazamapiversion=v3&video=v3'  # artist id
-    TOP_TRACKS_ARTIST = 'https://cdn.shazam.com/shazam/v3/ru/GB/web/-/tracks/artisttoptracks_{}' \
-                        '?startFrom=0&pageSize=20&connected=&channel='  # artist id
+    TOP_WORLD = 'https://www.shazam.com/shazam/v3/en-US/PL/web/-/tracks/ip-global-chart?pageSize={}&startFrom={}'
+    ARTIST_ABOUT = 'https://www.shazam.com/discovery/v3/ru/GB/web/artist/{}?shazamapiversion=v3&video=v3'  # artist id
+    ARTIST_TOP_TRACKS = 'https://cdn.shazam.com/shazam/v3/ru/GB/web/-/tracks/artisttoptracks_{}' \
+                        '?startFrom={}&pageSize={}&connected=&channel='  # artist id, startFrom, pageSize,
     ABOUT_TRACK = 'https://www.shazam.com/discovery/v5/ru/PL/web/-/track/{}?shazamapiversion=v3&video=v3'
     TOP_TRACKS_COUNTRY = 'https://www.shazam.com/shazam/v3/ru/PL/web/-/tracks/ip-country-chart-{}?pageSize=200' \
                          '&startFrom=0'  # страна
