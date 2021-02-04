@@ -17,7 +17,7 @@ class Converter(Request):
     @staticmethod
     async def city_id_from(city: CityName) -> CityID:
         async with aiohttp.ClientSession() as session:
-            async with session.get(ShazamUrl.CITY_ID) as resp:
+            async with session.get(ShazamUrl.CITY_IDs_EN) as resp:
                 data = await resp.json()
                 for k, v in data.items():
                     if v == city:
