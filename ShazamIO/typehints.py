@@ -1,0 +1,3 @@
+
+CityName = str
+CityID = int
