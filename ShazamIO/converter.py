@@ -7,6 +7,26 @@ from ShazamIO.typehints import *
 from ShazamIO.models import *
 import aiohttp
 
+
+class AboutTrack:
+    def __init__(self, track: dict):
+        self.track = track
+        self.track_id = track['key']
+        self.title = self.track['title']
+        self.author = self.track['subtitle']
+        self.photo_url = self.track['images']['coverarthq'] if 'images' in self.track else None
+        self.ringtone_url = self.track['hub']['actions'][1]['uri'] if 'actions' in self.track['hub'] else None
+        self.artist_id = self.track['artists'][0]['id'] if 'artists' in self.track else None
+        self.shazam_url = f'https://www.shazam.com/track/{self.track_id}'
+
+    def __str__(self):
+        return (f'Author: {self.author} - {self.title}\n'
+                f'Artist ID: {self.artist_id}'
+                f'Shazam URL: {self.shazam_url}\n'
+                f'Ringtone: {self.ringtone_url}\n'
+                f'Track photo: {self.photo_url}\n')
+
+
 class Converter(Request):
 
     @staticmethod
