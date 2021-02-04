@@ -1,3 +1,0 @@
-
-CityName = str
-CityID = int
