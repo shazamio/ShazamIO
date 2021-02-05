@@ -6,7 +6,7 @@ from ShazamIO.utils import validate_json
 class HTTPClient:
 
     @staticmethod
-    async def request(method: str, url: str, *args, **kwargs) -> aiohttp.ClientResponse:
+    async def request(method: str, url: str, *args, **kwargs) -> dict:
         async with aiohttp.ClientSession() as session:
             if method.upper() == 'GET':
                 async with session.get(url, **kwargs) as resp:

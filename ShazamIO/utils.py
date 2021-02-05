@@ -3,7 +3,7 @@ from aiohttp import ContentTypeError
 from ShazamIO.exceptions import FailedDecodeJson
 
 
-async def validate_json(resp: aiohttp.ClientResponse, content_type: str = 'application/json') -> aiohttp.ClientResponse:
+async def validate_json(resp: aiohttp.ClientResponse, content_type: str = 'application/json') -> dict:
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
