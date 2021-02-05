@@ -1,13 +1,11 @@
-import json
 from io import BytesIO
 
 from pydub import AudioSegment
 
 from ShazamIO.algorithm import SignatureGenerator
 from ShazamIO.client import HTTPClient
-from ShazamIO.exceptions import BadCityName
+from ShazamIO.exceptions import BadCityName, BadCountryName
 from ShazamIO.models import *
-import aiohttp
 
 
 class AboutTrack:
@@ -29,7 +27,7 @@ class AboutTrack:
                 f'Track photo: {self.photo_url}\n')
 
 
-class Geo(Request, HTTPClient):
+class Geo(HTTPClient):
 
     async def city_id_from(self, country: str, city: str) -> int:
         data = await self.request('GET', ShazamUrl.CITY_IDs, 'text/plain')
@@ -38,7 +36,7 @@ class Geo(Request, HTTPClient):
                 for response_city in response_country['cities']:
                     if city == response_city['name']:
                         return response_city['id']
-        raise BadCityName('City not found')
+        raise BadCityName('City not found, check city name')
 
     async def all_cities_from_country(self, country: str) -> list:
         cities = []
@@ -48,7 +46,7 @@ class Geo(Request, HTTPClient):
                 for city in response_country['cities']:
                     cities.append(city['name'])
                 return cities
-        raise Exception('Not Found City!')
+        raise BadCountryName('Country not found, check country name')
 
 
 class Converter:
