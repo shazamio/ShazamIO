@@ -1,9 +1,11 @@
+import json
 from io import BytesIO
 
 from pydub import AudioSegment
 
 from ShazamIO.algorithm import SignatureGenerator
-from ShazamIO.typehints import *
+from ShazamIO.client import HTTPClient
+from ShazamIO.exceptions import BadCityName
 from ShazamIO.models import *
 import aiohttp
 
@@ -27,21 +29,34 @@ class AboutTrack:
                 f'Track photo: {self.photo_url}\n')
 
 
-class Converter(Request):
+class Geo(Request, HTTPClient):
+
+    async def city_id_from(self, country: str, city: str) -> int:
+        data = await self.request('GET', ShazamUrl.CITY_IDs, 'text/plain')
+        for response_country in data['countries']:
+            if country == response_country['id']:
+                for response_city in response_country['cities']:
+                    if city == response_city['name']:
+                        return response_city['id']
+        raise BadCityName('City not found')
+
+    async def all_cities_from_country(self, country: str) -> list:
+        cities = []
+        data = await self.request('GET', ShazamUrl.CITY_IDs, 'text/plain')
+        for response_country in data['countries']:
+            if country == response_country['id']:
+                for city in response_country['cities']:
+                    cities.append(city['name'])
+                return cities
+        raise Exception('Not Found City!')
+
+
+class Converter:
 
     @staticmethod
     def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> dict:
         return {'timezone': timezone, 'signature': {'uri': uri, 'samplems': samplems},
                 'timestamp': timestamp, 'context': {}, 'geolocation': {}}
-
-    @staticmethod
-    async def city_id_from(city: CityName) -> CityID:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(ShazamUrl.CITY_IDs_EN) as resp:
-                data = await resp.json()
-                for k, v in data.items():
-                    if v == city:
-                        return k.split('_')[2]
 
     @staticmethod
     def normalize_audio_data(song_data: bytes) -> AudioSegment:
@@ -61,5 +76,3 @@ class Converter(Request):
         if audio.duration_seconds > 12 * 3:
             signature_generator.samples_processed += 16000 * (int(audio.duration_seconds / 16) - 6)
         return signature_generator
-
-
