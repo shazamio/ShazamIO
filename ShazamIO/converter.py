@@ -10,8 +10,8 @@ from ShazamIO.models import *
 
 class AboutTrack:
     def __init__(self, track: dict):
-        self.track = track
-        self.track_id = track['key']
+        self.track = track['track'] if 'timezone' in track else track
+        self.track_id = self.track['key']
         self.title = self.track['title']
         self.author = self.track['subtitle']
         self.photo_url = self.track['images']['coverarthq'] if 'images' in self.track else None
