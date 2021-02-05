@@ -4,3 +4,7 @@ class FailedDecodeJson(Exception):
 
 class BadCityName(Exception):
     pass
+
+
+class BadCountryName(Exception):
+    pass
