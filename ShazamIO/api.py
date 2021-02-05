@@ -1,3 +1,5 @@
+import asyncio
+
 from aiohttp import ClientRequest
 
 from ShazamIO.converter import Converter
@@ -6,49 +8,37 @@ from io import BytesIO
 import aiohttp
 import uuid
 import time
-
-from .algorithm import SignatureGenerator
 from .signature import DecodedMessage
 from .models import Request, ShazamUrl
 from .converter import Converter
 from .utils import validate_json
+from .client import HTTPClient
 
-class Shazam(Converter):
 
-    @staticmethod
-    async def request(method: str, url: str, **kwargs) -> aiohttp.ClientRequest:
-        async with aiohttp.ClientSession() as session:
-            if method.upper() == 'GET':
-                async with session.get(url, **kwargs) as resp:
-                    return await validate_json(resp)
-            elif method.upper() == 'POST':
-                async with session.post(url, **kwargs) as resp:
-                    return await validate_json(resp)
-            else:
-                raise Exception('Wrong method (Accept: GET/POST')
+class Shazam(Converter, HTTPClient):
 
-    async def top_world_tracks(self, tracks: int = 200, start_from: int = 0) -> ClientRequest:
+    async def top_world_tracks(self, tracks: int = 200, start_from: int = 0) -> aiohttp.ClientResponse:
         return await self.request('GET', ShazamUrl.TOP_TRACKS_WORLD.format(tracks, start_from), headers=Request.HEADERS)
 
     async def artist_about(self, artist_id: int):
         return await self.request('GET', ShazamUrl.ARTIST_ABOUT.format(artist_id))
 
-    async def artist_top_tracks(self, artist_id: int, tracks: int = 200, start_from: int = 200) -> ClientRequest:
+    async def artist_top_tracks(self, artist_id: int, tracks: int = 200, start_from: int = 200) -> aiohttp.ClientResponse:
         return await self.request('GET', ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, tracks),
                                   headers=Request.HEADERS)
 
-    async def track_about(self, track_id: int) -> ClientRequest:
+    async def track_about(self, track_id: int) ->  aiohttp.ClientResponse:
         return await self.request('GET', ShazamUrl.ABOUT_TRACK.format(track_id), headers=Request.HEADERS)
 
     async def top_country_tracks(self, country: str, tracks: int = 200, start_from: int = 0):
         return await self.request('GET', ShazamUrl.TOP_TRACKS_COUNTRY.format(country, tracks, start_from),
                                   headers=Request.HEADERS)
 
-    async def top_city_tracks(self, city_id: int, tracks: int = 200, start_from: int = 0) -> ClientRequest:
+    async def top_city_tracks(self, city_id: int, tracks: int = 200, start_from: int = 0) ->  aiohttp.ClientResponse:
         return await self.request('GET', ShazamUrl.TOP_TRACKS_CITY.format(city_id, tracks, start_from),
                                   headers=Request.HEADERS)
 
-    async def top_world_genre_tracks(self, genre: str, tracks: int = 200, start_from: int = 200) -> ClientRequest:
+    async def top_world_genre_tracks(self, genre: str, tracks: int = 200, start_from: int = 200) -> aiohttp.ClientResponse:
         return await self.request('GET', ShazamUrl.GENRE_WORLD.format(genre, tracks, start_from),
                                   headers=Request.HEADERS)
 
@@ -56,7 +46,7 @@ class Shazam(Converter):
         return await self.request('GET', ShazamUrl.GENRE_COUNTRY.format(country, genre, tracks, start_from),
                                   headers=Request.HEADERS)
 
-    async def recognize_song(self, song_data: bytes) -> ClientRequest:
+    async def recognize_song(self, song_data: bytes) -> aiohttp.ClientResponse:
         audio = self.normalize_audio_data(song_data)
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
@@ -65,7 +55,7 @@ class Shazam(Converter):
         results = await self.send_recognize_request(signature)
         return results
 
-    async def send_recognize_request(self, sig: DecodedMessage) -> ClientRequest:
+    async def send_recognize_request(self, sig: DecodedMessage) -> aiohttp.ClientResponse:
         data = Converter.data_search(Request.TIME_ZONE, sig.encode_to_uri(),
                                      int(sig.number_samples / sig.sample_rate_hz * 1000), int(time.time() * 1000))
 
