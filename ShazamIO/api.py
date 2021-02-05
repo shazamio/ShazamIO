@@ -1,17 +1,9 @@
-import asyncio
-
-from aiohttp import ClientRequest
-
-from ShazamIO.converter import Converter
-from pydub import AudioSegment
-from io import BytesIO
 import aiohttp
 import uuid
 import time
 from .signature import DecodedMessage
 from .models import Request, ShazamUrl
 from .converter import Converter
-from .utils import validate_json
 from .client import HTTPClient
 
 
