@@ -8,3 +8,7 @@ class BadCityName(Exception):
 
 class BadCountryName(Exception):
     pass
+
+
+class BadMethod(Exception):
+    pass
