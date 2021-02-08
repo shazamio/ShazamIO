@@ -1,5 +1,6 @@
 import aiohttp
 
+from ShazamIO.exceptions import BadMethod
 from ShazamIO.utils import validate_json
 
 
@@ -15,4 +16,4 @@ class HTTPClient:
                 async with session.post(url, **kwargs) as resp:
                     return await validate_json(resp, *args)
             else:
-                raise Exception('Wrong method (Accept: GET/POST')
+                raise BadMethod('Accept only GET/POST')
