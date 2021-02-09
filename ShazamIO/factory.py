@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional, List
-
+from urllib.parse import urlparse, urlencode, urlunparse
 from dataclass_factory import Schema
+from dataclasses import dataclass
 
 
 @dataclass
@@ -10,18 +11,9 @@ class ArtistInfo:
     alias: str
     verified: Optional[bool]
     genres: Optional[List[str]] = field(default_factory=list)
-    genres_primary: Optional[str] = field(default_factory=str)
-    avatar: Optional[str] = field(default_factory=str)
-    url: Optional[str] = field(default_factory=str)
-
-    def __str__(self):
-        return (f'Name: {self.name}\n'
-                f'Alias: {self.alias}\n'
-                f'Verified: {self.verified}\n'
-                f'Primary genre: {self.genres_primary}\n'
-                f'All genres: {self.genres}\n'
-                f'Url: {self.url}\n'
-                f'Avatar: {self.avatar}')
+    genres_primary: Optional[str] = None
+    avatar: Optional[str] = None
+    url: Optional[str] = None
 
 
 artist_info_schema = Schema(
@@ -29,6 +21,46 @@ artist_info_schema = Schema(
         "avatar": ("avatar", "default"),
         "genres": ("genres", "secondaries"),
         "genres_primary": ("genres", "primary"),
-    }
-)
+    })
 
+
+@dataclass
+class TrackInfo:
+    key: int
+    title: str
+    subtitle: str
+    artist_id: Optional[str] = None
+    providers: Optional[str] = None
+    shazam_url: str = None
+    photo_url: Optional[str] = None
+    spotify_url: Optional[str] = field(init=False, default=None)
+    spotify_uri: Optional[str] = field(init=False, default=None)
+    spotify_uri_query: Optional[str] = None
+    apple_music_url: Optional[str] = None
+    ringtone: Optional[str] = None
+
+    def __post_init__(self):
+        self.shazam_url = f'https://www.shazam.com/track/{self.artist_id}'
+        self.apple_music_url = self.__apple_music_url()
+        self.spotify_uri_query = self.__short_uri()
+
+    def __apple_music_url(self):
+        url_parse_list = list(urlparse(self.apple_music_url))
+        url_parse_list[4] = urlencode({}, doseq=True)
+        url_deleted_query = urlunparse(url_parse_list)
+        return url_deleted_query
+
+    def __short_uri(self):
+        if self.spotify_uri:
+            return self.spotify_uri.split('spotify:search:')[1]
+
+
+track_info_schema = Schema(
+    name_mapping={
+        "photo_url": ("images", "coverarthq"),
+        "ringtone": ("hub", "actions", 1, "uri"),
+        "artist_id": ("artists", 0, "id"),
+        "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
+        "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
+        "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
+    })
