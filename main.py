@@ -12,10 +12,6 @@ from ShazamIO.utils import load_file
 
 async def main():
 
-    # artist_id = 43328183
-    # about_artist = await shazam.artist_about(artist_id)
-    # print(ArtistInfoNormalized(about_artist))
-
     # artist_id = 201896832
     # top_three_artist_tracks = await shazam.artist_top_tracks(artist_id=artist_id, count=2)
     # for track in top_three_artist_tracks['tracks']:
