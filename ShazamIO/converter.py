@@ -38,7 +38,6 @@ class Converter:
                 'timestamp': timestamp, 'context': {}, 'geolocation': {}}
 
     @staticmethod
-    @utils.threaded
     def normalize_audio_data(song_data: bytes) -> AudioSegment:
         audio = AudioSegment.from_file(BytesIO(song_data))
         audio = audio.set_sample_width(2)
@@ -48,7 +47,6 @@ class Converter:
         return audio
 
     @staticmethod
-    @utils.threaded
     def create_signature_generator(audio: AudioSegment) -> SignatureGenerator:
         signature_generator = SignatureGenerator()
         signature_generator.feed_input(audio.get_array_of_samples())

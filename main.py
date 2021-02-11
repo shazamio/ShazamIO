@@ -11,16 +11,7 @@ from ShazamIO.utils import load_file
 
 
 async def main():
-    shazam = Shazam()
-    out = await shazam.recognize_song('data/dora.ogg')
-    print(out)
 
-    # top_world_tracks = await shazam.top_world_tracks(limit=10)
-    # for track in top_world_tracks['tracks']:
-    #     print(track)
-    #     serialized = factory_track.load(track, TrackInfo)
-    #     print(serialized)
-    #
     # artist_id = 43328183
     # about_artist = await shazam.artist_about(artist_id)
     # print(ArtistInfoNormalized(about_artist))

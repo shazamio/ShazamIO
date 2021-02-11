@@ -56,9 +56,9 @@ class Shazam(Converter, HTTPClient):
 
     async def recognize_song(self, file_path: typing.Union[str, pathlib.Path]) -> dict:
         file = await load_file(file_path, 'rb')
-        audio = await self.normalize_audio_data(file)
-        signature_generator = await self.create_signature_generator(audio)
-        signature = await signature_generator.get_next_signature()
+        audio = self.normalize_audio_data(file)
+        signature_generator = self.create_signature_generator(audio)
+        signature = signature_generator.get_next_signature()
         while not signature:
             signature = signature_generator.get_next_signature()
         results = await self.send_recognize_request(signature)

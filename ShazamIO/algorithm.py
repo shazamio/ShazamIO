@@ -83,7 +83,6 @@ class SignatureGenerator:
         Except if there are no more samples to be consumed, in this case
         we will return None.
     """
-    @utils.threaded
     def get_next_signature(self) -> Optional[DecodedMessage]:
         if len(self.input_pending_processing) - self.samples_processed < 128:
             return None
