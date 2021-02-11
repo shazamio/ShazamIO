@@ -1,7 +1,5 @@
 import asyncio
 from ShazamIO.api import Shazam
-from ShazamIO.factory import ArtistInfo
-from ShazamIO.misc import factory_artist
 
 
 async def main():
