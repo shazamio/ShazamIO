@@ -1,7 +1,7 @@
 from io import BytesIO
+from typing import Optional
 
 from pydub import AudioSegment
-from ShazamIO import utils
 from ShazamIO.algorithm import SignatureGenerator
 from ShazamIO.client import HTTPClient
 from ShazamIO.exceptions import BadCityName, BadCountryName
@@ -9,21 +9,24 @@ from ShazamIO.models import *
 
 
 class Geo(HTTPClient):
+    def __init__(self, country: Optional[str] = None, city: Optional[str] = None):
+        self.country = country
+        self.city = city
 
-    async def city_id_from(self, country: str, city: str) -> int:
+    async def city_id_from(self) -> int:
         data = await self.request('GET', ShazamUrl.CITY_IDS, 'text/plain')
         for response_country in data['countries']:
-            if country == response_country['id']:
+            if self.country == response_country['id']:
                 for response_city in response_country['cities']:
-                    if city == response_city['name']:
+                    if self.city == response_city['name']:
                         return response_city['id']
         raise BadCityName('City not found, check city name')
 
-    async def all_cities_from_country(self, country: str) -> list:
+    async def all_cities_from_country(self) -> list:
         cities = []
         data = await self.request('GET', ShazamUrl.CITY_IDS, 'text/plain')
         for response_country in data['countries']:
-            if country == response_country['id']:
+            if self.country == response_country['id']:
                 for city in response_country['cities']:
                     cities.append(city['name'])
                 return cities
