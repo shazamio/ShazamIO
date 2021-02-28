@@ -1,7 +1,7 @@
 from dataclasses import field
 from typing import Optional, List
 from urllib.parse import urlparse, urlencode, urlunparse
-from dataclass_factory import Schema
+from dataclass_factory import Factory, Schema
 from dataclasses import dataclass
 
 
@@ -16,28 +16,19 @@ class ArtistInfo:
     url: Optional[str] = None
 
 
-artist_info_schema = Schema(
-    name_mapping={
-        "avatar": ("avatar", "default"),
-        "genres": ("genres", "secondaries"),
-        "genres_primary": ("genres", "primary"),
-    })
-
-
 @dataclass
-class TrackInfo:
+class TrackInfo(Factory):
     key: int
     title: str
     subtitle: str
-    artist_id: Optional[str] = None
-    providers: Optional[str] = None
+    artist_id: Optional[str] = field(default=None)
     shazam_url: str = None
-    photo_url: Optional[str] = None
-    spotify_url: Optional[str] = field(init=False, default=None)
-    spotify_uri: Optional[str] = field(init=False, default=None)
+    photo_url: Optional[str] = field(init=False, default=None)
     spotify_uri_query: Optional[str] = None
     apple_music_url: Optional[str] = None
     ringtone: Optional[str] = None
+    spotify_url: Optional[str] = field(default=None)
+    spotify_uri: Optional[str] = field(default=None)
 
     def __post_init__(self):
         self.shazam_url = f'https://www.shazam.com/track/{self.artist_id}'
@@ -55,12 +46,34 @@ class TrackInfo:
             return self.spotify_uri.split('spotify:search:')[1]
 
 
-track_info_schema = Schema(
-    name_mapping={
-        "photo_url": ("images", "coverarthq"),
-        "ringtone": ("hub", "actions", 1, "uri"),
-        "artist_id": ("artists", 0, "id"),
-        "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
-        "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
-        "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
-    })
+class FactoryTrack:
+    def __init__(self, data):
+        self.__data = data
+        self.__schema = Schema(
+            name_mapping={
+                "photo_url": ("images", "coverarthq"),
+                "ringtone": ("hub", "actions", 1, "uri"),
+                "artist_id": ("artists", 0, "id"),
+                "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
+                "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
+                "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
+            }, skip_internal=True)
+
+    def serializer(self):
+        factory = Factory(schemas={TrackInfo: self.__schema}, debug_path=True)
+        return factory.load(self.__data, TrackInfo)
+
+
+class FactoryArtist:
+    def __init__(self, data):
+        self.__data = data
+        self.__schema = Schema(
+            name_mapping={
+                "avatar": ("avatar", "default"),
+                "genres": ("genres", "secondaries"),
+                "genres_primary": ("genres", "primary"),
+            })
+
+    def serializer(self):
+        factory = Factory(schemas={ArtistInfo: self.__schema}, debug_path=True)
+        return factory.load(self.__data, ArtistInfo)
