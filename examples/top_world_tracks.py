@@ -1,14 +1,13 @@
 import asyncio
-from ShazamIO.api import Shazam
-from ShazamIO.factory import TrackInfo
-from ShazamIO.misc import factory_track
+from ShazamIO import Shazam, FactoryTrack
 
 
 async def main():
     shazam = Shazam()
-    top_world_tracks = await shazam.top_world_tracks(limit=10)  # API JSON
+    top_world_tracks = await shazam.top_world_tracks(limit=10)
+    print(top_world_tracks)
     for track in top_world_tracks['tracks']:
-        serialized = factory_track.load(track, TrackInfo)
+        serialized = FactoryTrack(track).serializer()
         print(serialized)
 
 loop = asyncio.get_event_loop()

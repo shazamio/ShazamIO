@@ -1,5 +1,5 @@
 import asyncio
-from ShazamIO.api import Shazam
+from ShazamIO import Shazam
 
 
 async def main():
