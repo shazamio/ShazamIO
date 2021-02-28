@@ -2,7 +2,6 @@ from typing import Dict, List
 from base64 import b64decode, b64encode
 from math import exp, sqrt
 from binascii import crc32
-from enum import IntEnum
 from io import BytesIO
 from ctypes import *
 from .models import FrequencyBand, SampleRate
