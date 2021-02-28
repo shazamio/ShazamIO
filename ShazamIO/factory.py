@@ -1,5 +1,5 @@
 from dataclasses import field
-from typing import Optional, List
+from typing import Optional, List, Union
 from urllib.parse import urlparse, urlencode, urlunparse
 from dataclass_factory import Factory, Schema
 from dataclasses import dataclass
@@ -12,8 +12,19 @@ class ArtistInfo:
     verified: Optional[bool]
     genres: Optional[List[str]] = field(default_factory=list)
     genres_primary: Optional[str] = None
-    avatar: Optional[str] = None
-    url: Optional[str] = None
+    avatar: Union[dict, str, None] = None
+    url: Optional[str] = ''
+
+    def __post_init__(self):
+        self.avatar = self.__optional_avatar()
+
+    def __optional_avatar(self):
+        if 'default' in self.avatar:
+            return self.avatar.get('default')
+        elif self.avatar:
+            return ''.join(self.avatar)
+        else:
+            return None
 
 
 @dataclass
@@ -69,7 +80,7 @@ class FactoryArtist:
         self.__data = data
         self.__schema = Schema(
             name_mapping={
-                "avatar": ("avatar", "default"),
+                "avatar": "avatar",
                 "genres": ("genres", "secondaries"),
                 "genres_primary": ("genres", "primary"),
             })
