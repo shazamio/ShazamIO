@@ -5,7 +5,8 @@ import time
 import typing
 
 from .signature import DecodedMessage
-from .models import Request, ShazamUrl, GenreMusic
+from .models import Request, ShazamUrl
+from .enums import GenreMusic
 from .converter import Converter, Geo
 from .typehints import CountryCode, ShazamResponse
 from .utils import load_file
