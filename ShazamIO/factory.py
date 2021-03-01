@@ -12,19 +12,19 @@ class ArtistInfo:
     verified: Optional[bool]
     genres: Optional[List[str]] = field(default_factory=list)
     genres_primary: Optional[str] = None
-    avatar: Union[dict, str, None] = None
+    avatar: Optional[Union[dict, str]] = None
     url: Optional[str] = ''
 
     def __post_init__(self):
         self.avatar = self.__optional_avatar()
 
     def __optional_avatar(self):
-        if 'default' in self.avatar:
-            return self.avatar.get('default')
-        elif self.avatar:
-            return ''.join(self.avatar)
-        else:
+        if self.avatar is None:
             return None
+        elif 'default' in self.avatar:
+            return self.avatar.get('default')
+        else:
+            return ''.join(self.avatar)
 
 
 @dataclass
