@@ -9,7 +9,59 @@
 ```
 💲 pip install shazamio
 ```
----
+
+## How to use data serialization
+
+<details> 
+<summary>
+<i>Open Code</i>
+</summary>
+
+  ```python3
+import asyncio
+from shazamio import Shazam, FactoryTrack
+
+
+async def main():
+    shazam = Shazam()
+    top_five_track_from_amsterdam = await shazam.top_country_tracks('NL', 5)
+    for track in top_five_track_from_amsterdam['tracks']:
+        serialized = FactoryTrack(data=track).serializer()
+        print(serialized.title)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+  ```
+</details>
+
+<details> 
+<summary>
+<i>Open photo: What song information looks like (Dict)</i>
+</summary>
+<img src="https://user-images.githubusercontent.com/64792903/109454521-75b4c980-7a65-11eb-917e-62da3abefb8a.png">
+
+</details>
+
+<details> 
+<summary>
+<i>Open photo: what song information looks like (Custom serializer)</i>
+</summary>
+<img src="https://user-images.githubusercontent.com/64792903/109454465-57e76480-7a65-11eb-956c-1bcac41d7de5.png">
+
+</details>
+
+Agree, thanks to the serializer, you no longer need to manually select the necessary data from the dictionary. Now the serializer contains the most necessary information about an artist or a track.
+
+You can get information on a specific attribute like this:
+
+<details> 
+<summary>
+<i>Open photo: Using an attribute with a Serializer</i>
+</summary>
+<img src="https://user-images.githubusercontent.com/64792903/109455344-75b5c900-7a67-11eb-9863-a5ecd2859119.png">
+
+</details>
+
 ## 💻 Example
 
 
@@ -325,60 +377,4 @@ loop.run_until_complete(main())
 </details>
 
 ---
-
-## How use Serialization
-
-<details> 
-<summary>
-<b>Open Code</b>
-</summary>
-
-  ```python3
-import asyncio
-from shazamio import Shazam, FactoryTrack
-
-
-async def main():
-    shazam = Shazam()
-    top_five_track_from_amsterdam = await shazam.top_country_tracks('NL', 5)
-    for track in top_five_track_from_amsterdam['tracks']:
-        serialized = FactoryTrack(data=track).serializer()
-        print(serialized.title)
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
-  ```
-</details>
-
-<details> 
-<summary>
-<b>Open photo: What song information looks like (Dict)</b>
-</summary>
-<img src="https://user-images.githubusercontent.com/64792903/109454521-75b4c980-7a65-11eb-917e-62da3abefb8a.png">
-
-</details>
-
-<details> 
-<summary>
-<b>Open photo: what song information looks like (Custom serializer)</b>
-</summary>
-<img src="https://user-images.githubusercontent.com/64792903/109454465-57e76480-7a65-11eb-956c-1bcac41d7de5.png">
-
-</details>
-
-Agree, thanks to the serializer, you no longer need to manually select the necessary data from the dictionary. Now the serializer contains the most necessary information about an artist or a track.
-
-You can get information on a specific attribute like this:
-
-<details> 
-<summary>
-<b>Open photo: Using an attribute with a Serializer</b>
-</summary>
-<img src="https://user-images.githubusercontent.com/64792903/109455344-75b5c900-7a67-11eb-9863-a5ecd2859119.png">
-
-</details>
-
-
-
-
 
