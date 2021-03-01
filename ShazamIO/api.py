@@ -30,8 +30,7 @@ class Shazam(Converter, Geo):
                                   ShazamUrl.TOP_TRACKS_WORLD.format(limit, start_from),
                                   headers=Request.HEADERS)
 
-    async def artist_about(self,
-                           artist_id: int) -> typing.Union[ShazamResponse, dict]:
+    async def artist_about(self, artist_id: int) -> typing.Union[ShazamResponse, dict]:
         """
         Retrieving information from an artist profile
 
@@ -39,7 +38,8 @@ class Shazam(Converter, Geo):
             :return: dict about artist
         """
         return await self.request('GET',
-                                  ShazamUrl.ARTIST_ABOUT.format(artist_id))
+                                  ShazamUrl.ARTIST_ABOUT.format(artist_id),
+                                  headers=Request.HEADERS)
 
     async def artist_top_tracks(self,
                                 artist_id: int,
@@ -59,8 +59,7 @@ class Shazam(Converter, Geo):
                                   ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, limit),
                                   headers=Request.HEADERS)
 
-    async def track_about(self,
-                          track_id: int) -> typing.Union[ShazamResponse, dict]:
+    async def track_about(self, track_id: int) -> typing.Union[ShazamResponse, dict]:
         """
         Get track information
 
