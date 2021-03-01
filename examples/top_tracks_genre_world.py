@@ -1,5 +1,5 @@
 import asyncio
-from ShazamIO import Shazam, FactoryTrack, GenreMusic
+from shazamio import Shazam, FactoryTrack, GenreMusic
 
 
 async def main():

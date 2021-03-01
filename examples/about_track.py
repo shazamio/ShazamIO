@@ -1,5 +1,5 @@
 import asyncio
-from ShazamIO import Shazam, FactoryTrack
+from shazamio import Shazam, FactoryTrack
 
 
 async def main():
