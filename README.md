@@ -15,7 +15,7 @@
 
 <details> 
 <summary>
-<b>🎵🔎 Recognize track</b>
+<b>🔎🎵 Recognize track</b>
 </summary>
 
 Recognize a track based on a file<br>
@@ -118,7 +118,7 @@ loop.run_until_complete(main())
 
 <details> 
 <summary>
-<b>👨‍🎤🔎 Search artists</b>
+<b>🔎👨‍🎤 Search artists</b>
 </summary>
 
 Search all artists by prefix<br>
@@ -141,7 +141,7 @@ loop.run_until_complete(main())
 
 <details> 
 <summary>
-<b>🎶🔎 Search tracks</b>
+<b>🔎🎶 Search tracks</b>
 </summary>
 
 Search all tracks by prefix<br>
@@ -164,7 +164,7 @@ loop.run_until_complete(main())
 
 <details> 
 <summary>
-<b>👨‍🎤🔝🎶 Top artist tracks</b>
+<b>🔝🎶👨‍🎤 Top artist tracks</b>
 </summary>
 
 Get the top songs according to Shazam<br>
@@ -327,4 +327,19 @@ loop.run_until_complete(main())
 ---
 
 ## How use Serialization
+```python3
+import asyncio
+from ShazamIO import Shazam, FactoryTrack
 
+
+async def main():
+    shazam = Shazam()
+    top_five_track_from_amsterdam = await shazam.top_country_tracks('RU', 5)
+    for track in top_five_track_from_amsterdam['tracks']:
+        serialized = FactoryTrack(data=track).serializer()
+        print(track)
+        print(serialized)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
