@@ -2,10 +2,10 @@ from io import BytesIO
 from typing import Optional
 
 from pydub import AudioSegment
-from ShazamIO.algorithm import SignatureGenerator
-from ShazamIO.client import HTTPClient
-from ShazamIO.exceptions import BadCityName, BadCountryName
-from ShazamIO.models import *
+from shazamio.algorithm import SignatureGenerator
+from shazamio.client import HTTPClient
+from shazamio.exceptions import BadCityName, BadCountryName
+from shazamio.models import *
 
 
 class Geo(HTTPClient):

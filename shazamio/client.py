@@ -1,7 +1,7 @@
 import aiohttp
 
-from ShazamIO.exceptions import BadMethod
-from ShazamIO.utils import validate_json
+from shazamio.exceptions import BadMethod
+from shazamio.utils import validate_json
 
 
 class HTTPClient:
