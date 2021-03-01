@@ -1,6 +1,3 @@
-import asyncio
-from functools import wraps, partial
-
 import aiofiles
 import aiohttp
 from aiohttp import ContentTypeError
