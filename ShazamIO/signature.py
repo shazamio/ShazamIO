@@ -4,7 +4,7 @@ from math import exp, sqrt
 from binascii import crc32
 from io import BytesIO
 from ctypes import *
-from .models import FrequencyBand, SampleRate
+from .enums import FrequencyBand, SampleRate
 
 DATA_URI_PREFIX = 'data:audio/vnd.shazam.sig;base64,'
 
