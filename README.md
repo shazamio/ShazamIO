@@ -1,6 +1,7 @@
 <p align="center">
 <img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/quality-score.png?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
 <img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/code-intelligence.svg?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
+<img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/build.png?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
 <img src="https://badge.fury.io/py/shazamio.svg" alt="https://badge.fury.io/py/shazamio">
 <img src="https://img.shields.io/pypi/dm/shazamio.svg" alt="https://pypistats.org/packages/shazamio">
 <img src="https://img.shields.io/github/license/dotX12/shazamio.svg" alt="https://github.com/dotX12/ShazamIO/blob/master/LICENSE.txt">
