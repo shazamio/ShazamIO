@@ -57,34 +57,20 @@ class TrackInfo(Factory):
             return self.spotify_uri.split('spotify:search:')[1]
 
 
-class FactoryTrack:
-    def __init__(self, data):
-        self.__data = data
-        self.__schema = Schema(
-            name_mapping={
-                "photo_url": ("images", "coverarthq"),
-                "ringtone": ("hub", "actions", 1, "uri"),
-                "artist_id": ("artists", 0, "id"),
-                "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
-                "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
-                "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
-            }, skip_internal=True)
+class FactorySchemas:
+    FACTORY_TRACK_SCHEMA = Schema(
+        name_mapping={
+            "photo_url": ("images", "coverarthq"),
+            "ringtone": ("hub", "actions", 1, "uri"),
+            "artist_id": ("artists", 0, "id"),
+            "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
+            "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
+            "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
+        }, skip_internal=True)
 
-    def serializer(self):
-        factory = Factory(schemas={TrackInfo: self.__schema}, debug_path=True)
-        return factory.load(self.__data, TrackInfo)
-
-
-class FactoryArtist:
-    def __init__(self, data):
-        self.__data = data
-        self.__schema = Schema(
-            name_mapping={
-                "avatar": "avatar",
-                "genres": ("genres", "secondaries"),
-                "genres_primary": ("genres", "primary"),
-            })
-
-    def serializer(self):
-        factory = Factory(schemas={ArtistInfo: self.__schema}, debug_path=True)
-        return factory.load(self.__data, ArtistInfo)
+    FACTORY_ARTIST_SCHEMA = Schema(
+        name_mapping={
+            "avatar": "avatar",
+            "genres": ("genres", "secondaries"),
+            "genres_primary": ("genres", "primary"),
+        })
