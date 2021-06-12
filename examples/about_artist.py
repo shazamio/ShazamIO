@@ -1,12 +1,12 @@
 import asyncio
-from shazamio import Shazam, FactoryArtist
+from shazamio import Shazam, serialize_artist
 
 
 async def main():
     shazam = Shazam()
     artist_id = 43328183
     about_artist = await shazam.artist_about(artist_id)
-    serialized = FactoryArtist(data=about_artist).serializer()
+    serialized = serialize_artist(about_artist)
 
     print(about_artist)  # dict
     print(serialized)  # serialized from dataclass factory
