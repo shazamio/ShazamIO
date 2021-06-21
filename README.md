@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/github/license/dotX12/shazamio.svg" alt="https://github.com/dotX12/ShazamIO/blob/master/LICENSE.txt">
 <br><br>
   <img width="1000" src="https://user-images.githubusercontent.com/64792903/109359596-ca561a00-7896-11eb-9c93-9cf1f283b1a5.png">
-  🎵 Is a FREE asynchronous framework from reverse engineered Shazam API written in Python 3.6+ with asyncio and aiohttp.
+  🎵 Is a FREE asynchronous framework from reverse engineered Shazam API written in Python 3.6+ with asyncio and aiohttp. Includes all the methods that Shazam has, including searching for a song by file.
 </p>
 
 ## 💿 Installation
