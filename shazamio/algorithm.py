@@ -38,19 +38,25 @@ class SignatureGenerator:
         # Used when storing input that will be processed when requiring to
         # generate a signature:
 
-        self.input_pending_processing: List[int] = []  # Signed 16-bits, 16 KHz mono samples to be processed
+        self.input_pending_processing: List[int] = []
+        # Signed 16-bits, 16 KHz mono samples to be processed
 
-        self.samples_processed: int = 0  # Number of samples processed out of "self.input_pending_processing"
+        self.samples_processed: int = 0
+        # Number of samples processed out of "self.input_pending_processing"
 
         # Used when processing input:
 
-        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
+        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048,
+                                                                  default_value=0)
 
-        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(buffer_size=256, default_value=[0. * 1025])
-        # Lists of 1025 floats, premultiplied with a Hanning function before being passed through FFT, computed from
+        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(buffer_size=256,
+                                                               default_value=[0. * 1025])
+        # Lists of 1025 floats, premultiplied with a Hanning function before being
+        # passed through FFT, computed from
         # the ring buffer every new 128 samples
 
-        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(buffer_size=256, default_value=[0] * 1025)
+        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(buffer_size=256,
+                                                                     default_value=[0] * 1025)
 
         # How much data to send to Shazam at once?
 
@@ -83,14 +89,17 @@ class SignatureGenerator:
         Except if there are no more samples to be consumed, in this case
         we will return None.
     """
+
     def get_next_signature(self) -> Optional[DecodedMessage]:
         if len(self.input_pending_processing) - self.samples_processed < 128:
             return None
         while (len(self.input_pending_processing) - self.samples_processed >= 128 and
-               (self.next_signature.number_samples / self.next_signature.sample_rate_hz < self.MAX_TIME_SECONDS or
-                sum(len(peaks) for peaks in self.next_signature.frequency_band_to_sound_peaks.values())
+               (self.next_signature.number_samples / self.next_signature.sample_rate_hz <
+                self.MAX_TIME_SECONDS or sum(len(peaks) for peaks in
+                                             self.next_signature.frequency_band_to_sound_peaks.values())
                 < self.MAX_PEAKS)):
-            self.process_input(self.input_pending_processing[self.samples_processed:self.samples_processed + 128])
+            self.process_input(self.input_pending_processing
+                               [self.samples_processed:self.samples_processed + 128])
             self.samples_processed += 128
 
         returned_signature = self.next_signature
@@ -100,9 +109,12 @@ class SignatureGenerator:
         self.next_signature.number_samples = 0
         self.next_signature.frequency_band_to_sound_peaks = {}
 
-        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
-        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(buffer_size=256, default_value=[0. * 1025])
-        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(buffer_size=256, default_value=[0] * 1025)
+        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048,
+                                                                  default_value=0)
+        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(buffer_size=256,
+                                                               default_value=[0. * 1025])
+        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(buffer_size=256,
+                                                                     default_value=[0] * 1025)
 
         return returned_signature
 
@@ -114,22 +126,21 @@ class SignatureGenerator:
 
     def do_fft(self, batch_of_128_s16le_mono_samples):
         type_ring = (self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples))
-        self.ring_buffer_of_samples[self.ring_buffer_of_samples.position: type_ring] = batch_of_128_s16le_mono_samples
+        self.ring_buffer_of_samples[
+        self.ring_buffer_of_samples.position: type_ring] = batch_of_128_s16le_mono_samples
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)
 
         excerpt_from_ring_buffer: list = (
-                self.ring_buffer_of_samples[self.ring_buffer_of_samples.position:] +
-                self.ring_buffer_of_samples[:self.ring_buffer_of_samples.position]
+            self.ring_buffer_of_samples[self.ring_buffer_of_samples.position:] +
+            self.ring_buffer_of_samples[:self.ring_buffer_of_samples.position]
         )
 
         # The pre multiplication of the array is for applying a windowing function before the DFT
         # (slight rounded Hanning without zeros at edges)
 
         fft_results: array = fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
-
-        assert len(fft_results) == 1025 and len(excerpt_from_ring_buffer) == 2048 == len(HANNING_MATRIX)
 
         fft_results = (fft_results.real ** 2 + fft_results.imag ** 2) / (1 << 17)
         fft_results = maximum(fft_results, 0.0000000001)
@@ -185,16 +196,17 @@ class SignatureGenerator:
 
             # Ensure that the bin is large enough to be a peak
 
-            if (fft_minus_46[bin_position] >= 1 / 64 and
-                    fft_minus_46[bin_position] >= fft_minus_49[bin_position - 1]):
+            if fft_minus_46[bin_position] >= 1 / 64 and (fft_minus_46[bin_position] >=
+                                                         fft_minus_49[bin_position - 1]):
 
                 # Ensure that it is frequency-domain local minimum
 
                 max_neighbor_in_fft_minus_49 = 0
 
                 for neighbor_offset in [*range(-10, -3, 3), -3, 1, *range(2, 9, 3)]:
-                    max_neighbor_in_fft_minus_49 = max(fft_minus_49[bin_position + neighbor_offset],
-                                                       max_neighbor_in_fft_minus_49)
+                    max_neighbor_in_fft_minus_49 = max(
+                        fft_minus_49[bin_position + neighbor_offset],
+                        max_neighbor_in_fft_minus_49)
 
                 if fft_minus_46[bin_position] > max_neighbor_in_fft_minus_49:
 
@@ -216,7 +228,8 @@ class SignatureGenerator:
 
                         fft_number = self.spread_fft_output.num_written - 46
 
-                        peak_magnitude = log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
+                        peak_magnitude = log(max(1 / 64, fft_minus_46[bin_position])
+                                             ) * 1477.3 + 6144
                         peak_magnitude_before = log(
                             max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144
                         peak_magnitude_after = log(
