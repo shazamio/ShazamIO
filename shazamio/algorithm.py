@@ -1,9 +1,10 @@
-from numpy import fft, array as nparray, maximum, log, hanning
+from copy import copy
 from typing import List, Optional, Any
 
-from .signature import DecodedMessage, FrequencyPeak
-from copy import copy
+from numpy import hanning, log, maximum, fft, array
+
 from .enums import FrequencyBand
+from .signature import DecodedMessage, FrequencyPeak
 
 HANNING_MATRIX = hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
@@ -114,7 +115,6 @@ class SignatureGenerator:
     def do_fft(self, batch_of_128_s16le_mono_samples):
         type_ring = (self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples))
         self.ring_buffer_of_samples[self.ring_buffer_of_samples.position: type_ring] = batch_of_128_s16le_mono_samples
-
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)
@@ -127,7 +127,7 @@ class SignatureGenerator:
         # The pre multiplication of the array is for applying a windowing function before the DFT
         # (slight rounded Hanning without zeros at edges)
 
-        fft_results: nparray = fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
+        fft_results: array = fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
 
         assert len(fft_results) == 1025 and len(excerpt_from_ring_buffer) == 2048 == len(HANNING_MATRIX)
 
@@ -161,9 +161,11 @@ class SignatureGenerator:
 
             for former_fft_num in [-1, -3, -6]:
                 former_fft_output = self.spread_fft_output[
-                    (self.spread_fft_output.position + former_fft_num) % self.spread_fft_output.buffer_size]
+                    (self.spread_fft_output.position + former_fft_num) %
+                    self.spread_fft_output.buffer_size]
 
-                former_fft_output[position] = max_value = max(former_fft_output[position], max_value)
+                former_fft_output[position] = max_value = max(former_fft_output[position],
+                                                              max_value)
 
         # Save output locally
 
@@ -173,7 +175,9 @@ class SignatureGenerator:
 
     def do_peak_recognition(self):
 
-        fft_minus_46 = self.fft_outputs[(self.fft_outputs.position - 46) % self.fft_outputs.buffer_size]
+        fft_minus_46 = self.fft_outputs[
+            (self.fft_outputs.position - 46) % self.fft_outputs.buffer_size
+            ]
         fft_minus_49 = self.spread_fft_output[
             (self.spread_fft_output.position - 49) % self.spread_fft_output.buffer_size]
 
@@ -200,8 +204,9 @@ class SignatureGenerator:
 
                     for other_offset in [-53, -45, *range(165, 201, 7), *range(214, 250, 7)]:
                         max_neighbor_in_other_adjacent_ffts = max(
-                            self.spread_fft_output[(self.spread_fft_output.position + other_offset)
-                                                   % self.spread_fft_output.buffer_size][bin_position - 1],
+                            self.spread_fft_output[
+                                (self.spread_fft_output.position + other_offset) %
+                                self.spread_fft_output.buffer_size][bin_position - 1],
                             max_neighbor_in_other_adjacent_ffts
                         )
 
@@ -212,11 +217,15 @@ class SignatureGenerator:
                         fft_number = self.spread_fft_output.num_written - 46
 
                         peak_magnitude = log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
-                        peak_magnitude_before = log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144
-                        peak_magnitude_after = log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3 + 6144
+                        peak_magnitude_before = log(
+                            max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144
+                        peak_magnitude_after = log(
+                            max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3 + 6144
 
-                        peak_variation_1 = peak_magnitude * 2 - peak_magnitude_before - peak_magnitude_after
-                        peak_variation_2 = (peak_magnitude_after - peak_magnitude_before) * 32 / peak_variation_1
+                        peak_variation_1 = (peak_magnitude * 2 - peak_magnitude_before -
+                                            peak_magnitude_after)
+                        peak_variation_2 = (peak_magnitude_after - peak_magnitude_before
+                                            ) * 32 / peak_variation_1
 
                         corrected_peak_frequency_bin = bin_position * 64 + peak_variation_2
 
@@ -224,15 +233,13 @@ class SignatureGenerator:
 
                         frequency_hz = corrected_peak_frequency_bin * (16000 / 2 / 1024 / 64)
 
-                        if frequency_hz < 250:
-                            continue
-                        elif frequency_hz < 520:
+                        if 250 < frequency_hz < 520:
                             band = FrequencyBand.hz_250_520
-                        elif frequency_hz < 1450:
+                        elif 520 < frequency_hz < 1450:
                             band = FrequencyBand.hz_520_1450
-                        elif frequency_hz < 3500:
+                        elif 1450 < frequency_hz < 3500:
                             band = FrequencyBand.hz_1450_3500
-                        elif frequency_hz <= 5500:
+                        elif 5500 < frequency_hz <= 5500:
                             band = FrequencyBand.hz_3500_5500
                         else:
                             continue
@@ -241,5 +248,6 @@ class SignatureGenerator:
                             self.next_signature.frequency_band_to_sound_peaks[band] = []
 
                         self.next_signature.frequency_band_to_sound_peaks[band].append(
-                            FrequencyPeak(fft_number, int(peak_magnitude), int(corrected_peak_frequency_bin), 16000)
+                            FrequencyPeak(fft_number, int(peak_magnitude),
+                                          int(corrected_peak_frequency_bin), 16000)
                         )
