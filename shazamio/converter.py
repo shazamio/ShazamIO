@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Optional, Union
+from typing import Union
 
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
@@ -12,6 +12,13 @@ from shazamio.typehints import CountryCode
 class Geo(HTTPClient):
 
     async def city_id_from(self, country: Union[CountryCode, str], city: str) -> int:
+        """
+        Return City ID from country name and city name.
+            :param country: - Country name
+            :param city: - City name
+            :return: City ID
+        """
+
         data = await self.request('GET', ShazamUrl.CITY_IDS, 'text/plain')
         for response_country in data['countries']:
             if country == response_country['id']:
