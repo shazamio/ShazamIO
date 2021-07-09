@@ -8,7 +8,7 @@ async def main():
 
     for track in top_rock_in_the_world['tracks']:
         serialized_track = serialize_track(data=track)
-        print(serialized_track.spotify_url)
+        print(serialized_track)
 
 
 loop = asyncio.get_event_loop()
