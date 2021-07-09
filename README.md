@@ -99,6 +99,32 @@ loop.run_until_complete(main())
 
 <details> 
 <summary>
+<i>🎵⌛ Track listenings count</i>
+</summary>
+
+Returns the number of times a particular song has been played<br>
+<a href="https://www.shazam.com/track/559284007/rampampam">https://www.shazam.com/track/559284007/rampampam</a>
+
+  ```python3
+import asyncio
+from shazamio import Shazam
+
+
+async def main():
+    # Example: https://www.shazam.com/track/559284007/rampampam
+
+    shazam = Shazam()
+    track_id = 559284007
+    count = await shazam.listening_counter(track_id=track_id)
+    print(count)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+  ```
+</details>
+
+<details> 
+<summary>
 <i>🎶💬 Similar songs</i>
 </summary>
 
