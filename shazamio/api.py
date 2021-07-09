@@ -2,13 +2,13 @@ import pathlib
 import uuid
 import time
 
-import typing
+from typing import Dict, Any, Union
 
 from .signature import DecodedMessage
 from .models import Request, ShazamUrl
 from .enums import GenreMusic
 from .converter import Converter, Geo
-from .typehints import CountryCode, ShazamResponse
+from .typehints import CountryCode
 from .utils import load_file
 
 
@@ -17,7 +17,7 @@ class Shazam(Converter, Geo):
 
     async def top_world_tracks(self,
                                limit: int = 200,
-                               start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                               start_from: int = 0) -> Dict[str, Any]:
         """
         Search top world tracks
 
@@ -31,7 +31,7 @@ class Shazam(Converter, Geo):
                                   ShazamUrl.TOP_TRACKS_WORLD.format(limit, start_from),
                                   headers=Request.HEADERS)
 
-    async def artist_about(self, artist_id: int) -> typing.Union[ShazamResponse, dict]:
+    async def artist_about(self, artist_id: int) -> Dict[str, Any]:
         """
         Retrieving information from an artist profile
 
@@ -45,7 +45,7 @@ class Shazam(Converter, Geo):
     async def artist_top_tracks(self,
                                 artist_id: int,
                                 limit: int = 200,
-                                start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                                start_from: int = 0) -> Dict[str, Any]:
         """
         Get the top songs according to Shazam
 
@@ -60,7 +60,7 @@ class Shazam(Converter, Geo):
                                   ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, limit),
                                   headers=Request.HEADERS)
 
-    async def track_about(self, track_id: int) -> typing.Union[ShazamResponse, dict]:
+    async def track_about(self, track_id: int) -> Dict[str, Any]:
         """
         Get track information
 
@@ -72,9 +72,9 @@ class Shazam(Converter, Geo):
                                   headers=Request.HEADERS)
 
     async def top_country_tracks(self,
-                                 country_code: typing.Union[CountryCode, str],
+                                 country_code: Union[CountryCode, str],
                                  limit: int = 200,
-                                 start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                                 start_from: int = 0) -> Dict[str, Any]:
         """
         Get the best tracks by country code
         https://www.shazam.com/charts/discovery/netherlands
@@ -91,10 +91,10 @@ class Shazam(Converter, Geo):
                                   headers=Request.HEADERS)
 
     async def top_city_tracks(self,
-                              country_code: typing.Union[CountryCode, str],
+                              country_code: Union[CountryCode, str],
                               city_name: str,
                               limit: int = 200,
-                              start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                              start_from: int = 0) -> Dict[str, Any]:
 
         """
         Retrieving information from an artist profile
@@ -109,15 +109,15 @@ class Shazam(Converter, Geo):
                 The default is 0. If you want to skip the first few songs, set this parameter to your own.
             :return: dict songs
         """
-        city_id = await Geo(country_code, city_name).city_id_from()
+        city_id = await self.city_id_from(country=country_code, city=city_name)
         return await self.request('GET',
                                   ShazamUrl.TOP_TRACKS_CITY.format(city_id, limit, start_from),
                                   headers=Request.HEADERS)
 
     async def top_world_genre_tracks(self,
-                                     genre: typing.Union[GenreMusic, int],
+                                     genre: Union[GenreMusic, int],
                                      limit: int = 100,
-                                     start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                                     start_from: int = 0) -> Dict[str, Any]:
         """
         Get world tracks by certain genre
         https://www.shazam.com/charts/genre/world/rock
@@ -139,9 +139,9 @@ class Shazam(Converter, Geo):
 
     async def top_country_genre_tracks(self,
                                        country_code: str,
-                                       genre: typing.Union[GenreMusic, int],
+                                       genre: Union[GenreMusic, int],
                                        limit: int = 200,
-                                       start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                                       start_from: int = 0) -> Dict[str, Any]:
         """
         The best tracks by a genre in the country
         https://www.shazam.com/charts/genre/spain/hip-hop-rap
@@ -164,7 +164,7 @@ class Shazam(Converter, Geo):
     async def related_tracks(self,
                              track_id: int,
                              limit: int = 20,
-                             start_from: int = 0) -> typing.Union[ShazamResponse, dict]:
+                             start_from: int = 0) -> Dict[str, Any]:
         """
         Similar songs based song id
         https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix
@@ -182,7 +182,7 @@ class Shazam(Converter, Geo):
 
     async def search_artist(self,
                             query: str,
-                            limit: int = 10) -> typing.Union[ShazamResponse, dict]:
+                            limit: int = 10) -> Dict[str, Any]:
         """
         Search all artists by prefix or fullname
 
@@ -197,7 +197,7 @@ class Shazam(Converter, Geo):
 
     async def search_track(self,
                            query: str,
-                           limit: int = 10) -> typing.Union[ShazamResponse, dict]:
+                           limit: int = 10) -> Dict[str, Any]:
         """
         Search all tracks by prefix
             :param query: Track full title or prefix title
@@ -209,14 +209,25 @@ class Shazam(Converter, Geo):
                                   ShazamUrl.SEARCH_MUSIC.format(query, limit),
                                   headers=Request.HEADERS)
 
-    async def recognize_song(self, file_path: typing.Union[str, pathlib.Path]) -> typing.Union[ShazamResponse, dict]:
+    async def listening_counter(self, track_id: int) -> Dict[str, Any]:
+        """
+        Returns the total track listener counter.
+
+            :param track_id: Track number. Example: (559284007) https://www.shazam.com/track/559284007/rampampam
+            :return: The data dictionary that contains the listen counter.
+        """
+
+        return await self.request('GET', ShazamUrl.LISTENING_COUNTER.format(track_id),
+                                  headers=Request.HEADERS)
+
+    async def recognize_song(self, file_path: Union[str, pathlib.Path]) -> Dict[str, Any]:
         """
         Creating a song signature based on a file and searching for this signature in the shazam database.
 
             :param file_path: Path to song file
             :return: Dictionary with information about the found song
         """
-        file = await load_file(file_path, 'rb')
+        file = await load_file(file_path, True)
         audio = self.normalize_audio_data(file)
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
@@ -225,7 +236,7 @@ class Shazam(Converter, Geo):
         results = await self.send_recognize_request(signature)
         return results
 
-    async def send_recognize_request(self, sig: DecodedMessage) -> typing.Union[ShazamResponse, dict]:
+    async def send_recognize_request(self, sig: DecodedMessage) -> Dict[str, Any]:
 
         data = Converter.data_search(Request.TIME_ZONE,
                                      sig.encode_to_uri(),
