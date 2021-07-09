@@ -3,7 +3,7 @@ from shazamio import Shazam
 
 
 async def main():
-    # https://www.shazam.com/track/559284007/rampampam
+    # Example: https://www.shazam.com/track/559284007/rampampam
 
     shazam = Shazam()
     track_id = 559284007
