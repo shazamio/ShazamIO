@@ -1,32 +1,30 @@
 from io import BytesIO
-from typing import Optional
+from typing import Optional, Union
 
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
 from shazamio.client import HTTPClient
 from shazamio.exceptions import BadCityName, BadCountryName
 from shazamio.models import *
+from shazamio.typehints import CountryCode
 
 
 class Geo(HTTPClient):
-    def __init__(self, country: Optional[str] = None, city: Optional[str] = None):
-        self.country = country
-        self.city = city
 
-    async def city_id_from(self) -> int:
+    async def city_id_from(self, country: Union[CountryCode, str], city: str) -> int:
         data = await self.request('GET', ShazamUrl.CITY_IDS, 'text/plain')
         for response_country in data['countries']:
-            if self.country == response_country['id']:
+            if country == response_country['id']:
                 for response_city in response_country['cities']:
-                    if self.city == response_city['name']:
+                    if city == response_city['name']:
                         return response_city['id']
         raise BadCityName('City not found, check city name')
 
-    async def all_cities_from_country(self) -> list:
+    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> list:
         cities = []
         data = await self.request('GET', ShazamUrl.CITY_IDS, 'text/plain')
         for response_country in data['countries']:
-            if self.country == response_country['id']:
+            if country == response_country['id']:
                 for city in response_country['cities']:
                     cities.append(city['name'])
                 return cities
