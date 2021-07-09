@@ -28,10 +28,10 @@ class ShazamUrl:
     SEARCH_ARTIST = (
         'https://www.shazam.com/services/search/v3/en/GB/web/search?query={}'
         '&numResults={}&offset=0&types=artists')
-
     SEARCH_MUSIC = (
         'https://www.shazam.com/services/search/v3/en/GB/web/search?query={}'
         '&numResults={}&offset=0&types=songs')
+    LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
 
 
 class Request:
