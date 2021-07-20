@@ -3,7 +3,7 @@ aiohttp
 async-timeout==3.0.1
 attrs==20.3.0
 chardet==3.0.4
-dataclass-factory==2.10.1
+dataclass-factory
 idna==3.1
 multidict==5.1.0
 numpy
