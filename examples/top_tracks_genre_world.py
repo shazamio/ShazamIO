@@ -1,5 +1,5 @@
 import asyncio
-from shazamio import Shazam, FactoryTrack, GenreMusic
+from shazamio import Shazam, serialize_track, GenreMusic
 
 
 async def main():
@@ -7,8 +7,8 @@ async def main():
     top_rock_in_the_world = await shazam.top_world_genre_tracks(genre=GenreMusic.ROCK, limit=10)
 
     for track in top_rock_in_the_world['tracks']:
-        serialized_track = FactoryTrack(track).serializer()
-        print(serialized_track.spotify_url)
+        serialized_track = serialize_track(data=track)
+        print(serialized_track)
 
 
 loop = asyncio.get_event_loop()

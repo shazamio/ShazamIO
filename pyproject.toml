@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "shazamio"
-version = "0.0.2"
-description = "Is a asynchronous framework from reverse engineered Shazam API written in Python 3.7 with asyncio and aiohttp."
+version = "0.0.4"
+description = "Is a asynchronous framework from reverse engineered Shazam API written in Python 3.6+ with asyncio and aiohttp."
 authors = ["dotX12"]
 license = "MIT License"
 keywords = ["python", "shazam", "music", "recognize", "api", "async", "asyncio", "aiohttp", "identification"]
@@ -14,7 +14,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 numpy = "^1.20.1"
 aiohttp = "^3.7.4"
 pydub = "^0.24.1"

@@ -1,3 +1,8 @@
+from random import choice
+
+from shazamio.user_agent import USER_AGENTS
+
+
 class ShazamUrl:
     SEARCH_FROM_FILE = (
         'https://amp.shazam.com/discovery/v5/en/GB/iphone/-/tag/{}/{}?sync=true&webv3=true&sampling=true'
@@ -23,10 +28,10 @@ class ShazamUrl:
     SEARCH_ARTIST = (
         'https://www.shazam.com/services/search/v3/en/GB/web/search?query={}'
         '&numResults={}&offset=0&types=artists')
-
     SEARCH_MUSIC = (
         'https://www.shazam.com/services/search/v3/en/GB/web/search?query={}'
         '&numResults={}&offset=0&types=songs')
+    LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
 
 
 class Request:
@@ -38,5 +43,5 @@ class Request:
         "Accept": "*/*",
         "Accept-Language": LANG,
         "Accept-Encoding": "gzip, deflate",
-        "User-Agent": "Shazam/3685 CFNetwork/1197 Darwin/20.0.0"
+        "User-Agent": choice(USER_AGENTS)
     }

@@ -1,3 +1,6 @@
+import pathlib
+from typing import Union
+
 import aiofiles
 import aiohttp
 from aiohttp import ContentTypeError
@@ -12,7 +15,7 @@ async def validate_json(resp: aiohttp.ClientResponse, content_type: str = 'appli
         raise FailedDecodeJson(f"Check args, URL is invalid\nURL- {bad_url}")
 
 
-async def load_file(file, binary=False):
+async def load_file(file: Union[str, pathlib.Path], binary: bool = False):
     mode = "r" if not binary else "rb"
     async with aiofiles.open(file, mode=mode) as f:
         return await f.read()

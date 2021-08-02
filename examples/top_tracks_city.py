@@ -1,5 +1,5 @@
 import asyncio
-from shazamio import Shazam, FactoryTrack
+from shazamio import Shazam, serialize_track
 
 
 async def main():
@@ -8,7 +8,7 @@ async def main():
     print(top_ten_moscow_tracks)
     # ALL TRACKS DICT
     for track in top_ten_moscow_tracks['tracks']:
-        serialized = FactoryTrack(track).serializer()
+        serialized = serialize_track(data=track)
         # SERIALIZE FROM DATACLASS FACTORY
         print(serialized)
 
