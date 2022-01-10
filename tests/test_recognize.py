@@ -1,11 +1,8 @@
-import ssl
 import asyncio
 import pytest
 
 from shazamio import Shazam
 from shazamio.utils import get_file_bytes
-
-ssl.SSLContext.verify_mode = ssl.VerifyMode.CERT_OPTIONAL
 
 
 @pytest.fixture(scope="session")
