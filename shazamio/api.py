@@ -9,7 +9,7 @@ from .models import Request, ShazamUrl
 from .enums import GenreMusic
 from .converter import Converter, Geo
 from .typehints import CountryCode
-from .utils import load_file
+from .utils import get_song_bytes
 
 
 class Shazam(Converter, Geo):
@@ -145,14 +145,13 @@ class Shazam(Converter, Geo):
         """
         The best tracks by a genre in the country
         https://www.shazam.com/charts/genre/spain/hip-hop-rap
-
             :param country_code: ISO 3166-3 alpha-2 code. Example: RU,NL,UA
             :param genre: Genre name or ID:
                 POP = 1, HIP_HOP_RAP = 2, DANCE = 3, ELECTRONIC = 4, RNB_SOUL = 5, ALTERNATIVE = 6, ROCK = 7
                 LATIN = 8, FILM_TV_STAGE = 9, COUNTRY = 10, AFRO_BEATS = 11, WORLDWIDE = 12, REGGAE_DANCE_HALL = 13
                 HOUSE = 14, K_POP = 15, FRENCH_POP = 16, SINGER_SONGWRITER = 17, REGIONAL_MEXICANO = 18
             :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs.
+                Example: If 5 is specified, the query will return no more than 5 songs
             :param start_from: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to your own.
             :return: dict songs
@@ -168,10 +167,9 @@ class Shazam(Converter, Geo):
         """
         Similar songs based song id
         https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix
-
             :param track_id: Track number. Example: (549952578) https://www.shazam.com/track/549952578/
             :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs.
+                Example: If 5 is specified, the query will return no more than 5 songs
             :param start_from: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to your own.
             :return: dict tracks
@@ -185,7 +183,6 @@ class Shazam(Converter, Geo):
                             limit: int = 10) -> Dict[str, Any]:
         """
         Search all artists by prefix or fullname
-
             :param query: Artist name or search prefix
             :param limit: Determines how many artists the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 artists.
@@ -212,7 +209,6 @@ class Shazam(Converter, Geo):
     async def listening_counter(self, track_id: int) -> Dict[str, Any]:
         """
         Returns the total track listener counter.
-
             :param track_id: Track number. Example: (559284007) https://www.shazam.com/track/559284007/rampampam
             :return: The data dictionary that contains the listen counter.
         """
@@ -220,15 +216,17 @@ class Shazam(Converter, Geo):
         return await self.request('GET', ShazamUrl.LISTENING_COUNTER.format(track_id),
                                   headers=Request.HEADERS)
 
-    async def recognize_song(self, file_path: Union[str, pathlib.Path]) -> Dict[str, Any]:
+    async def recognize_song(
+        self,
+        data: Union[str, pathlib.Path, bytes, bytearray]
+    ) -> Dict[str, Any]:
         """
         Creating a song signature based on a file and searching for this signature in the shazam database.
-
-            :param file_path: Path to song file
+            :param data: Path to song file or bytes
             :return: Dictionary with information about the found song
         """
-        file = await load_file(file_path, True)
-        audio = self.normalize_audio_data(file)
+        data_bytes = await get_song_bytes(data=data)
+        audio = self.normalize_audio_data(data_bytes)
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
         while not signature:
