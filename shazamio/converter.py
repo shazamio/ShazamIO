@@ -1,4 +1,3 @@
-from io import BytesIO
 from typing import Union
 
 from pydub import AudioSegment
