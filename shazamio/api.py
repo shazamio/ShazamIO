@@ -1,6 +1,7 @@
 import pathlib
 import uuid
 import time
+from pydub import AudioSegment
 
 from typing import Dict, Any, Union
 
@@ -9,7 +10,7 @@ from .models import Request, ShazamUrl
 from .enums import GenreMusic
 from .converter import Converter, Geo
 from .typehints import CountryCode
-from .utils import get_song_bytes
+from .utils import get_song
 
 
 class Shazam(Converter, Geo):
@@ -218,15 +219,15 @@ class Shazam(Converter, Geo):
 
     async def recognize_song(
         self,
-        data: Union[str, pathlib.Path, bytes, bytearray]
+        data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment]
     ) -> Dict[str, Any]:
         """
         Creating a song signature based on a file and searching for this signature in the shazam database.
             :param data: Path to song file or bytes
             :return: Dictionary with information about the found song
         """
-        data_bytes = await get_song_bytes(data=data)
-        audio = self.normalize_audio_data(data_bytes)
+        song = await get_song(data=data)
+        audio = self.normalize_audio_data(song)
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
         while not signature:
