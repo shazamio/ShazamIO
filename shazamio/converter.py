@@ -1,10 +1,9 @@
 from io import BytesIO
-from typing import Union
-
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
 from shazamio.client import HTTPClient
 from shazamio.exceptions import BadCityName, BadCountryName
+from shazamio.misc import ShazamUrl
 from shazamio.models import *
 from shazamio.typehints import CountryCode
 

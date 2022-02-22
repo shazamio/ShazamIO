@@ -1,60 +1,4 @@
-from dataclasses import field
-from typing import Optional, List, Union
-from urllib.parse import urlparse, urlencode, urlunparse
-from dataclass_factory import Factory, Schema
-from dataclasses import dataclass
-
-
-@dataclass
-class ArtistInfo:
-    name: str
-    alias: str
-    verified: Optional[bool]
-    genres: Optional[List[str]] = field(default_factory=list)
-    genres_primary: Optional[str] = None
-    avatar: Optional[Union[dict, str]] = None
-    url: Optional[str] = ''
-
-    def __post_init__(self):
-        self.avatar = self.__optional_avatar()
-
-    def __optional_avatar(self):
-        if self.avatar is None:
-            return None
-        elif 'default' in self.avatar:
-            return self.avatar.get('default')
-        else:
-            return ''.join(self.avatar)
-
-
-@dataclass
-class TrackInfo(Factory):
-    key: int
-    title: str
-    subtitle: str
-    artist_id: Optional[str] = field(default=None)
-    shazam_url: str = None
-    photo_url: Optional[str] = field(init=False, default=None)
-    spotify_uri_query: Optional[str] = None
-    apple_music_url: Optional[str] = None
-    ringtone: Optional[str] = None
-    spotify_url: Optional[str] = field(default=None)
-    spotify_uri: Optional[str] = field(default=None)
-
-    def __post_init__(self):
-        self.shazam_url = f'https://www.shazam.com/track/{self.artist_id}'
-        self.apple_music_url = self.__apple_music_url()
-        self.spotify_uri_query = self.__short_uri()
-
-    def __apple_music_url(self):
-        url_parse_list = list(urlparse(self.apple_music_url))
-        url_parse_list[4] = urlencode({}, doseq=True)
-        url_deleted_query = urlunparse(url_parse_list)
-        return url_deleted_query
-
-    def __short_uri(self):
-        if self.spotify_uri:
-            return self.spotify_uri.split('spotify:search:')[1]
+from dataclass_factory import Schema
 
 
 class FactorySchemas:
@@ -65,7 +9,9 @@ class FactorySchemas:
             "artist_id": ("artists", 0, "id"),
             "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
             "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
-            "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri")
+            "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri"),
+            "_sections": "sections"
+
         }, skip_internal=True)
 
     FACTORY_ARTIST_SCHEMA = Schema(
@@ -74,3 +20,52 @@ class FactorySchemas:
             "genres": ("genres", "secondaries"),
             "genres_primary": ("genres", "primary"),
         })
+
+    FACTORY_SONG_SECTION_SCHEMA = Schema(
+        name_mapping={
+            "type": "type",
+            "meta_pages": "metapages",
+            "tab_name": "tabname",
+            "metadata": "metadata"
+        },
+        skip_internal=True
+    )
+
+    FACTORY_VIDEO_SECTION_SCHEMA = Schema(
+        name_mapping={
+            "type": "type",
+            "youtube_url": "youtubeurl",
+            "tab_name": "tabname",
+        },
+        skip_internal=True
+    )
+
+    FACTORY_RELATED_SECTION_SCHEMA = Schema(
+        name_mapping={
+            "type": "type",
+            "url": "url",
+            "tab_name": "tabname",
+        },
+        skip_internal=True
+    )
+
+    FACTORY_YOUTUBE_TRACK_SCHEMA = Schema(
+        name_mapping={
+            "caption": "caption",
+            "image": "image",
+            "actions": "actions",
+        },
+        skip_internal=True
+    )
+
+    FACTORY_RESPONSE_TRACK_SCHEMA = Schema(
+        name_mapping={
+            "matches": "matches",
+            "location": "location",
+            "timestamp": "timestamp",
+            "timezone": "timezone",
+            "track": "track",
+            "tag_id": "tagid",
+        },
+        skip_internal=True
+    )
