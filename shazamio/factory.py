@@ -62,10 +62,51 @@ class FactorySchemas:
         name_mapping={
             "matches": "matches",
             "location": "location",
+            "retry_ms": "retryms",
             "timestamp": "timestamp",
             "timezone": "timezone",
             "track": "track",
             "tag_id": "tagid",
         },
         skip_internal=True
+    )
+
+    FACTORY_LYRICS_SECTION = Schema(
+        name_mapping={
+            "type": "type",
+            "text": "text",
+            "footer": "footer",
+            "tab_name": "tabname",
+            "beacon_data": "beacondata",
+        },
+    )
+
+    FACTORY_BEACON_DATA_LYRICS_SECTION = Schema(
+        name_mapping={
+            "lyrics_id": "lyricsid",
+            "provider_name": "providername",
+            "common_track_id": "commontrackid",
+        }
+    )
+
+    FACTORY_ARTIST_SECTION = Schema(
+        name_mapping={
+            "type": "type",
+            "id": "id",
+            "name": "name",
+            "verified": "verified",
+            "actions": "actions",
+            "tab_name": "tabname",
+            "top_tracks": "toptracks",
+        }
+    )
+
+    FACTORY_MATCH_MODEL = Schema(
+        name_mapping={
+            "id": "id",
+            "offset": "offset",
+            "channel": "channel",
+            "time_skew": "timeskew",
+            "frequency_skew": "frequencyskew",
+        }
     )

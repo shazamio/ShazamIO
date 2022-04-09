@@ -73,6 +73,43 @@ class SongSection:
 
 
 @dataclass
+class BaseIdTypeModel:
+    type: str
+    id: str
+
+
+@dataclass
+class TopTracksModel:
+    url: str
+
+
+@dataclass
+class ArtistSection:
+    type: str
+    id: str
+    name: str
+    verified: bool
+    actions: List[BaseIdTypeModel]
+    tab_name: str
+    top_tracks: TopTracksModel
+
+
+class BeaconDataLyricsSection:
+    lyrics_id: str
+    provider_name: str
+    common_track_id: str
+
+
+@dataclass
+class LyricsSection:
+    type: str
+    text: List[str]
+    footer: str
+    tab_name: str
+    beacon_data: Optional[BeaconDataLyricsSection]
+
+
+@dataclass
 class VideoSection:
     type: str
     tab_name: str
@@ -103,8 +140,8 @@ class MatchModel:
     id: str
     offset: float
     channel: str
-    timeskew: float
-    frequencyskew: float
+    time_skew: float
+    frequency_skew: float
 
 
 @dataclass
@@ -143,7 +180,13 @@ class TrackInfo(Factory):
     spotify_url: Optional[str] = field(default=None)
     spotify_uri: Optional[str] = field(default=None)
     youtube_link: Optional[str] = None
-    _sections: Optional[List[Union[SongSection, VideoSection, RelatedSection]]] = field(
+    _sections: Optional[List[Union[
+        SongSection,
+        VideoSection,
+        RelatedSection,
+        ArtistSection,
+        LyricsSection,
+    ]]] = field(
         default_factory=list
     )
 
@@ -172,7 +215,7 @@ class TrackInfo(Factory):
 @dataclass
 class ResponseTrack:
     tag_id: Optional[UUID]
-    retryms: Optional[int] = field(default=None)
+    retry_ms: Optional[int] = field(default=None)
     location: Optional[LocationModel] = field(default=None)
     matches: List[MatchModel] = field(default_factory=list)
     timestamp: Optional[int] = field(default=None)

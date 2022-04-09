@@ -1,5 +1,7 @@
 import pathlib
 from typing import Union
+from pydub import AudioSegment
+from io import BytesIO
 
 import aiofiles
 import aiohttp
@@ -23,11 +25,15 @@ async def get_file_bytes(file: FileT) -> bytes:
         return await f.read()
 
 
-async def get_song_bytes(data: SongT) -> bytes:
+async def get_song(data: SongT) -> bytes:
 
     if isinstance(data, (str, pathlib.Path)):
-        return await get_file_bytes(file=data)
+        song_bytes = await get_file_bytes(file=data)
+        return AudioSegment.from_file(BytesIO(song_bytes))
 
     if isinstance(data, (bytes, bytearray)):
+        return AudioSegment.from_file(BytesIO(data))
+
+    if isinstance(data, AudioSegment):
         return data
 
