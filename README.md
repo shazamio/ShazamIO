@@ -55,14 +55,14 @@ Retrieving information from an artist profile<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_artist
+from shazamio import Shazam, Serialize
 
 
 async def main():
     shazam = Shazam()
     artist_id = 43328183
     about_artist = await shazam.artist_about(artist_id)
-    serialized = serialize_artist(about_artist)
+    serialized = Serialize.artist(about_artist)
 
     print(about_artist)  # dict
     print(serialized)  # serialized from dataclass factory
@@ -83,14 +83,14 @@ Get track information<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
     shazam = Shazam()
     track_id = 552406075
     about_track = await shazam.track_about(track_id=track_id)
-    serialized = serialize_track(data=about_track)
+    serialized = Serialize.track(data=about_track)
 
     print(about_track)  # dict
     print(serialized)  # serialized from dataclass factory
@@ -159,14 +159,14 @@ loop.run_until_complete(main())
 Search all artists by prefix<br>
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_artist
+from shazamio import Shazam, Serialize
 
 
 async def main():
     shazam = Shazam()
     artists = await shazam.search_artist(query='Lil', limit=5)
     for artist in artists['artists']['hits']:
-        serialized = serialize_artist(data=artist)
+        serialized = Serialize.artist(data=artist)
         print(serialized)
 
 loop = asyncio.get_event_loop()
@@ -208,7 +208,7 @@ Get the top songs according to Shazam<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
@@ -216,7 +216,7 @@ async def main():
     artist_id = 201896832
     top_three_artist_tracks = await shazam.artist_top_tracks(artist_id=artist_id, limit=3)
     for track in top_three_artist_tracks['tracks']:
-        serialized_track = serialize_track(data=track)
+        serialized_track = Serialize.track(data=track)
         print(serialized_track)
 
 loop = asyncio.get_event_loop()
@@ -235,7 +235,7 @@ Retrieving information from an artist profile<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
@@ -244,7 +244,7 @@ async def main():
     print(top_ten_moscow_tracks)
     # ALL TRACKS DICT
     for track in top_ten_moscow_tracks['tracks']:
-        serialized = serialize_track(data=track)
+        serialized = Serialize.track(data=track)
         # SERIALIZE FROM DATACLASS FACTORY
         print(serialized)
 
@@ -264,14 +264,14 @@ Get the best tracks by country code<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
     shazam = Shazam()
     top_five_track_from_amsterdam = await shazam.top_country_tracks('NL', 5)
     for track in top_five_track_from_amsterdam['tracks']:
-        serialized = serialize_track(data=track)
+        serialized = Serialize.track(data=track)
         print(serialized)
 
 loop = asyncio.get_event_loop()
@@ -294,9 +294,11 @@ from shazamio import Shazam, GenreMusic
 
 async def main():
     shazam = Shazam()
-    top_spain_rap = await shazam.top_country_genre_tracks(country_code='ES',
-                                                          genre=GenreMusic.HIP_HOP_RAP,
-                                                          limit=4)
+    top_spain_rap = await shazam.top_country_genre_tracks(
+        country_code='ES',
+        genre=GenreMusic.HIP_HOP_RAP,
+        limit=4
+    )
     print(top_spain_rap)
 
 loop = asyncio.get_event_loop()
@@ -314,7 +316,7 @@ Get world tracks by certain genre<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track, GenreMusic
+from shazamio import Shazam, Serialize, GenreMusic
 
 
 async def main():
@@ -322,7 +324,7 @@ async def main():
     top_rock_in_the_world = await shazam.top_world_genre_tracks(genre=GenreMusic.ROCK, limit=10)
 
     for track in top_rock_in_the_world['tracks']:
-        serialized_track = serialize_track(data=track)
+        serialized_track = Serialize.track(data=track)
         print(serialized_track.spotify_url)
 
 
@@ -341,7 +343,7 @@ Get the best tracks from all over the world<br>
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
@@ -349,7 +351,7 @@ async def main():
     top_world_tracks = await shazam.top_world_tracks(limit=10)
     print(top_world_tracks)
     for track in top_world_tracks['tracks']:
-        serialized = serialize_track(track)
+        serialized = Serialize.track(track)
         print(serialized)
 
 loop = asyncio.get_event_loop()
@@ -367,14 +369,14 @@ loop.run_until_complete(main())
 
   ```python3
 import asyncio
-from shazamio import Shazam, serialize_track
+from shazamio import Shazam, Serialize
 
 
 async def main():
     shazam = Shazam()
     top_five_track_from_amsterdam = await shazam.top_country_tracks('NL', 5)
     for track in top_five_track_from_amsterdam['tracks']:
-        serialized = serialize_track(data=track)
+        serialized = Serialize.track(data=track)
         print(serialized.title)
 
 loop = asyncio.get_event_loop()
