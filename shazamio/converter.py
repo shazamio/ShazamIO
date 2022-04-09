@@ -1,3 +1,4 @@
+from typing import Union
 from io import BytesIO
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
@@ -45,8 +46,7 @@ class Converter:
                 'timestamp': timestamp, 'context': {}, 'geolocation': {}}
 
     @staticmethod
-    def normalize_audio_data(song_data: bytes) -> AudioSegment:
-        audio = AudioSegment.from_file(BytesIO(song_data))
+    def normalize_audio_data(audio: AudioSegment) -> AudioSegment:
         audio = audio.set_sample_width(2)
         audio = audio.set_frame_rate(16000)
         audio = audio.set_channels(1)
