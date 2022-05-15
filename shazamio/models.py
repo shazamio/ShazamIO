@@ -139,9 +139,9 @@ class YoutubeImageModel:
 class MatchModel:
     id: str
     offset: float
-    channel: str
     time_skew: float
     frequency_skew: float
+    channel: Optional[str] = field(default=None)
 
 
 @dataclass
