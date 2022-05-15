@@ -6,19 +6,6 @@ from shazamio import Shazam
 
 
 @pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop()
-
-    yield loop
-
-    pending = asyncio.tasks.all_tasks(loop)
-    loop.run_until_complete(asyncio.gather(*pending))
-    loop.run_until_complete(asyncio.sleep(5))
-
-    loop.close()
-
-
-@pytest.fixture(scope="session")
 def song_response():
     response = {
         "matches": [
