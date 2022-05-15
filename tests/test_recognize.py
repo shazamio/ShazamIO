@@ -1,13 +1,7 @@
-import asyncio
 import pytest
 
 from shazamio import Shazam
 from shazamio.utils import get_file_bytes
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    return asyncio.get_event_loop()
 
 
 @pytest.fixture
