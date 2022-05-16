@@ -14,16 +14,18 @@ class RawSignatureHeader(LittleEndianStructure):
 
     _fields_ = [
         ('magic1', c_uint32),  # Fixed 0xcafe2580 - 80 25 fe ca
-        ('crc32', c_uint32),  # CRC-32 for all of the following (so excluding these first 8 bytes)
+        ('crc32', c_uint32),  # CRC-32 for all following (so excluding these first 8 bytes)
         ('size_minus_header', c_uint32),
         # Total size of the message, minus the size of the current header (which is 48 bytes)
         ('magic2', c_uint32),  # Fixed 0x94119c00 - 00 9c 11 94
         ('void1', c_uint32 * 3),  # Void
         ('shifted_sample_rate_id', c_uint32),
-        # A member of SampleRate (usually 3 for 16000 Hz), left-shifted by 27 (usually giving 0x18000000 - 00 00 00 18)
+        # A member of SampleRate (usually 3 for 16000 Hz), left-shifted by 27 (usually giving
+        # 0x18000000 - 00 00 00 18)
         ('void2', c_uint32 * 2),  # Void, or maybe used only in "rolling window" mode?
         ('number_samples_plus_divided_sample_rate', c_uint32),
-        # int(number_of_samples + sample_rate * 0.24) - As the sample rate is known thanks to the field above,
+        # int(number_of_samples + sample_rate * 0.24) - As the sample rate is known thanks to the
+        # field above,
         # it can be inferred and subtracted so that we obtain the number of samples,
         # and from the number of samples and sample rate we can obtain the length of the recording
         ('fixed_value', c_uint32)
@@ -38,8 +40,10 @@ class FrequencyPeak:
     corrected_peak_frequency_bin: int = None
     sample_rate_hz: int = None
 
-    def __init__(self, fft_pass_number: int, peak_magnitude: int, corrected_peak_frequency_bin: int,
-                 sample_rate_hz: int):
+    def __init__(
+        self, fft_pass_number: int, peak_magnitude: int, corrected_peak_frequency_bin: int,
+        sample_rate_hz: int
+    ):
         self.fft_pass_number = fft_pass_number
         self.peak_magnitude = peak_magnitude
         self.corrected_peak_frequency_bin = corrected_peak_frequency_bin
@@ -48,7 +52,7 @@ class FrequencyPeak:
     def get_frequency_hz(self) -> float:
         return self.corrected_peak_frequency_bin * (self.sample_rate_hz / 2 / 1024 / 64)
 
-        # ^ Convert back a FFT bin to a frequency, given a 16 KHz sample
+        # ^ Convert back FFT bin to a frequency, given a 16 KHz sample
         # rate, 1024 useful bins and the multiplication by 64 made before
         # storing the information
 
@@ -93,7 +97,9 @@ class DecodedMessage:
 
         self.sample_rate_hz = int(SampleRate(header.shifted_sample_rate_id >> 27).name.strip('_'))
 
-        self.number_samples = int(header.number_samples_plus_divided_sample_rate - self.sample_rate_hz * 0.24)
+        self.number_samples = int(
+            header.number_samples_plus_divided_sample_rate - self.sample_rate_hz * 0.24
+        )
 
         # Read the type-length-value sequence that follows the header
 
@@ -145,7 +151,10 @@ class DecodedMessage:
                 corrected_peak_frequency_bin = int.from_bytes(frequency_peaks_buf.read(2), 'little')
 
                 self.frequency_band_to_sound_peaks[frequency_band].append(
-                    FrequencyPeak(fft_pass_number, peak_magnitude, corrected_peak_frequency_bin, self.sample_rate_hz)
+                    FrequencyPeak(
+                        fft_pass_number, peak_magnitude, corrected_peak_frequency_bin,
+                        self.sample_rate_hz
+                    )
                 )
 
         return self
@@ -180,7 +189,8 @@ class DecodedMessage:
                     }
                     for frequency_peak in frequency_peaks
                 ]
-                for frequency_band, frequency_peaks in sorted(self.frequency_band_to_sound_peaks.items())
+                for frequency_band, frequency_peaks in
+                sorted(self.frequency_band_to_sound_peaks.items())
             }
         }
 
@@ -192,7 +202,9 @@ class DecodedMessage:
         header.magic2 = 0x94119c00
         header.shifted_sample_rate_id = int(getattr(SampleRate, '_%s' % self.sample_rate_hz)) << 27
         header.fixed_value = ((15 << 19) + 0x40000)
-        header.number_samples_plus_divided_sample_rate = int(self.number_samples + self.sample_rate_hz * 0.24)
+        header.number_samples_plus_divided_sample_rate = int(
+            self.number_samples + self.sample_rate_hz * 0.24
+        )
 
         contents_buf = BytesIO()
 
