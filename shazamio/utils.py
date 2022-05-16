@@ -25,7 +25,7 @@ async def get_file_bytes(file: FileT) -> bytes:
         return await f.read()
 
 
-async def get_song(data: SongT) -> bytes:
+async def get_song(data: SongT) -> Union[AudioSegment]:
 
     if isinstance(data, (str, pathlib.Path)):
         song_bytes = await get_file_bytes(file=data)
