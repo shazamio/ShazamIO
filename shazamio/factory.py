@@ -10,25 +10,29 @@ class FactorySchemas:
             "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
             "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
             "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri"),
-            "_sections": "sections"
-
-        }, skip_internal=True)
+            "_sections": "sections",
+        },
+        skip_internal=True,
+    )
 
     FACTORY_ARTIST_SCHEMA = Schema(
         name_mapping={
             "avatar": "avatar",
             "genres": ("genres", "secondaries"),
             "genres_primary": ("genres", "primary"),
-        })
+            "adam_id": "adamid",
+            "url": "weburl",
+        }
+    )
 
     FACTORY_SONG_SECTION_SCHEMA = Schema(
         name_mapping={
             "type": "type",
             "meta_pages": "metapages",
             "tab_name": "tabname",
-            "metadata": "metadata"
+            "metadata": "metadata",
         },
-        skip_internal=True
+        skip_internal=True,
     )
 
     FACTORY_VIDEO_SECTION_SCHEMA = Schema(
@@ -37,7 +41,7 @@ class FactorySchemas:
             "youtube_url": "youtubeurl",
             "tab_name": "tabname",
         },
-        skip_internal=True
+        skip_internal=True,
     )
 
     FACTORY_RELATED_SECTION_SCHEMA = Schema(
@@ -46,7 +50,7 @@ class FactorySchemas:
             "url": "url",
             "tab_name": "tabname",
         },
-        skip_internal=True
+        skip_internal=True,
     )
 
     FACTORY_YOUTUBE_TRACK_SCHEMA = Schema(
@@ -55,7 +59,7 @@ class FactorySchemas:
             "image": "image",
             "actions": "actions",
         },
-        skip_internal=True
+        skip_internal=True,
     )
 
     FACTORY_RESPONSE_TRACK_SCHEMA = Schema(
@@ -68,7 +72,7 @@ class FactorySchemas:
             "track": "track",
             "tag_id": "tagid",
         },
-        skip_internal=True
+        skip_internal=True,
     )
 
     FACTORY_LYRICS_SECTION = Schema(

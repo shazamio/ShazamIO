@@ -10,5 +10,6 @@ async def main():
     count = await shazam.listening_counter(track_id=track_id)
     print(count)
 
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

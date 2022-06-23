@@ -12,7 +12,9 @@ SongT = Union[str, pathlib.Path, bytes, bytearray]
 FileT = Union[str, pathlib.Path]
 
 
-async def validate_json(resp: aiohttp.ClientResponse, content_type: str = 'application/json') -> dict:
+async def validate_json(
+    resp: aiohttp.ClientResponse, content_type: str = "application/json"
+) -> dict:
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
@@ -21,7 +23,7 @@ async def validate_json(resp: aiohttp.ClientResponse, content_type: str = 'appli
 
 
 async def get_file_bytes(file: FileT) -> bytes:
-    async with aiofiles.open(file, mode='rb') as f:
+    async with aiofiles.open(file, mode="rb") as f:
         return await f.read()
 
 
@@ -36,4 +38,3 @@ async def get_song(data: SongT) -> Union[AudioSegment]:
 
     if isinstance(data, AudioSegment):
         return data
-
