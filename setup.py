@@ -11,8 +11,13 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dotX12/ShazamIO",
-    install_requires=['aiohttp', 'pydub', 'numpy', 'aiofiles', 'dataclass-factory',],
+    install_requires=[
+        "aiohttp",
+        "pydub",
+        "numpy",
+        "aiofiles",
+        "dataclass-factory",
+    ],
     packages=setuptools.find_packages(),
-    python_requires='>=3.6',
-
+    python_requires=">=3.8",
 )
