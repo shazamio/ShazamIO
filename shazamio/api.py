@@ -19,9 +19,7 @@ class Shazam(Converter, Geo):
     asyncio and aiohttp."""
 
     async def top_world_tracks(
-        self,
-        limit: int = 200,
-        start_from: int = 0
+        self, limit: int = 200, start_from: int = 0
     ) -> Dict[str, Any]:
         """
         Search top world tracks
@@ -34,9 +32,9 @@ class Shazam(Converter, Geo):
             :return: dict tracks
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.TOP_TRACKS_WORLD.format(limit, start_from),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def artist_about(self, artist_id: int) -> Dict[str, Any]:
@@ -48,16 +46,11 @@ class Shazam(Converter, Geo):
             :return: dict about artist
         """
         return await self.request(
-            'GET',
-            ShazamUrl.ARTIST_ABOUT.format(artist_id),
-            headers=Request.HEADERS
+            "GET", ShazamUrl.ARTIST_ABOUT.format(artist_id), headers=Request.HEADERS
         )
 
     async def artist_top_tracks(
-        self,
-        artist_id: int,
-        limit: int = 200,
-        start_from: int = 0
+        self, artist_id: int, limit: int = 200, start_from: int = 0
     ) -> Dict[str, Any]:
         """
         Get the top songs according to Shazam
@@ -72,9 +65,9 @@ class Shazam(Converter, Geo):
             :return: dict tracks
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, limit),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def track_about(self, track_id: int) -> Dict[str, Any]:
@@ -86,16 +79,14 @@ class Shazam(Converter, Geo):
             :return: dict about track
         """
         return await self.request(
-            'GET',
-            ShazamUrl.ABOUT_TRACK.format(track_id),
-            headers=Request.HEADERS
+            "GET", ShazamUrl.ABOUT_TRACK.format(track_id), headers=Request.HEADERS
         )
 
     async def top_country_tracks(
         self,
         country_code: Union[CountryCode, str],
         limit: int = 200,
-        start_from: int = 0
+        start_from: int = 0,
     ) -> Dict[str, Any]:
         """
         Get the best tracks by country code
@@ -110,9 +101,9 @@ class Shazam(Converter, Geo):
             :return: dict songs
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.TOP_TRACKS_COUNTRY.format(country_code, limit, start_from),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def top_city_tracks(
@@ -120,7 +111,7 @@ class Shazam(Converter, Geo):
         country_code: Union[CountryCode, str],
         city_name: str,
         limit: int = 200,
-        start_from: int = 0
+        start_from: int = 0,
     ) -> Dict[str, Any]:
 
         """
@@ -139,16 +130,13 @@ class Shazam(Converter, Geo):
         """
         city_id = await self.city_id_from(country=country_code, city=city_name)
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.TOP_TRACKS_CITY.format(city_id, limit, start_from),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def top_world_genre_tracks(
-        self,
-        genre: Union[GenreMusic, int],
-        limit: int = 100,
-        start_from: int = 0
+        self, genre: Union[GenreMusic, int], limit: int = 100, start_from: int = 0
     ) -> Dict[str, Any]:
         """
         Get world tracks by certain genre
@@ -170,9 +158,9 @@ class Shazam(Converter, Geo):
             :return: dict songs
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.GENRE_WORLD.format(genre, limit, start_from),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def top_country_genre_tracks(
@@ -180,7 +168,7 @@ class Shazam(Converter, Geo):
         country_code: str,
         genre: Union[GenreMusic, int],
         limit: int = 200,
-        start_from: int = 0
+        start_from: int = 0,
     ) -> Dict[str, Any]:
         """
         The best tracks by a genre in the country
@@ -201,16 +189,13 @@ class Shazam(Converter, Geo):
             :return: dict songs
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.GENRE_COUNTRY.format(country_code, genre, limit, start_from),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
     async def related_tracks(
-        self,
-        track_id: int,
-        limit: int = 20,
-        start_from: int = 0
+        self, track_id: int, limit: int = 20, start_from: int = 0
     ) -> Dict[str, Any]:
         """
         Similar songs based song id
@@ -225,16 +210,12 @@ class Shazam(Converter, Geo):
             :return: dict tracks
         """
         return await self.request(
-            'GET',
+            "GET",
             ShazamUrl.RELATED_SONGS.format(track_id, start_from, limit),
-            headers=Request.HEADERS
+            headers=Request.HEADERS,
         )
 
-    async def search_artist(
-        self,
-        query: str,
-        limit: int = 10
-    ) -> Dict[str, Any]:
+    async def search_artist(self, query: str, limit: int = 10) -> Dict[str, Any]:
         """
         Search all artists by prefix or fullname
             :param query: Artist name or search prefix
@@ -243,16 +224,10 @@ class Shazam(Converter, Geo):
             :return: dict artists
         """
         return await self.request(
-            'GET',
-            ShazamUrl.SEARCH_ARTIST.format(query, limit),
-            headers=Request.HEADERS
+            "GET", ShazamUrl.SEARCH_ARTIST.format(query, limit), headers=Request.HEADERS
         )
 
-    async def search_track(
-        self,
-        query: str,
-        limit: int = 10
-    ) -> Dict[str, Any]:
+    async def search_track(self, query: str, limit: int = 10) -> Dict[str, Any]:
         """
         Search all tracks by prefix
             :param query: Track full title or prefix title
@@ -261,9 +236,7 @@ class Shazam(Converter, Geo):
             :return: dict songs
         """
         return await self.request(
-            'GET',
-            ShazamUrl.SEARCH_MUSIC.format(query, limit),
-            headers=Request.HEADERS
+            "GET", ShazamUrl.SEARCH_MUSIC.format(query, limit), headers=Request.HEADERS
         )
 
     async def listening_counter(self, track_id: int) -> Dict[str, Any]:
@@ -275,19 +248,14 @@ class Shazam(Converter, Geo):
         """
 
         return await self.request(
-            'GET', ShazamUrl.LISTENING_COUNTER.format(track_id),
-            headers=Request.HEADERS
+            "GET", ShazamUrl.LISTENING_COUNTER.format(track_id), headers=Request.HEADERS
         )
 
     async def get_youtube_data(self, link: str) -> Dict[str, Any]:
-        return await self.request(
-            'GET', link,
-            headers=Request.HEADERS
-        )
+        return await self.request("GET", link, headers=Request.HEADERS)
 
     async def recognize_song(
-        self,
-        data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment]
+        self, data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment]
     ) -> Dict[str, Any]:
         """
         Creating a song signature based on a file and searching for this signature in the shazam
@@ -310,14 +278,14 @@ class Shazam(Converter, Geo):
             Request.TIME_ZONE,
             sig.encode_to_uri(),
             int(sig.number_samples / sig.sample_rate_hz * 1000),
-            int(time.time() * 1000)
+            int(time.time() * 1000),
         )
 
         return await self.request(
-            'POST',
+            "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
-                str(uuid.uuid4()).upper(),
-                str(uuid.uuid4()).upper()
+                str(uuid.uuid4()).upper(), str(uuid.uuid4()).upper()
             ),
-            headers=Request.HEADERS, json=data
+            headers=Request.HEADERS,
+            json=data,
         )
