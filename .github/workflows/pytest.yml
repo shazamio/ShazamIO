@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v3
         id: cache
         with:
-          path: ~/.virtualenvs
+          path: ~/.local/share/virtualenvs
           key: poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             poetry-${{ hashFiles('**/poetry.lock') }}
