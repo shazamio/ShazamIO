@@ -54,7 +54,7 @@ jobs:
       #              run test suite
       #----------------------------------------------
       - name: Check black
-      - uses: psf/black@stable
+        uses: psf/black@stable
         run: |
           poetry run black . --check
 
