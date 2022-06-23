@@ -54,8 +54,8 @@ jobs:
       #              run test suite
       #----------------------------------------------
       - name: Check black
-        uses: psf/black@stable
         run: |
+          poetry add --dev black --allow-prereleases
           poetry run black . --check
 
       - name: Run tests
