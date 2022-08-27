@@ -30,7 +30,7 @@ FACTORY_TRACK = Factory(
         RelatedSection: FactorySchemas.FACTORY_RELATED_SECTION_SCHEMA,
         YoutubeData: FactorySchemas.FACTORY_YOUTUBE_TRACK_SCHEMA,
         ResponseTrack: FactorySchemas.FACTORY_RESPONSE_TRACK_SCHEMA,
-        UUID: uuid_schema
+        UUID: uuid_schema,
     },
     debug_path=True,
 )
