@@ -1,5 +1,4 @@
 from dataclass_factory import Factory
-from dataclass_factory.schema_helpers import uuid_schema
 
 from shazamio.factory import FactorySchemas
 from shazamio.models import ArtistInfo
@@ -16,7 +15,6 @@ from shazamio.models import TrackInfo
 from shazamio.models import YoutubeData
 from shazamio.models import ResponseTrack
 
-from uuid import UUID
 
 FACTORY_TRACK = Factory(
     schemas={
@@ -30,7 +28,6 @@ FACTORY_TRACK = Factory(
         RelatedSection: FactorySchemas.FACTORY_RELATED_SECTION_SCHEMA,
         YoutubeData: FactorySchemas.FACTORY_YOUTUBE_TRACK_SCHEMA,
         ResponseTrack: FactorySchemas.FACTORY_RESPONSE_TRACK_SCHEMA,
-        UUID: uuid_schema,
     },
     debug_path=True,
 )
