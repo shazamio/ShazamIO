@@ -269,7 +269,7 @@ class Shazam(Converter, Geo):
         signature = signature_generator.get_next_signature()
 
         if len(signature_generator.input_pending_processing) < 128:
-            return {'matches': []}
+            return {"matches": []}
 
         while not signature:
             signature = signature_generator.get_next_signature()
