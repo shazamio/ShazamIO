@@ -267,6 +267,10 @@ class Shazam(Converter, Geo):
         audio = self.normalize_audio_data(song)
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
+
+        if len(signature_generator.input_pending_processing) < 128:
+            return {"matches": []}
+
         while not signature:
             signature = signature_generator.get_next_signature()
         results = await self.send_recognize_request(signature)
