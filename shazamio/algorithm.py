@@ -2,6 +2,7 @@ from copy import copy
 from typing import List, Optional, Any
 
 from numpy import hanning, log, maximum, fft, array
+import numpy as np
 
 from .enums import FrequencyBand
 from .signature import DecodedMessage, FrequencyPeak
@@ -168,39 +169,40 @@ class SignatureGenerator:
             self.do_peak_recognition()
 
     def do_peak_spreading(self):
-
         origin_last_fft: List[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
-        spread_last_fft: List[float] = list(origin_last_fft)
+        temporary_array_1 = np.tile(origin_last_fft, 3).reshape((3, -1))
+        temporary_array_1[1] = np.roll(temporary_array_1[1], -1)
+        temporary_array_1[2] = np.roll(temporary_array_1[2], -2)
 
-        for position in range(1025):
+        origin_last_fft = np.hstack(
+            [temporary_array_1.max(axis=0)[:-3], origin_last_fft[-3:]]
+        )
 
-            # Perform frequency-domain spreading of peak values
+        i1, i2, i3 = [
+            (self.spread_fft_output.position + former_fft_num)
+            % self.spread_fft_output.buffer_size
+            for former_fft_num in [-1, -3, -6]
+        ]
 
-            if position < 1023:
-                spread_last_fft[position] = max(
-                    spread_last_fft[position : position + 3]
-                )
+        temporary_array_2 = np.vstack(
+            [
+                origin_last_fft,
+                self.spread_fft_output[i1],
+                self.spread_fft_output[i2],
+                self.spread_fft_output[i3],
+            ]
+        )
 
-            # Perform time-domain spreading of peak values
+        temporary_array_2[1] = np.max(temporary_array_2[:2, :], axis=0)
+        temporary_array_2[2] = np.max(temporary_array_2[:3, :], axis=0)
+        temporary_array_2[3] = np.max(temporary_array_2[:4, :], axis=0)
 
-            max_value = spread_last_fft[position]
+        self.spread_fft_output[i1] = temporary_array_2[1].tolist()
+        self.spread_fft_output[i2] = temporary_array_2[2].tolist()
+        self.spread_fft_output[i3] = temporary_array_2[3].tolist()
 
-            for former_fft_num in [-1, -3, -6]:
-                former_fft_output = self.spread_fft_output[
-                    (self.spread_fft_output.position + former_fft_num)
-                    % self.spread_fft_output.buffer_size
-                ]
-
-                former_fft_output[position] = max_value = max(
-                    former_fft_output[position], max_value
-                )
-
-        # Save output locally
-
-        self.spread_fft_output.append(spread_last_fft)
-
-        pass
+        self.spread_fft_output.append(list(origin_last_fft))
 
     def do_peak_recognition(self):
 
