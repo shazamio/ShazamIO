@@ -66,7 +66,4 @@ async def test_do_peak_spreading_numpy():
     while not signature:
         signature = signature_generator.get_next_signature()
 
-    # print(signature.frequency_band_to_sound_peaks)
-    # print(signature_non_numpy.frequency_band_to_sound_peaks)
-
     assert signature.encode_to_binary() == signature_non_numpy.encode_to_binary()
