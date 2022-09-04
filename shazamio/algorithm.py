@@ -200,7 +200,7 @@ class SignatureGenerator:
         self.spread_fft_output[i2] = temporary_array_2[2].tolist()
         self.spread_fft_output[i3] = temporary_array_2[3].tolist()
 
-        self.spread_fft_output.append(list(origin_last_fft))
+        self.spread_fft_output.append(list(origin_last_fft_np))
 
     def do_peak_recognition(self):
 
