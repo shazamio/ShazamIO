@@ -256,7 +256,8 @@ class SignatureGenerator:
                         fft_number = self.spread_fft_output.num_written - 46
 
                         peak_magnitude = (
-                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3
+                            + 6144
                         )
                         peak_magnitude_before = (
                             np.log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
