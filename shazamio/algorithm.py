@@ -1,12 +1,11 @@
 from copy import copy
 from typing import List, Optional, Any
-
-from numpy import hanning, log, maximum, fft, array
+import numpy as np
 
 from .enums import FrequencyBand
 from .signature import DecodedMessage, FrequencyPeak
 
-HANNING_MATRIX = hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
+HANNING_MATRIX = np.hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
 
 class RingBuffer(list):
@@ -105,7 +104,7 @@ class SignatureGenerator:
         ):
             self.process_input(
                 self.input_pending_processing[
-                    self.samples_processed : self.samples_processed + 128
+                    self.samples_processed: self.samples_processed + 128
                 ]
             )
             self.samples_processed += 128
@@ -140,7 +139,7 @@ class SignatureGenerator:
             batch_of_128_s16le_mono_samples
         )
         self.ring_buffer_of_samples[
-            self.ring_buffer_of_samples.position : type_ring
+            self.ring_buffer_of_samples.position: type_ring
         ] = batch_of_128_s16le_mono_samples
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
@@ -154,10 +153,10 @@ class SignatureGenerator:
         # The pre multiplication of the array is for applying a windowing function before the DFT
         # (slight rounded Hanning without zeros at edges)
 
-        fft_results: array = fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
+        fft_results: np.array = np.fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
 
         fft_results = (fft_results.real**2 + fft_results.imag**2) / (1 << 17)
-        fft_results = maximum(fft_results, 0.0000000001)
+        fft_results = np.maximum(fft_results, 0.0000000001)
 
         self.fft_outputs.append(fft_results)
 
@@ -168,39 +167,40 @@ class SignatureGenerator:
             self.do_peak_recognition()
 
     def do_peak_spreading(self):
-
         origin_last_fft: List[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
-        spread_last_fft: List[float] = list(origin_last_fft)
+        temporary_array_1 = np.tile(origin_last_fft, 3).reshape((3, -1))
+        temporary_array_1[1] = np.roll(temporary_array_1[1], -1)
+        temporary_array_1[2] = np.roll(temporary_array_1[2], -2)
 
-        for position in range(1025):
+        origin_last_fft_np = np.hstack(
+            [temporary_array_1.max(axis=0)[:-3], origin_last_fft[-3:]]
+        )
 
-            # Perform frequency-domain spreading of peak values
+        i1, i2, i3 = [
+            (self.spread_fft_output.position + former_fft_num)
+            % self.spread_fft_output.buffer_size
+            for former_fft_num in [-1, -3, -6]
+        ]
 
-            if position < 1023:
-                spread_last_fft[position] = max(
-                    spread_last_fft[position : position + 3]
-                )
+        temporary_array_2 = np.vstack(
+            [
+                origin_last_fft_np,
+                self.spread_fft_output[i1],
+                self.spread_fft_output[i2],
+                self.spread_fft_output[i3],
+            ]
+        )
 
-            # Perform time-domain spreading of peak values
+        temporary_array_2[1] = np.max(temporary_array_2[:2, :], axis=0)
+        temporary_array_2[2] = np.max(temporary_array_2[:3, :], axis=0)
+        temporary_array_2[3] = np.max(temporary_array_2[:4, :], axis=0)
 
-            max_value = spread_last_fft[position]
+        self.spread_fft_output[i1] = temporary_array_2[1].tolist()
+        self.spread_fft_output[i2] = temporary_array_2[2].tolist()
+        self.spread_fft_output[i3] = temporary_array_2[3].tolist()
 
-            for former_fft_num in [-1, -3, -6]:
-                former_fft_output = self.spread_fft_output[
-                    (self.spread_fft_output.position + former_fft_num)
-                    % self.spread_fft_output.buffer_size
-                ]
-
-                former_fft_output[position] = max_value = max(
-                    former_fft_output[position], max_value
-                )
-
-        # Save output locally
-
-        self.spread_fft_output.append(spread_last_fft)
-
-        pass
+        self.spread_fft_output.append(list(origin_last_fft_np))
 
     def do_peak_recognition(self):
 
@@ -256,14 +256,15 @@ class SignatureGenerator:
                         fft_number = self.spread_fft_output.num_written - 46
 
                         peak_magnitude = (
-                            log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3
+                            + 6144
                         )
                         peak_magnitude_before = (
-                            log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
+                            np.log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
                             + 6144
                         )
                         peak_magnitude_after = (
-                            log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3
+                            np.log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3
                             + 6144
                         )
 

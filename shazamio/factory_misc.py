@@ -15,6 +15,7 @@ from shazamio.models import TrackInfo
 from shazamio.models import YoutubeData
 from shazamio.models import ResponseTrack
 
+
 FACTORY_TRACK = Factory(
     schemas={
         TrackInfo: FactorySchemas.FACTORY_TRACK_SCHEMA,
