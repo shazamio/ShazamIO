@@ -1,13 +1,11 @@
 from copy import copy
 from typing import List, Optional, Any
-
-from numpy import hanning, log, maximum, fft, array
 import numpy as np
 
 from .enums import FrequencyBand
 from .signature import DecodedMessage, FrequencyPeak
 
-HANNING_MATRIX = hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
+HANNING_MATRIX = np.hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
 
 class RingBuffer(list):
@@ -155,10 +153,10 @@ class SignatureGenerator:
         # The pre multiplication of the array is for applying a windowing function before the DFT
         # (slight rounded Hanning without zeros at edges)
 
-        fft_results: array = fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
+        fft_results: np.array = np.fft.rfft(HANNING_MATRIX * excerpt_from_ring_buffer)
 
         fft_results = (fft_results.real**2 + fft_results.imag**2) / (1 << 17)
-        fft_results = maximum(fft_results, 0.0000000001)
+        fft_results = np.maximum(fft_results, 0.0000000001)
 
         self.fft_outputs.append(fft_results)
 
@@ -175,7 +173,7 @@ class SignatureGenerator:
         temporary_array_1[1] = np.roll(temporary_array_1[1], -1)
         temporary_array_1[2] = np.roll(temporary_array_1[2], -2)
 
-        origin_last_fft = np.hstack(
+        origin_last_fft_np = np.hstack(
             [temporary_array_1.max(axis=0)[:-3], origin_last_fft[-3:]]
         )
 
@@ -187,7 +185,7 @@ class SignatureGenerator:
 
         temporary_array_2 = np.vstack(
             [
-                origin_last_fft,
+                origin_last_fft_np,
                 self.spread_fft_output[i1],
                 self.spread_fft_output[i2],
                 self.spread_fft_output[i3],
@@ -258,14 +256,14 @@ class SignatureGenerator:
                         fft_number = self.spread_fft_output.num_written - 46
 
                         peak_magnitude = (
-                            log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
                         )
                         peak_magnitude_before = (
-                            log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
+                            np.log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
                             + 6144
                         )
                         peak_magnitude_after = (
-                            log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3
+                            np.log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3
                             + 6144
                         )
 
