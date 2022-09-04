@@ -104,7 +104,7 @@ class SignatureGenerator:
         ):
             self.process_input(
                 self.input_pending_processing[
-                    self.samples_processed: self.samples_processed + 128
+                    self.samples_processed : self.samples_processed + 128
                 ]
             )
             self.samples_processed += 128
@@ -139,7 +139,7 @@ class SignatureGenerator:
             batch_of_128_s16le_mono_samples
         )
         self.ring_buffer_of_samples[
-            self.ring_buffer_of_samples.position: type_ring
+            self.ring_buffer_of_samples.position : type_ring
         ] = batch_of_128_s16le_mono_samples
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
