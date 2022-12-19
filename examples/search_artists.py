@@ -8,7 +8,8 @@ async def main():
     for artist in artists["artists"]["hits"]:
         serialized = Serialize.artist(data=artist)
         print(serialized)
+        print(artist)
 
 
-loop = asyncio.get_event_loop()
+loop = asyncio.get_event_loop_policy().get_event_loop()
 loop.run_until_complete(main())

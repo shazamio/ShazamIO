@@ -8,36 +8,6 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 from uuid import UUID
 
-from dataclass_factory import Factory
-
-
-@dataclass
-class ArtistInfo(Factory):
-    name: str
-    verified: Optional[bool]
-    genres: Optional[List[str]] = field(default_factory=list)
-    alias: Optional[str] = None
-    genres_primary: Optional[str] = None
-    avatar: Optional[Union[dict, str]] = None
-    adam_id: Optional[int] = None
-    url: Optional[str] = ""
-
-    def __post_init__(self):
-        self.avatar = self.__optional_avatar()
-
-    def __optional_avatar(self):
-        if self.avatar is None:
-            return None
-        elif "default" in self.avatar:
-            return self.avatar.get("default")
-        else:
-            return "".join(self.avatar)
-
-
-@dataclass
-class ArtistV2(Factory):
-    artist: ArtistInfo
-
 
 @dataclass
 class ShareModel:
@@ -173,7 +143,7 @@ class YoutubeData:
 
 
 @dataclass
-class TrackInfo(Factory):
+class TrackInfo:
     key: int
     title: str
     subtitle: str
