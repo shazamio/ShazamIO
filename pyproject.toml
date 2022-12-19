@@ -34,3 +34,7 @@ build-backend = "poetry.core.masonry.api"
 addopts = "-scoped"
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
+
+
+[tool.black]
+line-length = 100

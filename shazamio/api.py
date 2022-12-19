@@ -26,9 +26,7 @@ class Shazam(Converter, Geo, Request):
         super().__init__(language=language)
         self.language = language
 
-    async def top_world_tracks(
-        self, limit: int = 200, start_from: int = 0
-    ) -> Dict[str, Any]:
+    async def top_world_tracks(self, limit: int = 200, start_from: int = 0) -> Dict[str, Any]:
         """
         Search top world tracks
 
@@ -200,9 +198,7 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.GENRE_WORLD.format(
-                genre, limit, start_from, language=self.language
-            ),
+            ShazamUrl.GENRE_WORLD.format(genre, limit, start_from, language=self.language),
             headers=self.headers(),
         )
 
@@ -256,9 +252,7 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.RELATED_SONGS.format(
-                track_id, start_from, limit, language=self.language
-            ),
+            ShazamUrl.RELATED_SONGS.format(track_id, start_from, limit, language=self.language),
             headers=self.headers(),
         )
 

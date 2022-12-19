@@ -60,7 +60,5 @@ class Converter:
         signature_generator.feed_input(audio.get_array_of_samples())
         signature_generator.MAX_TIME_SECONDS = 12
         if audio.duration_seconds > 12 * 3:
-            signature_generator.samples_processed += 16000 * (
-                int(audio.duration_seconds / 2) - 6
-            )
+            signature_generator.samples_processed += 16000 * (int(audio.duration_seconds / 2) - 6)
         return signature_generator

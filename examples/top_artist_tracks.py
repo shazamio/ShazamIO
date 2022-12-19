@@ -5,9 +5,7 @@ from shazamio import Shazam, Serialize
 async def main():
     shazam = Shazam()
     artist_id = 201896832
-    top_three_artist_tracks = await shazam.artist_top_tracks(
-        artist_id=artist_id, limit=3
-    )
+    top_three_artist_tracks = await shazam.artist_top_tracks(artist_id=artist_id, limit=3)
     for track in top_three_artist_tracks["tracks"]:
         serialized_track = Serialize.track(data=track)
         print(serialized_track)

@@ -14,7 +14,7 @@ def do_peak_spreading_non_numpy(self):
         # Perform frequency-domain spreading of peak values
 
         if position < 1023:
-            spread_last_fft[position] = max(spread_last_fft[position: position + 3])
+            spread_last_fft[position] = max(spread_last_fft[position : position + 3])
 
         # Perform time-domain spreading of peak values
 
@@ -26,9 +26,7 @@ def do_peak_spreading_non_numpy(self):
                 % self.spread_fft_output.buffer_size
             ]
 
-            former_fft_output[position] = max_value = max(
-                former_fft_output[position], max_value
-            )
+            former_fft_output[position] = max_value = max(former_fft_output[position], max_value)
 
     # Save output locally
 

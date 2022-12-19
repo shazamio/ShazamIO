@@ -79,9 +79,7 @@ class ArtistRelationships(BaseModel):
 
 
 class ArtistViews(BaseModel):
-    top_music_videos: Optional[TopMusicVideosView] = Field(
-        None, alias="top-music-videos"
-    )
+    top_music_videos: Optional[TopMusicVideosView] = Field(None, alias="top-music-videos")
     simular_artists: Optional[SimularArtist] = Field(None, alias="similar-artists")
     latest_release: Optional[LastReleaseModel] = Field(None, alias="latest-release")
     full_albums: Optional[FullAlbumsModel] = Field(None, alias="full-albums")
