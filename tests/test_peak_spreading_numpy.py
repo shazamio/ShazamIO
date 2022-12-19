@@ -11,11 +11,10 @@ def do_peak_spreading_non_numpy(self):
     spread_last_fft: List[float] = list(origin_last_fft)
 
     for position in range(1025):
-
         # Perform frequency-domain spreading of peak values
 
         if position < 1023:
-            spread_last_fft[position] = max(spread_last_fft[position : position + 3])
+            spread_last_fft[position] = max(spread_last_fft[position: position + 3])
 
         # Perform time-domain spreading of peak values
 

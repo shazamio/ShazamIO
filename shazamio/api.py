@@ -1,22 +1,30 @@
 import pathlib
 import uuid
 import time
+from typing import Optional
+
 from pydub import AudioSegment
 
 from typing import Dict, Any, Union
 
 from .misc import Request
 from .misc import ShazamUrl
+from .schemas.artists import ArtistQuery
 from .signature import DecodedMessage
 from .enums import GenreMusic
 from .converter import Converter, Geo
 from .typehints import CountryCode
+from .utils import ArtistQueryGenerator
 from .utils import get_song
 
 
-class Shazam(Converter, Geo):
-    """Is a asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
+class Shazam(Converter, Geo, Request):
+    """Is asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
     asyncio and aiohttp."""
+
+    def __init__(self, language: str = "ES"):
+        super().__init__(language=language)
+        self.language = language
 
     async def top_world_tracks(
         self, limit: int = 200, start_from: int = 0
@@ -33,20 +41,37 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_WORLD.format(limit, start_from),
-            headers=Request.HEADERS,
+            ShazamUrl.TOP_TRACKS_WORLD.format(
+                limit,
+                start_from,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
-    async def artist_about(self, artist_id: int) -> Dict[str, Any]:
+    async def artist_about(
+        self, artist_id: int, query: Optional[ArtistQuery] = None
+    ) -> Dict[str, Any]:
         """
         Retrieving information from an artist profile
 
-            :param artist_id: Artist number. Example (203347991) :
+            :param artist_id: Artist number. Example (203347991)
+            :param query: Foo
             https://www.shazam.com/artist/203347991/
             :return: dict about artist
         """
+
+        if query:
+            pg = ArtistQueryGenerator(source=query)
+            params_dict = pg.params()
+        else:
+            params_dict = {}
+
         return await self.request(
-            "GET", ShazamUrl.ARTIST_ABOUT.format(artist_id), headers=Request.HEADERS
+            "GET",
+            ShazamUrl.SEARCH_ARTIST_V2.format(artist_id, language=self.language),
+            params=params_dict,
+            headers=self.headers(),
         )
 
     async def artist_top_tracks(
@@ -66,8 +91,10 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.ARTIST_TOP_TRACKS.format(artist_id, start_from, limit),
-            headers=Request.HEADERS,
+            ShazamUrl.ARTIST_TOP_TRACKS.format(
+                artist_id, start_from, limit, language=self.language
+            ),
+            headers=self.headers(),
         )
 
     async def track_about(self, track_id: int) -> Dict[str, Any]:
@@ -79,7 +106,12 @@ class Shazam(Converter, Geo):
             :return: dict about track
         """
         return await self.request(
-            "GET", ShazamUrl.ABOUT_TRACK.format(track_id), headers=Request.HEADERS
+            "GET",
+            ShazamUrl.ABOUT_TRACK.format(
+                track_id,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def top_country_tracks(
@@ -102,8 +134,13 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_COUNTRY.format(country_code, limit, start_from),
-            headers=Request.HEADERS,
+            ShazamUrl.TOP_TRACKS_COUNTRY.format(
+                country_code,
+                limit,
+                start_from,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def top_city_tracks(
@@ -113,7 +150,6 @@ class Shazam(Converter, Geo):
         limit: int = 200,
         start_from: int = 0,
     ) -> Dict[str, Any]:
-
         """
         Retrieving information from an artist profile
         https://www.shazam.com/charts/top-50/russia/moscow
@@ -131,8 +167,13 @@ class Shazam(Converter, Geo):
         city_id = await self.city_id_from(country=country_code, city=city_name)
         return await self.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_CITY.format(city_id, limit, start_from),
-            headers=Request.HEADERS,
+            ShazamUrl.TOP_TRACKS_CITY.format(
+                city_id,
+                limit,
+                start_from,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def top_world_genre_tracks(
@@ -159,8 +200,10 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.GENRE_WORLD.format(genre, limit, start_from),
-            headers=Request.HEADERS,
+            ShazamUrl.GENRE_WORLD.format(
+                genre, limit, start_from, language=self.language
+            ),
+            headers=self.headers(),
         )
 
     async def top_country_genre_tracks(
@@ -190,8 +233,10 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.GENRE_COUNTRY.format(country_code, genre, limit, start_from),
-            headers=Request.HEADERS,
+            ShazamUrl.GENRE_COUNTRY.format(
+                country_code, genre, limit, start_from, language=self.language
+            ),
+            headers=self.headers(),
         )
 
     async def related_tracks(
@@ -211,8 +256,10 @@ class Shazam(Converter, Geo):
         """
         return await self.request(
             "GET",
-            ShazamUrl.RELATED_SONGS.format(track_id, start_from, limit),
-            headers=Request.HEADERS,
+            ShazamUrl.RELATED_SONGS.format(
+                track_id, start_from, limit, language=self.language
+            ),
+            headers=self.headers(),
         )
 
     async def search_artist(self, query: str, limit: int = 10) -> Dict[str, Any]:
@@ -224,7 +271,13 @@ class Shazam(Converter, Geo):
             :return: dict artists
         """
         return await self.request(
-            "GET", ShazamUrl.SEARCH_ARTIST.format(query, limit), headers=Request.HEADERS
+            "GET",
+            ShazamUrl.SEARCH_ARTIST.format(
+                query,
+                limit,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def search_track(self, query: str, limit: int = 10) -> Dict[str, Any]:
@@ -236,7 +289,13 @@ class Shazam(Converter, Geo):
             :return: dict songs
         """
         return await self.request(
-            "GET", ShazamUrl.SEARCH_MUSIC.format(query, limit), headers=Request.HEADERS
+            "GET",
+            ShazamUrl.SEARCH_MUSIC.format(
+                query,
+                limit,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def listening_counter(self, track_id: int) -> Dict[str, Any]:
@@ -248,11 +307,16 @@ class Shazam(Converter, Geo):
         """
 
         return await self.request(
-            "GET", ShazamUrl.LISTENING_COUNTER.format(track_id), headers=Request.HEADERS
+            "GET",
+            ShazamUrl.LISTENING_COUNTER.format(
+                track_id,
+                language=self.language,
+            ),
+            headers=self.headers(),
         )
 
     async def get_youtube_data(self, link: str) -> Dict[str, Any]:
-        return await self.request("GET", link, headers=Request.HEADERS)
+        return await self.request("GET", link, headers=self.headers())
 
     async def recognize_song(
         self, data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment]
@@ -277,7 +341,6 @@ class Shazam(Converter, Geo):
         return results
 
     async def send_recognize_request(self, sig: DecodedMessage) -> Dict[str, Any]:
-
         data = Converter.data_search(
             Request.TIME_ZONE,
             sig.encode_to_uri(),
@@ -288,8 +351,10 @@ class Shazam(Converter, Geo):
         return await self.request(
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
-                str(uuid.uuid4()).upper(), str(uuid.uuid4()).upper()
+                str(uuid.uuid4()).upper(),
+                str(uuid.uuid4()).upper(),
+                language=self.language,
             ),
-            headers=Request.HEADERS,
+            headers=self.headers(),
             json=data,
         )

@@ -55,15 +55,23 @@ class ShazamUrl:
     )
     LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
 
+    SEARCH_ARTIST_V2 = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{language}/artists/{}"
+    )
+
 
 class Request:
-    LANG = "ru"
     TIME_ZONE = "Europe/Moscow"
-    HEADERS = {
-        "X-Shazam-Platform": "IPHONE",
-        "X-Shazam-AppVersion": "14.1.0",
-        "Accept": "*/*",
-        "Accept-Language": LANG,
-        "Accept-Encoding": "gzip, deflate",
-        "User-Agent": choice(USER_AGENTS),
-    }
+
+    def __init__(self, language: str):
+        self.language = language
+
+    def headers(self):
+        return {
+            "X-Shazam-Platform": "IPHONE",
+            "X-Shazam-AppVersion": "14.1.0",
+            "Accept": "*/*",
+            "Accept-Language": self.language,
+            "Accept-Encoding": "gzip, deflate",
+            "User-Agent": choice(USER_AGENTS),
+        }

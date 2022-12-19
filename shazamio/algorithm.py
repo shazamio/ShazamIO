@@ -10,7 +10,6 @@ HANNING_MATRIX = np.hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
 class RingBuffer(list):
     def __init__(self, buffer_size: int, default_value: Any = None):
-
         if default_value is not None:
             list.__init__(self, [copy(default_value) for _ in range(buffer_size)])
         else:
@@ -21,7 +20,6 @@ class RingBuffer(list):
         self.num_written: int = 0
 
     def append(self, value: Any):
-
         self[self.position] = value
 
         self.position += 1
@@ -31,7 +29,6 @@ class RingBuffer(list):
 
 class SignatureGenerator:
     def __init__(self):
-
         # Used when storing input that will be processed when requiring to
         # generate a signature:
 
@@ -78,7 +75,6 @@ class SignatureGenerator:
     """
 
     def feed_input(self, s16le_mono_samples: List[int]):
-
         self.input_pending_processing += s16le_mono_samples
 
     """
@@ -104,7 +100,7 @@ class SignatureGenerator:
         ):
             self.process_input(
                 self.input_pending_processing[
-                    self.samples_processed : self.samples_processed + 128
+                    self.samples_processed: self.samples_processed + 128
                 ]
             )
             self.samples_processed += 128
@@ -131,7 +127,7 @@ class SignatureGenerator:
     def process_input(self, s16le_mono_samples: List[int]):
         self.next_signature.number_samples += len(s16le_mono_samples)
         for position_of_chunk in range(0, len(s16le_mono_samples), 128):
-            self.do_fft(s16le_mono_samples[position_of_chunk : position_of_chunk + 128])
+            self.do_fft(s16le_mono_samples[position_of_chunk: position_of_chunk + 128])
             self.do_peak_spreading_and_recognition()
 
     def do_fft(self, batch_of_128_s16le_mono_samples):
@@ -139,14 +135,14 @@ class SignatureGenerator:
             batch_of_128_s16le_mono_samples
         )
         self.ring_buffer_of_samples[
-            self.ring_buffer_of_samples.position : type_ring
+            self.ring_buffer_of_samples.position: type_ring
         ] = batch_of_128_s16le_mono_samples
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)
 
         excerpt_from_ring_buffer: list = (
-            self.ring_buffer_of_samples[self.ring_buffer_of_samples.position :]
+            self.ring_buffer_of_samples[self.ring_buffer_of_samples.position:]
             + self.ring_buffer_of_samples[: self.ring_buffer_of_samples.position]
         )
 
@@ -161,7 +157,6 @@ class SignatureGenerator:
         self.fft_outputs.append(fft_results)
 
     def do_peak_spreading_and_recognition(self):
-
         self.do_peak_spreading()
         if self.spread_fft_output.num_written >= 46:
             self.do_peak_recognition()
@@ -203,7 +198,6 @@ class SignatureGenerator:
         self.spread_fft_output.append(list(origin_last_fft_np))
 
     def do_peak_recognition(self):
-
         fft_minus_46 = self.fft_outputs[
             (self.fft_outputs.position - 46) % self.fft_outputs.buffer_size
         ]
@@ -212,13 +206,11 @@ class SignatureGenerator:
         ]
 
         for bin_position in range(10, 1015):
-
             # Ensure that the bin is large enough to be a peak
 
             if fft_minus_46[bin_position] >= 1 / 64 and (
                 fft_minus_46[bin_position] >= fft_minus_49[bin_position - 1]
             ):
-
                 # Ensure that it is frequency-domain local minimum
 
                 max_neighbor_in_fft_minus_49 = 0
@@ -230,7 +222,6 @@ class SignatureGenerator:
                     )
 
                 if fft_minus_46[bin_position] > max_neighbor_in_fft_minus_49:
-
                     # Ensure that it is a time-domain local minimum
 
                     max_neighbor_in_other_adjacent_ffts = max_neighbor_in_fft_minus_49
@@ -250,7 +241,6 @@ class SignatureGenerator:
                         )
 
                     if fft_minus_46[bin_position] > max_neighbor_in_other_adjacent_ffts:
-
                         # This is a peak, store the peak
 
                         fft_number = self.spread_fft_output.num_written - 46

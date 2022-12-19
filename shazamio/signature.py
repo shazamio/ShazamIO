@@ -82,7 +82,6 @@ class DecodedMessage:
 
     @classmethod
     def decode_from_binary(cls, data: bytes):
-
         self = cls()
 
         buf = BytesIO(data)
@@ -121,7 +120,6 @@ class DecodedMessage:
         self.frequency_band_to_sound_peaks = {}
 
         while True:
-
             tlv_header = buf.read(8)
             if not tlv_header:
                 break
@@ -143,7 +141,6 @@ class DecodedMessage:
             self.frequency_band_to_sound_peaks[frequency_band] = []
 
             while True:
-
                 raw_fft_pass: bytes = frequency_peaks_buf.read(1)
                 if not raw_fft_pass:
                     break
@@ -175,7 +172,6 @@ class DecodedMessage:
 
     @classmethod
     def decode_from_uri(cls, uri: str):
-
         assert uri.startswith(DATA_URI_PREFIX)
 
         return cls.decode_from_binary(b64decode(uri.replace(DATA_URI_PREFIX, "", 1)))
@@ -186,7 +182,6 @@ class DecodedMessage:
     """
 
     def encode_to_json(self) -> dict:
-
         return {
             "sample_rate_hz": self.sample_rate_hz,
             "number_samples": self.number_samples,
@@ -210,7 +205,6 @@ class DecodedMessage:
         }
 
     def encode_to_binary(self) -> bytes:
-
         header = RawSignatureHeader()
 
         header.magic1 = 0xCAFE2580
@@ -228,7 +222,6 @@ class DecodedMessage:
         for frequency_band, frequency_peaks in sorted(
             self.frequency_band_to_sound_peaks.items()
         ):
-
             peaks_buf = BytesIO()
 
             fft_pass_number = 0
@@ -238,7 +231,6 @@ class DecodedMessage:
             # caller
 
             for frequency_peak in frequency_peaks:
-
                 assert frequency_peak.fft_pass_number >= fft_pass_number
 
                 if frequency_peak.fft_pass_number - fft_pass_number >= 255:
@@ -286,5 +278,4 @@ class DecodedMessage:
         return buf.getvalue()
 
     def encode_to_uri(self) -> str:
-
         return DATA_URI_PREFIX + b64encode(self.encode_to_binary()).decode("ascii")
