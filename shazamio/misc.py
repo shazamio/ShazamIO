@@ -13,16 +13,14 @@ class ShazamUrl:
         "?pageSize={}&startFrom={}"
     )
     ARTIST_ABOUT = (
-        "https://www.shazam.com/discovery/v3/en/GB/web/artist/{"
-        "}?shazamapiversion=v3&video=v3 "
+        "https://www.shazam.com/discovery/v3/en/GB/web/artist/{" "}?shazamapiversion=v3&video=v3 "
     )
     ARTIST_TOP_TRACKS = (
         "https://cdn.shazam.com/shazam/v3/en/GB/web/-/tracks/artisttoptracks_{}?startFrom={}"
         "&pageSize={}&connected=&channel="
     )
     ABOUT_TRACK = (
-        "https://www.shazam.com/discovery/v5/en/GB/web/-/track/{"
-        "}?shazamapiversion=v3&video=v3 "
+        "https://www.shazam.com/discovery/v5/en/GB/web/-/track/{" "}?shazamapiversion=v3&video=v3 "
     )
     TOP_TRACKS_COUNTRY = (
         "https://www.shazam.com/shazam/v3/en/GB/web/-/tracks/ip-country-chart-{}?pageSize={"
@@ -55,15 +53,21 @@ class ShazamUrl:
     )
     LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
 
+    SEARCH_ARTIST_V2 = "https://www.shazam.com/services/amapi/v1/catalog/{language}/artists/{}"
+
 
 class Request:
-    LANG = "ru"
     TIME_ZONE = "Europe/Moscow"
-    HEADERS = {
-        "X-Shazam-Platform": "IPHONE",
-        "X-Shazam-AppVersion": "14.1.0",
-        "Accept": "*/*",
-        "Accept-Language": LANG,
-        "Accept-Encoding": "gzip, deflate",
-        "User-Agent": choice(USER_AGENTS),
-    }
+
+    def __init__(self, language: str):
+        self.language = language
+
+    def headers(self):
+        return {
+            "X-Shazam-Platform": "IPHONE",
+            "X-Shazam-AppVersion": "14.1.0",
+            "Accept": "*/*",
+            "Accept-Language": self.language,
+            "Accept-Encoding": "gzip, deflate",
+            "User-Agent": choice(USER_AGENTS),
+        }

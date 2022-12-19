@@ -1,8 +1,10 @@
 from dataclass_factory import Factory
 
 from shazamio.factory import FactorySchemas
-from shazamio.models import ArtistInfo
-from shazamio.models import (
+from shazamio.schemas.artists import ArtistInfo
+from shazamio.schemas.artists import ArtistV3
+from shazamio.schemas.attributes import ArtistAttribute
+from shazamio.schemas.models import (
     SongSection,
     VideoSection,
     RelatedSection,
@@ -11,9 +13,9 @@ from shazamio.models import (
     ArtistSection,
     MatchModel,
 )
-from shazamio.models import TrackInfo
-from shazamio.models import YoutubeData
-from shazamio.models import ResponseTrack
+from shazamio.schemas.models import TrackInfo
+from shazamio.schemas.models import YoutubeData
+from shazamio.schemas.models import ResponseTrack
 
 
 FACTORY_TRACK = Factory(
@@ -24,7 +26,7 @@ FACTORY_TRACK = Factory(
         LyricsSection: FactorySchemas.FACTORY_LYRICS_SECTION,
         BeaconDataLyricsSection: FactorySchemas.FACTORY_BEACON_DATA_LYRICS_SECTION,
         ArtistSection: FactorySchemas.FACTORY_ARTIST_SECTION,
-        MatchModel: FactorySchemas.FACTORY_MATCH_MODEL,
+        MatchModel: FactorySchemas.FACTORY_MATCH,
         RelatedSection: FactorySchemas.FACTORY_RELATED_SECTION_SCHEMA,
         YoutubeData: FactorySchemas.FACTORY_YOUTUBE_TRACK_SCHEMA,
         ResponseTrack: FactorySchemas.FACTORY_RESPONSE_TRACK_SCHEMA,
@@ -33,5 +35,10 @@ FACTORY_TRACK = Factory(
 )
 
 FACTORY_ARTIST = Factory(
-    schemas={ArtistInfo: FactorySchemas.FACTORY_ARTIST_SCHEMA}, debug_path=True
+    schemas={
+        ArtistAttribute: FactorySchemas.FACTORY_ATTRIBUTES_ARTIST,
+        ArtistV3: FactorySchemas.FACTORY_ARTIST_V2,
+        ArtistInfo: FactorySchemas.FACTORY_ARTIST_SCHEMA,
+    },
+    debug_path=True,
 )

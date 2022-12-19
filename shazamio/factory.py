@@ -105,12 +105,29 @@ class FactorySchemas:
         }
     )
 
-    FACTORY_MATCH_MODEL = Schema(
+    FACTORY_MATCH = Schema(
         name_mapping={
             "id": "id",
             "offset": "offset",
             "channel": "channel",
             "time_skew": "timeskew",
             "frequency_skew": "frequencyskew",
+        }
+    )
+
+    FACTORY_ATTRIBUTES_ARTIST = Schema(
+        name_mapping={
+            "name": "name",
+            "url": "url",
+            "artist_bio": "artistBio",
+            "genre_names": "genreNames",
+        }
+    )
+
+    FACTORY_ARTIST_V2 = Schema(
+        name_mapping={
+            "id": "id",
+            "type": "type",
+            "attributes": "attributes",
         }
     )

@@ -10,7 +10,6 @@ HANNING_MATRIX = np.hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
 class RingBuffer(list):
     def __init__(self, buffer_size: int, default_value: Any = None):
-
         if default_value is not None:
             list.__init__(self, [copy(default_value) for _ in range(buffer_size)])
         else:
@@ -21,7 +20,6 @@ class RingBuffer(list):
         self.num_written: int = 0
 
     def append(self, value: Any):
-
         self[self.position] = value
 
         self.position += 1
@@ -31,7 +29,6 @@ class RingBuffer(list):
 
 class SignatureGenerator:
     def __init__(self):
-
         # Used when storing input that will be processed when requiring to
         # generate a signature:
 
@@ -43,9 +40,7 @@ class SignatureGenerator:
 
         # Used when processing input:
 
-        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(
-            buffer_size=2048, default_value=0
-        )
+        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
 
         self.fft_outputs: RingBuffer[List[float]] = RingBuffer(
             buffer_size=256, default_value=[0.0 * 1025]
@@ -78,7 +73,6 @@ class SignatureGenerator:
     """
 
     def feed_input(self, s16le_mono_samples: List[int]):
-
         self.input_pending_processing += s16le_mono_samples
 
     """
@@ -97,15 +91,12 @@ class SignatureGenerator:
             self.next_signature.number_samples / self.next_signature.sample_rate_hz
             < self.MAX_TIME_SECONDS
             or sum(
-                len(peaks)
-                for peaks in self.next_signature.frequency_band_to_sound_peaks.values()
+                len(peaks) for peaks in self.next_signature.frequency_band_to_sound_peaks.values()
             )
             < self.MAX_PEAKS
         ):
             self.process_input(
-                self.input_pending_processing[
-                    self.samples_processed : self.samples_processed + 128
-                ]
+                self.input_pending_processing[self.samples_processed : self.samples_processed + 128]
             )
             self.samples_processed += 128
 
@@ -116,9 +107,7 @@ class SignatureGenerator:
         self.next_signature.number_samples = 0
         self.next_signature.frequency_band_to_sound_peaks = {}
 
-        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(
-            buffer_size=2048, default_value=0
-        )
+        self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
         self.fft_outputs: RingBuffer[List[float]] = RingBuffer(
             buffer_size=256, default_value=[0.0 * 1025]
         )
@@ -135,9 +124,7 @@ class SignatureGenerator:
             self.do_peak_spreading_and_recognition()
 
     def do_fft(self, batch_of_128_s16le_mono_samples):
-        type_ring = self.ring_buffer_of_samples.position + len(
-            batch_of_128_s16le_mono_samples
-        )
+        type_ring = self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples[
             self.ring_buffer_of_samples.position : type_ring
         ] = batch_of_128_s16le_mono_samples
@@ -161,7 +148,6 @@ class SignatureGenerator:
         self.fft_outputs.append(fft_results)
 
     def do_peak_spreading_and_recognition(self):
-
         self.do_peak_spreading()
         if self.spread_fft_output.num_written >= 46:
             self.do_peak_recognition()
@@ -173,13 +159,10 @@ class SignatureGenerator:
         temporary_array_1[1] = np.roll(temporary_array_1[1], -1)
         temporary_array_1[2] = np.roll(temporary_array_1[2], -2)
 
-        origin_last_fft_np = np.hstack(
-            [temporary_array_1.max(axis=0)[:-3], origin_last_fft[-3:]]
-        )
+        origin_last_fft_np = np.hstack([temporary_array_1.max(axis=0)[:-3], origin_last_fft[-3:]])
 
         i1, i2, i3 = [
-            (self.spread_fft_output.position + former_fft_num)
-            % self.spread_fft_output.buffer_size
+            (self.spread_fft_output.position + former_fft_num) % self.spread_fft_output.buffer_size
             for former_fft_num in [-1, -3, -6]
         ]
 
@@ -203,7 +186,6 @@ class SignatureGenerator:
         self.spread_fft_output.append(list(origin_last_fft_np))
 
     def do_peak_recognition(self):
-
         fft_minus_46 = self.fft_outputs[
             (self.fft_outputs.position - 46) % self.fft_outputs.buffer_size
         ]
@@ -212,13 +194,11 @@ class SignatureGenerator:
         ]
 
         for bin_position in range(10, 1015):
-
             # Ensure that the bin is large enough to be a peak
 
             if fft_minus_46[bin_position] >= 1 / 64 and (
                 fft_minus_46[bin_position] >= fft_minus_49[bin_position - 1]
             ):
-
                 # Ensure that it is frequency-domain local minimum
 
                 max_neighbor_in_fft_minus_49 = 0
@@ -230,7 +210,6 @@ class SignatureGenerator:
                     )
 
                 if fft_minus_46[bin_position] > max_neighbor_in_fft_minus_49:
-
                     # Ensure that it is a time-domain local minimum
 
                     max_neighbor_in_other_adjacent_ffts = max_neighbor_in_fft_minus_49
@@ -250,44 +229,32 @@ class SignatureGenerator:
                         )
 
                     if fft_minus_46[bin_position] > max_neighbor_in_other_adjacent_ffts:
-
                         # This is a peak, store the peak
 
                         fft_number = self.spread_fft_output.num_written - 46
 
                         peak_magnitude = (
-                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3
-                            + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position])) * 1477.3 + 6144
                         )
                         peak_magnitude_before = (
-                            np.log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3
-                            + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144
                         )
                         peak_magnitude_after = (
-                            np.log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3
-                            + 6144
+                            np.log(max(1 / 64, fft_minus_46[bin_position + 1])) * 1477.3 + 6144
                         )
 
                         peak_variation_1 = (
-                            peak_magnitude * 2
-                            - peak_magnitude_before
-                            - peak_magnitude_after
+                            peak_magnitude * 2 - peak_magnitude_before - peak_magnitude_after
                         )
                         peak_variation_2 = (
-                            (peak_magnitude_after - peak_magnitude_before)
-                            * 32
-                            / peak_variation_1
+                            (peak_magnitude_after - peak_magnitude_before) * 32 / peak_variation_1
                         )
 
-                        corrected_peak_frequency_bin = (
-                            bin_position * 64 + peak_variation_2
-                        )
+                        corrected_peak_frequency_bin = bin_position * 64 + peak_variation_2
 
                         assert peak_variation_1 > 0
 
-                        frequency_hz = corrected_peak_frequency_bin * (
-                            16000 / 2 / 1024 / 64
-                        )
+                        frequency_hz = corrected_peak_frequency_bin * (16000 / 2 / 1024 / 64)
 
                         if 250 < frequency_hz < 520:
                             band = FrequencyBand.hz_250_520
@@ -300,10 +267,7 @@ class SignatureGenerator:
                         else:
                             continue
 
-                        if (
-                            band
-                            not in self.next_signature.frequency_band_to_sound_peaks
-                        ):
+                        if band not in self.next_signature.frequency_band_to_sound_peaks:
                             self.next_signature.frequency_band_to_sound_peaks[band] = []
 
                         self.next_signature.frequency_band_to_sound_peaks[band].append(

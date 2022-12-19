@@ -82,7 +82,6 @@ class DecodedMessage:
 
     @classmethod
     def decode_from_binary(cls, data: bytes):
-
         self = cls()
 
         buf = BytesIO(data)
@@ -101,9 +100,7 @@ class DecodedMessage:
         assert crc32(check_summable_data) & 0xFFFFFFFF == header.crc32
         assert header.magic2 == 0x94119C00
 
-        self.sample_rate_hz = int(
-            SampleRate(header.shifted_sample_rate_id >> 27).name.strip("_")
-        )
+        self.sample_rate_hz = int(SampleRate(header.shifted_sample_rate_id >> 27).name.strip("_"))
 
         self.number_samples = int(
             header.number_samples_plus_divided_sample_rate - self.sample_rate_hz * 0.24
@@ -121,7 +118,6 @@ class DecodedMessage:
         self.frequency_band_to_sound_peaks = {}
 
         while True:
-
             tlv_header = buf.read(8)
             if not tlv_header:
                 break
@@ -143,24 +139,19 @@ class DecodedMessage:
             self.frequency_band_to_sound_peaks[frequency_band] = []
 
             while True:
-
                 raw_fft_pass: bytes = frequency_peaks_buf.read(1)
                 if not raw_fft_pass:
                     break
 
                 fft_pass_offset: int = raw_fft_pass[0]
                 if fft_pass_offset == 0xFF:
-                    fft_pass_number = int.from_bytes(
-                        frequency_peaks_buf.read(4), "little"
-                    )
+                    fft_pass_number = int.from_bytes(frequency_peaks_buf.read(4), "little")
                     continue
                 else:
                     fft_pass_number += fft_pass_offset
 
                 peak_magnitude = int.from_bytes(frequency_peaks_buf.read(2), "little")
-                corrected_peak_frequency_bin = int.from_bytes(
-                    frequency_peaks_buf.read(2), "little"
-                )
+                corrected_peak_frequency_bin = int.from_bytes(frequency_peaks_buf.read(2), "little")
 
                 self.frequency_band_to_sound_peaks[frequency_band].append(
                     FrequencyPeak(
@@ -175,7 +166,6 @@ class DecodedMessage:
 
     @classmethod
     def decode_from_uri(cls, uri: str):
-
         assert uri.startswith(DATA_URI_PREFIX)
 
         return cls.decode_from_binary(b64decode(uri.replace(DATA_URI_PREFIX, "", 1)))
@@ -186,7 +176,6 @@ class DecodedMessage:
     """
 
     def encode_to_json(self) -> dict:
-
         return {
             "sample_rate_hz": self.sample_rate_hz,
             "number_samples": self.number_samples,
@@ -210,14 +199,11 @@ class DecodedMessage:
         }
 
     def encode_to_binary(self) -> bytes:
-
         header = RawSignatureHeader()
 
         header.magic1 = 0xCAFE2580
         header.magic2 = 0x94119C00
-        header.shifted_sample_rate_id = (
-            int(getattr(SampleRate, "_%s" % self.sample_rate_hz)) << 27
-        )
+        header.shifted_sample_rate_id = int(getattr(SampleRate, "_%s" % self.sample_rate_hz)) << 27
         header.fixed_value = (15 << 19) + 0x40000
         header.number_samples_plus_divided_sample_rate = int(
             self.number_samples + self.sample_rate_hz * 0.24
@@ -225,10 +211,7 @@ class DecodedMessage:
 
         contents_buf = BytesIO()
 
-        for frequency_band, frequency_peaks in sorted(
-            self.frequency_band_to_sound_peaks.items()
-        ):
-
+        for frequency_band, frequency_peaks in sorted(self.frequency_band_to_sound_peaks.items()):
             peaks_buf = BytesIO()
 
             fft_pass_number = 0
@@ -238,24 +221,17 @@ class DecodedMessage:
             # caller
 
             for frequency_peak in frequency_peaks:
-
                 assert frequency_peak.fft_pass_number >= fft_pass_number
 
                 if frequency_peak.fft_pass_number - fft_pass_number >= 255:
                     peaks_buf.write(b"\xff")
-                    peaks_buf.write(
-                        frequency_peak.fft_pass_number.to_bytes(4, "little")
-                    )
+                    peaks_buf.write(frequency_peak.fft_pass_number.to_bytes(4, "little"))
 
                     fft_pass_number = frequency_peak.fft_pass_number
 
-                peaks_buf.write(
-                    bytes([frequency_peak.fft_pass_number - fft_pass_number])
-                )
+                peaks_buf.write(bytes([frequency_peak.fft_pass_number - fft_pass_number]))
                 peaks_buf.write(frequency_peak.peak_magnitude.to_bytes(2, "little"))
-                peaks_buf.write(
-                    frequency_peak.corrected_peak_frequency_bin.to_bytes(2, "little")
-                )
+                peaks_buf.write(frequency_peak.corrected_peak_frequency_bin.to_bytes(2, "little"))
 
                 fft_pass_number = frequency_peak.fft_pass_number
 
@@ -269,9 +245,7 @@ class DecodedMessage:
         header.size_minus_header = len(contents_buf.getvalue()) + 8
 
         buf = BytesIO()
-        buf.write(
-            header
-        )  # We will rewrite it just after in order to include the final CRC-32
+        buf.write(header)  # We will rewrite it just after in order to include the final CRC-32
 
         buf.write((0x40000000).to_bytes(4, "little"))
         buf.write((len(contents_buf.getvalue()) + 8).to_bytes(4, "little"))
@@ -286,5 +260,4 @@ class DecodedMessage:
         return buf.getvalue()
 
     def encode_to_uri(self) -> str:
-
         return DATA_URI_PREFIX + b64encode(self.encode_to_binary()).decode("ascii")
