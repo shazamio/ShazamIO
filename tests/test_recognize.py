@@ -1,3 +1,4 @@
+import pytest
 import pytest_asyncio
 from pydub import AudioSegment
 from io import BytesIO
@@ -11,6 +12,7 @@ async def song_bytes():
     yield await get_file_bytes(file="examples/data/dora.ogg")
 
 
+@pytest.mark.asyncio
 async def test_recognize_song_file():
     shazam = Shazam()
     out = await shazam.recognize_song(data="examples/data/dora.ogg")
@@ -19,6 +21,7 @@ async def test_recognize_song_file():
     assert out["track"]["key"] == "549679333"
 
 
+@pytest.mark.asyncio
 async def test_recognize_song_bytes(song_bytes: bytes):
     shazam = Shazam()
     out = await shazam.recognize_song(data=song_bytes)
@@ -27,6 +30,7 @@ async def test_recognize_song_bytes(song_bytes: bytes):
     assert out["track"]["key"] == "549679333"
 
 
+@pytest.mark.asyncio
 async def test_recognize_song_too_short():
     short_audio_segment = AudioSegment.from_file(
         file=BytesIO(b"0" * 126),

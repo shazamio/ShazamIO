@@ -1,3 +1,4 @@
+import pytest
 from pydub import AudioSegment
 from typing import List
 
@@ -35,6 +36,7 @@ def do_peak_spreading_non_numpy(self):
     pass
 
 
+@pytest.mark.asyncio
 async def test_do_peak_spreading_numpy():
     audio = AudioSegment.from_file(file="examples/data/dora.ogg")
 

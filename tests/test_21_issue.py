@@ -1,3 +1,4 @@
+import pytest
 import pytest_asyncio
 
 from shazamio import Serialize
@@ -250,6 +251,7 @@ def song_response():
     yield response
 
 
+@pytest.mark.asyncio
 async def test_recognize_song_bug(song_response: bytes):
     serialize_out = Serialize.full_track(data=song_response)
     assert serialize_out.matches[0].channel is None
