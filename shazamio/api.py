@@ -22,9 +22,10 @@ class Shazam(Converter, Geo, Request):
     """Is asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
     asyncio and aiohttp."""
 
-    def __init__(self, language: str = "ES"):
+    def __init__(self, language: str = "ES", endpoint_country: str = "GB"):
         super().__init__(language=language)
         self.language = language
+        self.endpoint_country = endpoint_country
 
     async def top_world_tracks(self, limit: int = 200, start_from: int = 0) -> Dict[str, Any]:
         """
@@ -40,6 +41,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_WORLD.format(
+                self.endpoint_country,
                 limit,
                 start_from,
                 language=self.language,
@@ -67,7 +69,7 @@ class Shazam(Converter, Geo, Request):
 
         return await self.request(
             "GET",
-            ShazamUrl.SEARCH_ARTIST_V2.format(artist_id, language=self.language),
+            ShazamUrl.SEARCH_ARTIST_V2.format(self.endpoint_country, artist_id, language=self.language),
             params=params_dict,
             headers=self.headers(),
         )
@@ -90,7 +92,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.ARTIST_TOP_TRACKS.format(
-                artist_id, start_from, limit, language=self.language
+                self.endpoint_country, artist_id, start_from, limit, language=self.language
             ),
             headers=self.headers(),
         )
@@ -106,6 +108,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.ABOUT_TRACK.format(
+                self.endpoint_country,
                 track_id,
                 language=self.language,
             ),
@@ -133,6 +136,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_COUNTRY.format(
+                self.endpoint_country,
                 country_code,
                 limit,
                 start_from,
@@ -166,6 +170,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_CITY.format(
+                self.endpoint_country,
                 city_id,
                 limit,
                 start_from,
@@ -198,7 +203,7 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.GENRE_WORLD.format(genre, limit, start_from, language=self.language),
+            ShazamUrl.GENRE_WORLD.format(self.endpoint_country, genre, limit, start_from, language=self.language),
             headers=self.headers(),
         )
 
@@ -230,6 +235,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.GENRE_COUNTRY.format(
+                self.endpoint_country,
                 country_code, genre, limit, start_from, language=self.language
             ),
             headers=self.headers(),
@@ -252,7 +258,7 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.RELATED_SONGS.format(track_id, start_from, limit, language=self.language),
+            ShazamUrl.RELATED_SONGS.format(self.endpoint_country, track_id, start_from, limit, language=self.language),
             headers=self.headers(),
         )
 
@@ -267,6 +273,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.SEARCH_ARTIST.format(
+                self.endpoint_country,
                 query,
                 limit,
                 language=self.language,
@@ -285,6 +292,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.SEARCH_MUSIC.format(
+                self.endpoint_country,
                 query,
                 limit,
                 language=self.language,
@@ -345,6 +353,7 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
+                self.endpoint_country,
                 str(uuid.uuid4()).upper(),
                 str(uuid.uuid4()).upper(),
                 language=self.language,
