@@ -35,7 +35,7 @@ class ShazamUrl:
     )
     RELATED_SONGS = (
         "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/track-similarities-id-{track_id}?startFrom={limit}&pageSize={offset}&connected=&channel="
+        "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
     )
     SEARCH_ARTIST = (
         "https://www.shazam.com/services/search/v4/{language}/{endpoint_country}/web"
