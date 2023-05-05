@@ -22,18 +22,18 @@ class Shazam(Converter, Geo, Request):
     """Is asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
     asyncio and aiohttp."""
 
-    def __init__(self, language: str = "ES", endpoint_country: str = "GB"):
+    def __init__(self, language: str = "en-US", endpoint_country: str = "GB"):
         super().__init__(language=language)
         self.language = language
         self.endpoint_country = endpoint_country
 
-    async def top_world_tracks(self, limit: int = 200, start_from: int = 0) -> Dict[str, Any]:
+    async def top_world_tracks(self, limit: int = 200, offset: int = 0) -> Dict[str, Any]:
         """
         Search top world tracks
 
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs.
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to
                 your own.
             :return: dict tracks
@@ -41,10 +41,10 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_WORLD.format(
-                self.endpoint_country,
-                limit,
-                start_from,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
             ),
             headers=self.headers(),
         )
@@ -70,7 +70,8 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.SEARCH_ARTIST_V2.format(
-                self.endpoint_country, artist_id, language=self.language
+                endpoint_country=self.endpoint_country,
+                artist_id=artist_id,
             ),
             params=params_dict,
             headers=self.headers(),
@@ -87,9 +88,9 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.ABOUT_TRACK.format(
-                self.endpoint_country,
-                track_id,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                track_id=track_id,
             ),
             headers=self.headers(),
         )
@@ -98,7 +99,7 @@ class Shazam(Converter, Geo, Request):
         self,
         country_code: Union[CountryCode, str],
         limit: int = 200,
-        start_from: int = 0,
+        offset: int = 0,
     ) -> Dict[str, Any]:
         """
         Get the best tracks by country code
@@ -107,7 +108,7 @@ class Shazam(Converter, Geo, Request):
             :param country_code: ISO 3166-3 alpha-2 code. Example: RU,NL,UA
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs.
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to
                 your own.
             :return: dict songs
@@ -115,11 +116,11 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_COUNTRY.format(
-                self.endpoint_country,
-                country_code,
-                limit,
-                start_from,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                country_code=country_code,
+                limit=limit,
+                offset=offset,
             ),
             headers=self.headers(),
         )
@@ -129,7 +130,7 @@ class Shazam(Converter, Geo, Request):
         country_code: Union[CountryCode, str],
         city_name: str,
         limit: int = 200,
-        start_from: int = 0,
+        offset: int = 0,
     ) -> Dict[str, Any]:
         """
         Retrieving information from an artist profile
@@ -140,7 +141,7 @@ class Shazam(Converter, Geo, Request):
                 Example: Budapest, Moscow
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs.
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to
                 your own.
             :return: dict songs
@@ -149,17 +150,20 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.TOP_TRACKS_CITY.format(
-                self.endpoint_country,
-                city_id,
-                limit,
-                start_from,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                city_id=city_id,
             ),
             headers=self.headers(),
         )
 
     async def top_world_genre_tracks(
-        self, genre: Union[GenreMusic, int], limit: int = 100, start_from: int = 0
+        self,
+        genre: Union[GenreMusic, int],
+        limit: int = 100,
+        offset: int = 0,
     ) -> Dict[str, Any]:
         """
         Get world tracks by certain genre
@@ -175,7 +179,7 @@ class Shazam(Converter, Geo, Request):
 
             :param limit: Determines how many songs the maximum can be in the request.
                     Example: If 5 is specified, the query will return no more than 5 songs.
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                     The default is 0. If you want to skip the first few songs, set this parameter
                     to your own.
             :return: dict songs
@@ -183,7 +187,11 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.GENRE_WORLD.format(
-                self.endpoint_country, genre, limit, start_from, language=self.language
+                language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                genre=genre,
             ),
             headers=self.headers(),
         )
@@ -193,7 +201,7 @@ class Shazam(Converter, Geo, Request):
         country_code: str,
         genre: Union[GenreMusic, int],
         limit: int = 200,
-        start_from: int = 0,
+        offset: int = 0,
     ) -> Dict[str, Any]:
         """
         The best tracks by a genre in the country
@@ -208,7 +216,7 @@ class Shazam(Converter, Geo, Request):
                 REGIONAL_MEXICANO = 18
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to
                 your own.
             :return: dict songs
@@ -216,18 +224,21 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.GENRE_COUNTRY.format(
-                self.endpoint_country,
-                country_code,
-                genre,
-                limit,
-                start_from,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                country=country_code,
+                genre=genre,
             ),
             headers=self.headers(),
         )
 
     async def related_tracks(
-        self, track_id: int, limit: int = 20, start_from: int = 0
+        self,
+        track_id: int,
+        limit: int = 20,
+        offset: int = 0,
     ) -> Dict[str, Any]:
         """
         Similar songs based song id
@@ -236,7 +247,7 @@ class Shazam(Converter, Geo, Request):
             https://www.shazam.com/track/549952578/
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs
-            :param start_from: A parameter that determines with which song to display the request.
+            :param offset: A parameter that determines with which song to display the request.
                 The default is 0. If you want to skip the first few songs, set this parameter to
                 your own.
             :return: dict tracks
@@ -244,45 +255,62 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "GET",
             ShazamUrl.RELATED_SONGS.format(
-                self.endpoint_country, track_id, start_from, limit, language=self.language
+                language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                track_id=track_id,
             ),
             headers=self.headers(),
         )
 
-    async def search_artist(self, query: str, limit: int = 10) -> Dict[str, Any]:
+    async def search_artist(
+        self,
+        query: str,
+        limit: int = 10,
+        offset: int = 0,
+    ) -> Dict[str, Any]:
         """
         Search all artists by prefix or fullname
             :param query: Artist name or search prefix
             :param limit: Determines how many artists the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 artists.
+            :param offset: A parameter that determines with which song to display the request.
+                The default is 0. If you want to skip the first few songs, set this parameter to
+                your own.
             :return: dict artists
         """
         return await self.request(
             "GET",
             ShazamUrl.SEARCH_ARTIST.format(
-                self.endpoint_country,
-                query,
-                limit,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                query=query,
             ),
             headers=self.headers(),
         )
 
-    async def search_track(self, query: str, limit: int = 10) -> Dict[str, Any]:
+    async def search_track(self, query: str, limit: int = 10, offset: int = 0) -> Dict[str, Any]:
         """
         Search all tracks by prefix
             :param query: Track full title or prefix title
             :param limit: Determines how many songs the maximum can be in the request.
                 Example: If 5 is specified, the query will return no more than 5 songs.
+            :param offset: A parameter that determines with which song to display the request.
+                The default is 0. If you want to skip the first few songs, set this parameter to
+                your own.
             :return: dict songs
         """
         return await self.request(
             "GET",
             ShazamUrl.SEARCH_MUSIC.format(
-                self.endpoint_country,
-                query,
-                limit,
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                query=query,
             ),
             headers=self.headers(),
         )
@@ -340,10 +368,10 @@ class Shazam(Converter, Geo, Request):
         return await self.request(
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
-                self.endpoint_country,
-                str(uuid.uuid4()).upper(),
-                str(uuid.uuid4()).upper(),
                 language=self.language,
+                endpoint_country=self.endpoint_country,
+                uuid_1=str(uuid.uuid4()).upper(),
+                uuid_2=str(uuid.uuid4()).upper(),
             ),
             headers=self.headers(),
             json=data,

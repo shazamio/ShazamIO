@@ -19,6 +19,7 @@ async def main():
         ),
     )
     serialized = Serialize.artist_v2(about_artist)
+    print(serialized)
     for i in serialized.data[0].views.top_songs.data:
         pprint(i.attributes.name)
 
