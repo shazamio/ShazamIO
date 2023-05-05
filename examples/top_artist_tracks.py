@@ -1,4 +1,6 @@
 import asyncio
+from pprint import pprint
+
 from shazamio import Shazam, Serialize
 from shazamio.schemas.artists import ArtistQuery
 from shazamio.schemas.enums import ArtistView
@@ -18,7 +20,7 @@ async def main():
     )
     serialized = Serialize.artist_v2(about_artist)
     for i in serialized.data[0].views.top_songs.data:
-        print(i.attributes.name)
+        pprint(i.attributes.name)
 
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
