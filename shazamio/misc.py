@@ -15,10 +15,6 @@ class ShazamUrl:
     ARTIST_ABOUT = (
         "https://www.shazam.com/discovery/v3/en/{}/web/artist/{" "}?shazamapiversion=v3&video=v3 "
     )
-    ARTIST_TOP_TRACKS = (
-        "https://cdn.shazam.com/shazam/v3/en/{}/web/-/tracks/artisttoptracks_{}?startFrom={}"
-        "&pageSize={}&connected=&channel="
-    )
     ABOUT_TRACK = (
         "https://www.shazam.com/discovery/v5/en/{}/web/-/track/{" "}?shazamapiversion=v3&video=v3 "
     )

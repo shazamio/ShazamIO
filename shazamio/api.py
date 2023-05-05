@@ -73,30 +73,7 @@ class Shazam(Converter, Geo, Request):
             params=params_dict,
             headers=self.headers(),
         )
-
-    async def artist_top_tracks(
-        self, artist_id: int, limit: int = 200, start_from: int = 0
-    ) -> Dict[str, Any]:
-        """
-        Get the top songs according to Shazam
-
-            :param artist_id: Artist number. Example: (203347991)
-            https://www.shazam.com/artist/203347991/
-            :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs.
-            :param start_from: A parameter that determines with which song to display the request.
-                The default is 0. If you want to skip the first few songs, set this parameter to
-                your own.
-            :return: dict tracks
-        """
-        return await self.request(
-            "GET",
-            ShazamUrl.ARTIST_TOP_TRACKS.format(
-                self.endpoint_country, artist_id, start_from, limit, language=self.language
-            ),
-            headers=self.headers(),
-        )
-
+        
     async def track_about(self, track_id: int) -> Dict[str, Any]:
         """
         Get track information
