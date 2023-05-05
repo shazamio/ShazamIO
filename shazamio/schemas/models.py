@@ -87,9 +87,9 @@ class LyricsSection:
 
 @dataclass
 class VideoSection:
-    type: str
     tab_name: str
     youtube_url: str
+    type: str = "VIDEO"
 
 
 @dataclass
@@ -156,7 +156,7 @@ class TrackInfo:
     spotify_url: Optional[str] = field(default=None)
     spotify_uri: Optional[str] = field(default=None)
     youtube_link: Optional[str] = None
-    _sections: Optional[
+    sections: Optional[
         List[
             Union[
                 SongSection,
@@ -185,7 +185,7 @@ class TrackInfo:
             return self.spotify_uri.split("spotify:search:")[1]
 
     def __youtube_link(self):
-        for i in self._sections:
+        for i in self.sections:
             if type(i) is VideoSection:
                 return i.youtube_url
 

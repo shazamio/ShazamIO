@@ -11,6 +11,7 @@ from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
 from shazamio.schemas.artist.views.last_release import LastReleaseModel
 from shazamio.schemas.artist.views.simular_artists import SimularArtist
 from shazamio.schemas.artist.views.top_music import TopMusicVideosView
+from shazamio.schemas.artist.views.top_song import TopSong
 from shazamio.schemas.attributes import ArtistAttribute
 from shazamio.schemas.enums import ArtistExtend
 from shazamio.schemas.enums import ArtistView
@@ -83,6 +84,7 @@ class ArtistViews(BaseModel):
     simular_artists: Optional[SimularArtist] = Field(None, alias="similar-artists")
     latest_release: Optional[LastReleaseModel] = Field(None, alias="latest-release")
     full_albums: Optional[FullAlbumsModel] = Field(None, alias="full-albums")
+    top_songs: Optional[TopSong] = Field(None, alias="top-songs")
 
 
 class ArtistV3(BaseModel):
