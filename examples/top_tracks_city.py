@@ -3,9 +3,11 @@ from shazamio import Shazam, Serialize
 
 
 async def main():
-    shazam = Shazam()
+    shazam = Shazam(language="GB")
     top_ten_moscow_tracks = await shazam.top_city_tracks(
-        country_code="RU", city_name="Moscow", limit=10
+        country_code="RU",
+        city_name="Moscow",
+        limit=10,
     )
     print(top_ten_moscow_tracks)
     # ALL TRACKS DICT
