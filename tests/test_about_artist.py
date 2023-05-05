@@ -30,4 +30,4 @@ async def test_about_artist():
 
     serialized = Serialize.artist_v2(about_artist)
     assert serialized.data[0].attributes.name == "Markul"
-    assert "Hip-hop/Rap" in serialized.data[0].attributes.genre_names
+    assert "Hip-Hop/Rap" in serialized.data[0].attributes.genre_names
