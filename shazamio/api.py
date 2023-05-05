@@ -69,11 +69,13 @@ class Shazam(Converter, Geo, Request):
 
         return await self.request(
             "GET",
-            ShazamUrl.SEARCH_ARTIST_V2.format(self.endpoint_country, artist_id, language=self.language),
+            ShazamUrl.SEARCH_ARTIST_V2.format(
+                self.endpoint_country, artist_id, language=self.language
+            ),
             params=params_dict,
             headers=self.headers(),
         )
-        
+
     async def track_about(self, track_id: int) -> Dict[str, Any]:
         """
         Get track information
@@ -180,7 +182,9 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.GENRE_WORLD.format(self.endpoint_country, genre, limit, start_from, language=self.language),
+            ShazamUrl.GENRE_WORLD.format(
+                self.endpoint_country, genre, limit, start_from, language=self.language
+            ),
             headers=self.headers(),
         )
 
@@ -213,7 +217,11 @@ class Shazam(Converter, Geo, Request):
             "GET",
             ShazamUrl.GENRE_COUNTRY.format(
                 self.endpoint_country,
-                country_code, genre, limit, start_from, language=self.language
+                country_code,
+                genre,
+                limit,
+                start_from,
+                language=self.language,
             ),
             headers=self.headers(),
         )
@@ -235,7 +243,9 @@ class Shazam(Converter, Geo, Request):
         """
         return await self.request(
             "GET",
-            ShazamUrl.RELATED_SONGS.format(self.endpoint_country, track_id, start_from, limit, language=self.language),
+            ShazamUrl.RELATED_SONGS.format(
+                self.endpoint_country, track_id, start_from, limit, language=self.language
+            ),
             headers=self.headers(),
         )
 
