@@ -10,7 +10,7 @@ class FactorySchemas:
             "apple_music_url": ("hub", "options", 0, "actions", 0, "uri"),
             "spotify_url": ("hub", "providers", 0, "actions", 0, "uri"),
             "spotify_uri": ("hub", "providers", 0, "actions", 1, "uri"),
-            "_sections": "sections",
+            "sections": "sections",
         },
         skip_internal=True,
     )
