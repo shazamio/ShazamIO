@@ -50,6 +50,10 @@ class ShazamUrl:
     SEARCH_ARTIST_V2 = (
         "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}/artists/{artist_id}"
     )
+    ARTIST_ALBUMS = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
+        "/artists/{artist_id}/albums?limit={limit}&offset={offset}"
+    )
 
 
 class Request:

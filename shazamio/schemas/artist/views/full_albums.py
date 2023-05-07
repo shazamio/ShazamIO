@@ -38,7 +38,7 @@ class AttributesFullAlbums(BaseModel):
     is_compilation: bool = Field(..., alias="isCompilation")
     is_prerelease: bool = Field(..., alias="isPrerelease")
     audio_traits: List[str] = Field(..., alias="audioTraits")
-    editorial_artwork: EditorialArtwork = Field(..., alias="editorialArtwork")
+    editorial_artwork: Optional[EditorialArtwork] = Field(None, alias="editorialArtwork")
     is_single: bool = Field(..., alias="isSingle")
     name: str
     artist_name: str = Field(..., alias="artistName")

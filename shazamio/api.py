@@ -332,6 +332,30 @@ class Shazam(Converter, Geo, Request):
             headers=self.headers(),
         )
 
+    async def artist_albums(self, artist_id: int, limit: int = 10, offset: int = 0):
+        """
+        Get all albums of a specific artist
+
+          :param artist_id: Artist number. Example (203347991)
+          :param limit: Determines how many songs the maximum can be in the request.
+              Example: If 5 is specified, the query will return no more than 5 songs.
+          :param offset: A parameter that determines with which song to display the request.
+              The default is 0. If you want to skip the first few songs, set this parameter to
+              your own.
+          :return: dict albums
+        """
+
+        return await self.request(
+            "GET",
+            ShazamUrl.ARTIST_ALBUMS.format(
+                endpoint_country=self.endpoint_country,
+                limit=limit,
+                offset=offset,
+                artist_id=artist_id,
+            ),
+            headers=self.headers(),
+        )
+
     async def get_youtube_data(self, link: str) -> Dict[str, Any]:
         return await self.request("GET", link, headers=self.headers())
 
