@@ -349,13 +349,10 @@ class Shazam(Converter, Geo, Request):
         signature_generator = self.create_signature_generator(audio)
         signature = signature_generator.get_next_signature()
 
-        if len(signature_generator.input_pending_processing) < 128:
+        if signature is None:
             return {"matches": []}
 
-        while not signature:
-            signature = signature_generator.get_next_signature()
-        results = await self.send_recognize_request(signature)
-        return results
+        return await self.send_recognize_request(signature)
 
     async def send_recognize_request(self, sig: DecodedMessage) -> Dict[str, Any]:
         data = Converter.data_search(
