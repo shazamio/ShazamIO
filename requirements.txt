@@ -1,6 +1,7 @@
 aiofiles~=0.8.0
 aiohttp~=3.8.1
 attrs==20.3.0
+backoff==2.2.1
 chardet==3.0.4
 dataclass-factory==2.16
 idna==3.1

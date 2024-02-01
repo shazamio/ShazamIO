@@ -13,6 +13,7 @@ setuptools.setup(
     url="https://github.com/dotX12/ShazamIO",
     install_requires=[
         "aiohttp",
+        "backoff",
         "pydub",
         "numpy",
         "aiofiles",

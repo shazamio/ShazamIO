@@ -12,3 +12,7 @@ class BadCountryName(Exception):
 
 class BadMethod(Exception):
     pass
+
+
+class TooManyRequests(Exception):
+    pass
