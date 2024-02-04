@@ -5,10 +5,11 @@ from shazamio.utils import validate_json
 
 
 class HTTPClient:
-    http_session: aiohttp.ClientSession
-
     def __init__(self, *args, **kwargs):
         self.http_session = aiohttp.ClientSession()
+
+    async def stop(self):
+        await self.http_session.close()
 
     async def request(self, method: str, url: str, *args, **kwargs) -> dict:
         if method.upper() == "GET":

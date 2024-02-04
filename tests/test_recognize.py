@@ -16,6 +16,7 @@ async def song_bytes():
 async def test_recognize_song_file():
     shazam = Shazam()
     out = await shazam.recognize_song(data="examples/data/dora.ogg")
+    await shazam.stop()
 
     assert out.get("matches") != []
     assert out["track"]["key"] == "549679333"
@@ -25,6 +26,7 @@ async def test_recognize_song_file():
 async def test_recognize_song_bytes(song_bytes: bytes):
     shazam = Shazam()
     out = await shazam.recognize_song(data=song_bytes)
+    await shazam.stop()
 
     assert out.get("matches") != []
     assert out["track"]["key"] == "549679333"
@@ -42,6 +44,7 @@ async def test_recognize_song_too_short():
 
     shazam = Shazam()
     out = await shazam.recognize_song(data=short_audio_segment)
+    await shazam.stop()
 
     assert out.get("matches") == []
     assert "track" not in out
