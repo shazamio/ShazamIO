@@ -38,6 +38,7 @@ from shazamio import Shazam
 async def main():
     shazam = Shazam()
     out = await shazam.recognize_song('dora.ogg')
+    await shazam.stop()
     print(out)
 
 loop = asyncio.get_event_loop()
@@ -63,6 +64,7 @@ async def main():
     artist_id = 43328183
     about_artist = await shazam.artist_about(artist_id)
     serialized = Serialize.artist(about_artist)
+    await shazam.stop()
 
     print(about_artist)  # dict
     print(serialized)  # serialized from dataclass factory
@@ -91,6 +93,7 @@ async def main():
     track_id = 552406075
     about_track = await shazam.track_about(track_id=track_id)
     serialized = Serialize.track(data=about_track)
+    await shazam.stop()
 
     print(about_track)  # dict
     print(serialized)  # serialized from dataclass factory
@@ -119,6 +122,7 @@ async def main():
     shazam = Shazam()
     track_id = 559284007
     count = await shazam.listening_counter(track_id=track_id)
+    await shazam.stop()
     print(count)
 
 loop = asyncio.get_event_loop()
@@ -144,6 +148,7 @@ async def main():
     track_id = 546891609
     related = await shazam.related_tracks(track_id=track_id, limit=5, offset=2)
     # ONLY №3, №4 SONG
+    await shazam.stop()
     print(related)
 
 loop = asyncio.get_event_loop()
@@ -168,6 +173,7 @@ async def main():
     for artist in artists['artists']['hits']:
         serialized = Serialize.artist(data=artist)
         print(serialized)
+    await shazam.stop()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -190,6 +196,7 @@ from shazamio import Shazam
 async def main():
     shazam = Shazam()
     tracks = await shazam.search_track(query='Lil', limit=5)
+    await shazam.stop()
     print(tracks)
 
 loop = asyncio.get_event_loop()
@@ -229,6 +236,8 @@ async def main():
     for i in serialized.data[0].views.top_songs.data:
         print(i.attributes.name)
 
+    await shazam.stop()
+
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
 loop.run_until_complete(main())
@@ -260,6 +269,8 @@ async def main():
         # SERIALIZE FROM DATACLASS FACTORY
         print(serialized)
 
+    await shazam.stop()
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 
@@ -285,6 +296,7 @@ async def main():
     for track in top_five_track_from_amsterdam['tracks']:
         serialized = Serialize.track(data=track)
         print(serialized)
+    await shazam.stop()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -311,6 +323,7 @@ async def main():
         genre=GenreMusic.HIP_HOP_RAP,
         limit=4
     )
+    await shazam.stop()
     print(top_spain_rap)
 
 loop = asyncio.get_event_loop()
@@ -339,6 +352,8 @@ async def main():
         serialized_track = Serialize.track(data=track)
         print(serialized_track.spotify_url)
 
+    await shazam.stop()
+
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -365,6 +380,7 @@ async def main():
     for track in top_world_tracks['tracks']:
         serialized = Serialize.track(track)
         print(serialized)
+    await shazam.stop()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -390,6 +406,7 @@ async def main():
     for track in top_five_track_from_amsterdam['tracks']:
         serialized = Serialize.track(data=track)
         print(serialized.title)
+    await shazam.stop()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
