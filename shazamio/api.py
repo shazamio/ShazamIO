@@ -22,10 +22,11 @@ class Shazam(Converter, Geo, Request):
     """Is asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
     asyncio and aiohttp."""
 
-    def __init__(self, language: str = "en-US", endpoint_country: str = "GB"):
+    def __init__(self, language: str = "en-US", endpoint_country: str = "GB", proxy: str = ""):
         super().__init__(language=language)
         self.language = language
         self.endpoint_country = endpoint_country
+        self.proxy = proxy
 
     async def top_world_tracks(self, limit: int = 200, offset: int = 0) -> Dict[str, Any]:
         """
@@ -47,6 +48,7 @@ class Shazam(Converter, Geo, Request):
                 offset=offset,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def artist_about(
@@ -75,6 +77,7 @@ class Shazam(Converter, Geo, Request):
             ),
             params=params_dict,
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def track_about(self, track_id: int) -> Dict[str, Any]:
@@ -93,6 +96,7 @@ class Shazam(Converter, Geo, Request):
                 track_id=track_id,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def top_country_tracks(
@@ -123,6 +127,7 @@ class Shazam(Converter, Geo, Request):
                 offset=offset,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def top_city_tracks(
@@ -157,6 +162,7 @@ class Shazam(Converter, Geo, Request):
                 city_id=city_id,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def top_world_genre_tracks(
@@ -194,6 +200,7 @@ class Shazam(Converter, Geo, Request):
                 genre=genre,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def top_country_genre_tracks(
@@ -232,6 +239,7 @@ class Shazam(Converter, Geo, Request):
                 genre=genre,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def related_tracks(
@@ -262,6 +270,7 @@ class Shazam(Converter, Geo, Request):
                 track_id=track_id,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def search_artist(
@@ -290,6 +299,7 @@ class Shazam(Converter, Geo, Request):
                 query=query,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def search_track(self, query: str, limit: int = 10, offset: int = 0) -> Dict[str, Any]:
@@ -313,6 +323,7 @@ class Shazam(Converter, Geo, Request):
                 query=query,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def listening_counter(self, track_id: int) -> Dict[str, Any]:
@@ -330,6 +341,7 @@ class Shazam(Converter, Geo, Request):
                 language=self.language,
             ),
             headers=self.headers(),
+            proxy=self.proxy
         )
 
     async def get_youtube_data(self, link: str) -> Dict[str, Any]:
@@ -375,4 +387,5 @@ class Shazam(Converter, Geo, Request):
             ),
             headers=self.headers(),
             json=data,
+            proxy=self.proxy
         )
