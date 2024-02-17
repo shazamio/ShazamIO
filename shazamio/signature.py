@@ -31,7 +31,7 @@ class RawSignatureHeader(LittleEndianStructure):
         # field above,
         # it can be inferred and subtracted so that we obtain the number of samples,
         # and from the number of samples and sample rate we can obtain the length of the recording
-        ("fixed_value", c_uint32)
+        ("fixed_value", c_uint32),
         # Calculated as ((15 << 19) + 0x40000) - 0x7c0000 or 00 00 7c 00 - seems pretty constant,
         # may be different in the "SigType.STREAMING" mode
     ]
