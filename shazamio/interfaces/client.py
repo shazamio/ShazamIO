@@ -1,10 +1,9 @@
-import abc
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Any
 
 
 class HTTPClientInterface(ABC):
-    @abc.abstractmethod
+    @abstractmethod
     async def request(
         self,
         method: str,

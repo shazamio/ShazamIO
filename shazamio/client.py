@@ -61,4 +61,3 @@ class HTTPClient(HTTPClientInterface):
                         raise e
             else:
                 raise BadMethod("Accept only GET/POST")
-            await client.close()
