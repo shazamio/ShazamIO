@@ -29,7 +29,7 @@ class GeoService:
                         return response_city["id"]
         raise BadCityName("City not found, check city name")
 
-    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> list[str]:
+    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> List[str]:
         cities = []
         data = await self.client.request("GET", ShazamUrl.LOCATIONS, "application/json")
         for response_country in data["countries"]:
