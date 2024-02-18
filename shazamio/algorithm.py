@@ -118,9 +118,9 @@ class SignatureGenerator:
 
     def do_fft(self, batch_of_128_s16le_mono_samples):
         type_ring = self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples)
-        self.ring_buffer_of_samples[
-            self.ring_buffer_of_samples.position : type_ring
-        ] = batch_of_128_s16le_mono_samples
+        self.ring_buffer_of_samples[self.ring_buffer_of_samples.position : type_ring] = (
+            batch_of_128_s16le_mono_samples
+        )
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)
