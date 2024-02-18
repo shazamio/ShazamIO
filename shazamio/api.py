@@ -1,7 +1,7 @@
 import pathlib
 import time
 import uuid
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 from typing import Optional
 
 from aiohttp_retry import ExponentialRetry
@@ -401,9 +401,9 @@ class Shazam(Request):
 
     async def listening_counter_many(
         self,
-        track_ids: list[int],
+        track_ids: List[int],
         proxy: Optional[str] = None,
-    ) -> list[dict[str, Any]]:
+    ) -> List[Dict[str, Any]]:
         """
         Returns the total track listener counter.
             :param track_ids: Track numbers (list). Example: ([559284007])

@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from typing import Any, Optional
+from typing import Any, Optional, List, Dict
 
 from aiohttp import ClientSession, TraceRequestStartParams, TraceConfig
 from aiohttp_retry import RetryClient, RetryOptionsBase
@@ -40,7 +40,7 @@ class HTTPClient(HTTPClientInterface):
         url: str,
         *args,
         **kwargs,
-    ) -> list[Any] | dict[str, Any]:
+    ) -> List[Any] | Dict[str, Any]:
         async with RetryClient(
             retry_options=self.retry_options,
             raise_for_status=False,
