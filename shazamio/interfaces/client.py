@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List, Dict, Union
 
 
 class HTTPClientInterface(ABC):
@@ -10,5 +10,5 @@ class HTTPClientInterface(ABC):
         url: str,
         *args,
         **kwargs,
-    ) -> list[Any] | dict[str, Any]:
+    ) -> Union[List[Any], Dict[str, Any]]:
         raise NotImplementedError

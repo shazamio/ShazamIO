@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
@@ -29,7 +29,7 @@ class GeoService:
                         return response_city["id"]
         raise BadCityName("City not found, check city name")
 
-    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> list[str]:
+    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> List[str]:
         cities = []
         data = await self.client.request("GET", ShazamUrl.LOCATIONS, "application/json")
         for response_country in data["countries"]:
@@ -42,7 +42,7 @@ class GeoService:
 
 class Converter:
     @staticmethod
-    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> dict[str, Any]:
+    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> Dict[str, Any]:
         return {
             "timezone": timezone,
             "signature": {"uri": uri, "samplems": samplems},

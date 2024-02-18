@@ -164,40 +164,6 @@ class DecodedMessage:
 
         return self
 
-    @classmethod
-    def decode_from_uri(cls, uri: str):
-        assert uri.startswith(DATA_URI_PREFIX)
-
-        return cls.decode_from_binary(b64decode(uri.replace(DATA_URI_PREFIX, "", 1)))
-
-    """
-        Encode the current object to a readable JSON format, for debugging
-        purposes.
-    """
-
-    def encode_to_json(self) -> dict:
-        return {
-            "sample_rate_hz": self.sample_rate_hz,
-            "number_samples": self.number_samples,
-            "_seconds": self.number_samples / self.sample_rate_hz,
-            "frequency_band_to_peaks": {
-                frequency_band.name.strip("_"): [
-                    {
-                        "fft_pass_number": frequency_peak.fft_pass_number,
-                        "peak_magnitude": frequency_peak.peak_magnitude,
-                        "corrected_peak_frequency_bin": frequency_peak.corrected_peak_frequency_bin,
-                        "_frequency_hz": frequency_peak.get_frequency_hz(),
-                        "_amplitude_pcm": frequency_peak.get_amplitude_pcm(),
-                        "_seconds": frequency_peak.get_seconds(),
-                    }
-                    for frequency_peak in frequency_peaks
-                ]
-                for frequency_band, frequency_peaks in sorted(
-                    self.frequency_band_to_sound_peaks.items()
-                )
-            },
-        }
-
     def encode_to_binary(self) -> bytes:
         header = RawSignatureHeader()
 
