@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
@@ -42,7 +42,7 @@ class GeoService:
 
 class Converter:
     @staticmethod
-    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> dict[str, Any]:
+    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> Dict[str, Any]:
         return {
             "timezone": timezone,
             "signature": {"uri": uri, "samplems": samplems},
