@@ -693,34 +693,43 @@ testing = ["coverage (>=6.2)", "flaky (>=3.5.0)", "hypothesis (>=5.7.1)", "mypy 
 
 [[package]]
 name = "shazamio-core"
-version = "1.0.6"
+version = "1.0.7"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "shazamio_core-1.0.6-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8a422c6ff351aa15193e59eabb47f239c6be69ac807e64fa9b0945ad92d8ecd0"},
-    {file = "shazamio_core-1.0.6-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:08c981e50245e213fb03834e5775ee65c99010d29e0a545875072ddffb00b037"},
-    {file = "shazamio_core-1.0.6-cp310-none-win32.whl", hash = "sha256:28ddf95baafe3a40936867194abc64635f423b758332c66ee6640f0d46405f51"},
-    {file = "shazamio_core-1.0.6-cp310-none-win_amd64.whl", hash = "sha256:6f16928899f1e08a7f18111ebad7650b648f98785af6354229866447a5eb7428"},
-    {file = "shazamio_core-1.0.6-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:28ba9034375b2597d161b1b3c760dc6bf0d790e62c7d888a4bba3c0a649c4bb0"},
-    {file = "shazamio_core-1.0.6-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:c73f91750b3f2db748a2742da069a6b7c4c7ee78ad224563647a9e923927f3a2"},
-    {file = "shazamio_core-1.0.6-cp311-none-win32.whl", hash = "sha256:5034075fac0430dfe127101151cc374064bc4ed03b407675d73953544f3ef118"},
-    {file = "shazamio_core-1.0.6-cp311-none-win_amd64.whl", hash = "sha256:c351e5ae7e6f352f737f5fc41a8061f402ce5cc88a41f7ad1eff66f244e61627"},
-    {file = "shazamio_core-1.0.6-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:e7f5d8228643587f9b7efb3d7c0bcbddb874dcfd1d53383e1736190d26b54dde"},
-    {file = "shazamio_core-1.0.6-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:540e16d6d425deb56eeecb9fc1333153272c0e1b91d05b2c3b80e36099dfacfe"},
-    {file = "shazamio_core-1.0.6-cp312-none-win32.whl", hash = "sha256:55cd719ea094d9fe4f0a7297644bfa9f69b1819a1728bf4a99841ea78b97cc37"},
-    {file = "shazamio_core-1.0.6-cp312-none-win_amd64.whl", hash = "sha256:58dd3678027679e5db5b8a38f541439f6d5e0766d8a6d27df747a788f7848f73"},
-    {file = "shazamio_core-1.0.6-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:b47b1d201bb72e865a2ff8ad99b96cebad4acc0a40f247e8f9a8360fb58f41cb"},
-    {file = "shazamio_core-1.0.6-cp38-cp38-manylinux_2_28_x86_64.whl", hash = "sha256:8c76787a8888e1fce707fbb7b5ab71eb7d77a3a642dce33fc5fa08fc5fff3e5f"},
-    {file = "shazamio_core-1.0.6-cp38-none-win32.whl", hash = "sha256:e3e1eb19e0a61de324debbf9e68276a9bb21f49d86d4d00f9fd04c1d78098245"},
-    {file = "shazamio_core-1.0.6-cp38-none-win_amd64.whl", hash = "sha256:a61a63f4aade3bb800f14942be9bf15137613100124a897f0fd4f5bb0a94d65c"},
-    {file = "shazamio_core-1.0.6-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9b73f3814c977c5b78816be761b059fedb0029c2b18e5a23730806bf15492042"},
-    {file = "shazamio_core-1.0.6-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:8507cc6df384d021881f2dd23a7333af6fc732ed3d73c420ea3ee1f5233bc004"},
-    {file = "shazamio_core-1.0.6-cp39-none-win32.whl", hash = "sha256:9f0a7246182391f533ded4efbdacb927ed471a8cfe7d24035ed6683bdcf710dd"},
-    {file = "shazamio_core-1.0.6-cp39-none-win_amd64.whl", hash = "sha256:0e161619c5f46d697b0c6f67afdf8c7ab08017a8c929527377687cc48a6549a5"},
-    {file = "shazamio_core-1.0.6-pp310-pypy310_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:6fd24139b477fc7664e7159c2d0a1b338a516c5dbb06543ca93e0509d6c0724f"},
-    {file = "shazamio_core-1.0.6-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:dce9a939de8251d934fcb8393e22fa43e6d1b4c0c8a31459e156173031c33393"},
-    {file = "shazamio_core-1.0.6-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:8231851de3a346e4e9ebe9497c3225c4fcedf260c8616bb27ffe7567bbe6361c"},
+    {file = "shazamio_core-1.0.7-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:98f7968299e5fe34a340273164d4c5c620b2b074d91eff3355f0b55377e1ea7e"},
+    {file = "shazamio_core-1.0.7-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:a3651833d4e6d95464abcbcefefeca53c386446261878c56cbcfb419da4b5115"},
+    {file = "shazamio_core-1.0.7-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:f2f9081ab12a31af4fc1b9523d56a049a04ec236699705c70f22ee18858842c1"},
+    {file = "shazamio_core-1.0.7-cp310-none-win32.whl", hash = "sha256:7b88fdb2425716744fa3667b2c71634027dc5b06a05528f604ba55b5eedb8deb"},
+    {file = "shazamio_core-1.0.7-cp310-none-win_amd64.whl", hash = "sha256:fae00a5bc273a1f4a47c0bc33c46030ed96b9bb8a3cfc93858c8354b6a420115"},
+    {file = "shazamio_core-1.0.7-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:76ec784a546333ea30e7ff235699d68022d27ff13a0725bebb5a35d0c0b3db5a"},
+    {file = "shazamio_core-1.0.7-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:ef9d8626fb5e7f0c0c9fb1a9346494a78661ff99985e7c826c79b880228ff83a"},
+    {file = "shazamio_core-1.0.7-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:a7582f749da55119eebc5a18ca859aa603e6db936347b7c17ae2cdb3e8e27750"},
+    {file = "shazamio_core-1.0.7-cp311-none-win32.whl", hash = "sha256:1ffa240eb6899f6aff68565cb6056e2bb773919b18f4c70b75f7d33b8c864625"},
+    {file = "shazamio_core-1.0.7-cp311-none-win_amd64.whl", hash = "sha256:b224d5149cadc67d6383590e60dbd2221a533e52abb1f47e6e8ef724a24b1890"},
+    {file = "shazamio_core-1.0.7-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:62152bfebf5c9a297cb6497bd46cc4014d79f54dc805f3dddae93df297e9aa70"},
+    {file = "shazamio_core-1.0.7-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:89ad2e837b237671c629783da8e23012f1ea2b2200edb89afc37f6bfc49beaf2"},
+    {file = "shazamio_core-1.0.7-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:6bf9b7d40b2f3776883b2c484fe2831bb88ef3ec235ed8ec1bfb22c890b2a506"},
+    {file = "shazamio_core-1.0.7-cp312-none-win32.whl", hash = "sha256:89746e018042514c0812fe3d4e23a2a91f47a76bea9af473a01b0cda34dd4195"},
+    {file = "shazamio_core-1.0.7-cp312-none-win_amd64.whl", hash = "sha256:39f47e664a10a619755723fb5a15514d84b2f563646a2ac3acc629f479586cd1"},
+    {file = "shazamio_core-1.0.7-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:87e1511a7bb361061bd6520a6bd4b62c8ceb7b6bd7f730182bfb3060b58d97ab"},
+    {file = "shazamio_core-1.0.7-cp38-cp38-manylinux_2_28_aarch64.whl", hash = "sha256:d32fa44c109f38cba3c1e86ce79dcfdc9bd7378614650a161fa62a0e434b68a5"},
+    {file = "shazamio_core-1.0.7-cp38-cp38-manylinux_2_28_x86_64.whl", hash = "sha256:d76fd0f68f49cb853165b6f9301a5bb58a6f76e70b24c87f1e5072024f71a882"},
+    {file = "shazamio_core-1.0.7-cp38-none-win32.whl", hash = "sha256:a85dc4bb42a91f93ee60b8b73a53cc1b91b45b2843a7f41080d357d43973ad75"},
+    {file = "shazamio_core-1.0.7-cp38-none-win_amd64.whl", hash = "sha256:11bcfd545e4f0e9c6729ab66da056e5ad9a0d273c37e309c5d6ddd5e44850fcc"},
+    {file = "shazamio_core-1.0.7-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:1dddcb22068c7c54db2c7fe3beb1d9883c7ec4436b5649e98bb4297496114bc1"},
+    {file = "shazamio_core-1.0.7-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:9ac98bf38e8b79118038aeea14481c54ca24ece8d74cce517c463ea425da919d"},
+    {file = "shazamio_core-1.0.7-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:7195b8e9edfa2752009ba2499d216f71bfcf8b1bb8314fd50052a587eca4aade"},
+    {file = "shazamio_core-1.0.7-cp39-none-win32.whl", hash = "sha256:0f0bbb7bba48eeb4662ee9f4b61b0a3969c6d9cf2f1954986b2328e00c4e30d1"},
+    {file = "shazamio_core-1.0.7-cp39-none-win_amd64.whl", hash = "sha256:9ab97d5150ba37f350c5163baa8bd40e608716a08a85043bf6fbdbfc2e1c11e8"},
+    {file = "shazamio_core-1.0.7-pp310-pypy310_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:a3b31435537a5be9adca7ec7939948544c027633f3b1b9b2f850eece23a31ace"},
+    {file = "shazamio_core-1.0.7-pp310-pypy310_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:88c637a901e71a22bfb4faf4344273c2cf1a2cc25d603effd19bb976bba6eced"},
+    {file = "shazamio_core-1.0.7-pp38-pypy38_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:698dcc169d123cb2a702dc6e46bebfa9e80c871d41e71ca766dd868ecb9b01e0"},
+    {file = "shazamio_core-1.0.7-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:1af0557506d67a781c311a57603e16e0f168fb078626fe7901a5502f154d74fe"},
+    {file = "shazamio_core-1.0.7-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:9c9100f1d235ad2d55f9adc0aadab24bee1702486a57f9ceea3f9f6dcfb8aa9d"},
+    {file = "shazamio_core-1.0.7-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:d18ab8e6ac552ade5c777d8413a15f637240d3a0657a312fb03cdb9f1878c7b0"},
+    {file = "shazamio_core-1.0.7.tar.gz", hash = "sha256:da879322a8a43aac3c636e5d298832eda2098e6a578a451472c4337924e4b5b2"},
 ]
 
 [[package]]
@@ -862,4 +871,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ab38bc33c76be8756860a0383ef38354c2d0b89a62843e52bd2d1c57e8db40b0"
+content-hash = "fc9d8f02564a9761a29caf1c80fac43cf9f6e679c6e18d4076afbbe57da2e2cf"
