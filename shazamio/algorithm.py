@@ -100,13 +100,6 @@ class SignatureGenerator:
             )
             self.samples_processed += 128
 
-        returned_signature = self.next_signature
-
-        self.next_signature = DecodedMessage()
-        self.next_signature.sample_rate_hz = 16000
-        self.next_signature.number_samples = 0
-        self.next_signature.frequency_band_to_sound_peaks = {}
-
         self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
         self.fft_outputs: RingBuffer[List[float]] = RingBuffer(
             buffer_size=256, default_value=[0.0 * 1025]
@@ -115,7 +108,7 @@ class SignatureGenerator:
             buffer_size=256, default_value=[0] * 1025
         )
 
-        return returned_signature
+        return self.next_signature
 
     def process_input(self, s16le_mono_samples: List[int]):
         self.next_signature.number_samples += len(s16le_mono_samples)
@@ -125,9 +118,9 @@ class SignatureGenerator:
 
     def do_fft(self, batch_of_128_s16le_mono_samples):
         type_ring = self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples)
-        self.ring_buffer_of_samples[
-            self.ring_buffer_of_samples.position : type_ring
-        ] = batch_of_128_s16le_mono_samples
+        self.ring_buffer_of_samples[self.ring_buffer_of_samples.position : type_ring] = (
+            batch_of_128_s16le_mono_samples
+        )
         self.ring_buffer_of_samples.position += len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)

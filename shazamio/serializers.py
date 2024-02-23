@@ -2,6 +2,7 @@ from typing import Union
 
 from shazamio.factory_misc import FACTORY_ARTIST
 from shazamio.factory_misc import FACTORY_TRACK
+from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
 from shazamio.schemas.artists import ArtistInfo
 from shazamio.schemas.artists import ArtistResponse
 from shazamio.schemas.artists import ArtistV2
@@ -22,6 +23,10 @@ class Serialize:
     @classmethod
     def artist_v2(cls, data) -> ArtistResponse:
         return ArtistResponse.parse_obj(data)
+
+    @classmethod
+    def artist_albums(cls, data) -> FullAlbumsModel:
+        return FullAlbumsModel.parse_obj(data)
 
     @classmethod
     def artist(cls, data):

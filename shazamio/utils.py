@@ -18,14 +18,11 @@ SongT = Union[str, pathlib.Path, bytes, bytearray]
 FileT = Union[str, pathlib.Path]
 
 
-async def validate_json(
-    resp: aiohttp.ClientResponse, content_type: str = "application/json"
-) -> dict:
+async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "application/json"):
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
-        bad_url = str(str(e).split(",")[2]).split("'")[1]
-        raise FailedDecodeJson(f"Check args, URL is invalid\nURL- {bad_url}")
+        raise FailedDecodeJson("Failed to decode json") from e
 
 
 async def get_file_bytes(file: FileT) -> bytes:

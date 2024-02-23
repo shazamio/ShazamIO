@@ -41,6 +41,8 @@ jobs:
       - name: Install ffmpeg
         id: setup-ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v1
+      - name: Install libasound2-dev
+        run: sudo apt-get install -y libasound2-dev build-essential libudev-dev
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -61,4 +63,4 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest tests/
+          poetry run pytest

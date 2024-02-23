@@ -161,9 +161,9 @@ class TrackInfo:
             Union[
                 SongSection,
                 VideoSection,
+                LyricsSection,
                 RelatedSection,
                 ArtistSection,
-                LyricsSection,
             ]
         ]
     ] = field(default_factory=list)

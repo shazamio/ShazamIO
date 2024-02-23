@@ -1,13 +1,18 @@
+from typing import Any, Dict
+
 from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
-from shazamio.client import HTTPClient
 from shazamio.exceptions import BadCityName, BadCountryName
+from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.misc import ShazamUrl
 from shazamio.schemas.models import *
 from shazamio.typehints import CountryCode
 
 
-class Geo(HTTPClient):
+class GeoService:
+    def __init__(self, client: HTTPClientInterface):
+        self.client = client
+
     async def city_id_from(self, country: Union[CountryCode, str], city: str) -> int:
         """
         Return City ID from country name and city name.
@@ -16,7 +21,7 @@ class Geo(HTTPClient):
             :return: City ID
         """
 
-        data = await self.request("GET", ShazamUrl.CITY_IDS, "text/plain")
+        data = await self.client.request("GET", ShazamUrl.LOCATIONS, "application/json")
         for response_country in data["countries"]:
             if country == response_country["id"]:
                 for response_city in response_country["cities"]:
@@ -24,9 +29,9 @@ class Geo(HTTPClient):
                         return response_city["id"]
         raise BadCityName("City not found, check city name")
 
-    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> list:
+    async def all_cities_from_country(self, country: Union[CountryCode, str]) -> List[str]:
         cities = []
-        data = await self.request("GET", ShazamUrl.CITY_IDS, "text/plain")
+        data = await self.client.request("GET", ShazamUrl.LOCATIONS, "application/json")
         for response_country in data["countries"]:
             if country == response_country["id"]:
                 for city in response_country["cities"]:
@@ -37,7 +42,7 @@ class Geo(HTTPClient):
 
 class Converter:
     @staticmethod
-    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> dict:
+    def data_search(timezone: str, uri: str, samplems: int, timestamp: int) -> Dict[str, Any]:
         return {
             "timezone": timezone,
             "signature": {"uri": uri, "samplems": samplems},
