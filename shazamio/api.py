@@ -39,7 +39,9 @@ class Shazam(Request):
         self.endpoint_country = endpoint_country
 
         self.http_client = http_client or HTTPClient(
-            retry_options=ExponentialRetry(attempts=20, max_timeout=60, statuses={500, 502, 503, 504, 429}),
+            retry_options=ExponentialRetry(
+                attempts=20, max_timeout=60, statuses={500, 502, 503, 504, 429}
+            ),
         )
         self.geo_service = GeoService(self.http_client)
 
