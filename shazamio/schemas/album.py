@@ -38,4 +38,3 @@ class AlbumModel(BaseModel):
     href: str
     attributes: AttributesFullAlbums
     relationships: AlbumRelationships
-
