@@ -455,6 +455,29 @@ class Shazam(Request):
             proxy=proxy,
         )
 
+    async def search_album(
+        self,
+        album_id: int,
+        proxy: Optional[str] = None,
+    ):
+        """
+        Get album info by id
+
+          :param album_id: Album number. Example (203347991)
+          :param proxy: Proxy server
+          :return: dict albums
+        """
+
+        return await self.http_client.request(
+            "GET",
+            ShazamUrl.ARTIST_ALBUM_INFO.format(
+                endpoint_country=self.endpoint_country,
+                album_id=album_id,
+            ),
+            headers=self.headers(),
+            proxy=proxy,
+        )
+
     async def get_youtube_data(
         self,
         link: str,

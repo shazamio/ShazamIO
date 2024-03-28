@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from shazamio.schemas.artist.views.top_music import PlayParams
 from shazamio.schemas.attributes import AttributeName
-from shazamio.schemas.base import BaseDataModel
+from shazamio.schemas.base import BaseAttributesModel
 from shazamio.schemas.photos import ImageModel
 from shazamio.schemas.urls import UrlDTO
 
@@ -41,4 +41,4 @@ class TopSong(BaseModel):
     type: Optional[str] = None
     href: Optional[str] = None
     attributes: Optional[AttributeName] = None
-    data: Optional[List[BaseDataModel[AttributesTopSong]]] = None
+    data: Optional[List[BaseAttributesModel[AttributesTopSong]]] = None

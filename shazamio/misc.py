@@ -56,6 +56,9 @@ class ShazamUrl:
         "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
         "/artists/{artist_id}/albums?limit={limit}&offset={offset}"
     )
+    ARTIST_ALBUM_INFO = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}/albums/{album_id}"
+    )
 
 
 class Request:

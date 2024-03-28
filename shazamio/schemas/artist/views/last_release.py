@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from shazamio.schemas.attributes import AttributeName
-from shazamio.schemas.base import BaseDataModel
+from shazamio.schemas.base import BaseAttributesModel
 from shazamio.schemas.photos import ImageModel
 
 
@@ -39,4 +39,4 @@ class AttributeLastRelease(BaseModel):
 class LastReleaseModel(BaseModel):
     href: Optional[str] = None
     attributes: Optional[AttributeName] = None
-    data: Optional[List[BaseDataModel[AttributeLastRelease]]] = None
+    data: Optional[List[BaseAttributesModel[AttributeLastRelease]]] = None

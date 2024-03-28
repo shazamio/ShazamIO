@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from shazamio.schemas.attributes import AttributeName
-from shazamio.schemas.base import BaseDataModel
+from shazamio.schemas.base import BaseIdTypeHrefAttributesModel
 from shazamio.schemas.photos import ImageModel
 
 
@@ -50,4 +50,4 @@ class AttributesFullAlbums(BaseModel):
 class FullAlbumsModel(BaseModel):
     href: Optional[str] = None
     attributes: Optional[AttributeName] = None
-    data: Optional[List[BaseDataModel[AttributesFullAlbums]]] = None
+    data: List[BaseIdTypeHrefAttributesModel[AttributesFullAlbums]] = Field([])
