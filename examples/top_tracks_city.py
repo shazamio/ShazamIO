@@ -12,9 +12,9 @@ async def main():
     serialized = Serialize.playlists(top_ten_moscow_tracks)
     print(serialized)
 
-    # for element in top_ten_moscow_tracks["data"]:
-    #     serialized = Serialize.playlist(data=element)
-    #     print(serialized)
+    for element in top_ten_moscow_tracks["data"]:
+        serialized = Serialize.playlist(data=element)
+        print(serialized)
 
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
