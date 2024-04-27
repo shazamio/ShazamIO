@@ -32,10 +32,7 @@ class Relationships(BaseModel):
     albums: BaseHrefNextData[List[BaseIdTypeHref]]
 
 
-class Datum(BaseModel):
-    id: str
-    type: str
-    href: str
+class Datum(BaseIdTypeHref):
     attributes: Attributes
     relationships: Relationships
 

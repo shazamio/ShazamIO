@@ -9,31 +9,16 @@ class ShazamUrl:
         "/{uuid_1}/{uuid_2}?sync=true&webv3=true&sampling=true"
         "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
     )
-    TOP_TRACKS_WORLD = (
-        "https://www.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/ip-global-chart?pageSize={limit}&startFrom={offset}"
-    )
     ABOUT_TRACK = (
         "https://www.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
         "/{track_id}?shazamapiversion=v3&video=v3 "
     )
-    TOP_TRACKS_COUNTRY = (
-        "https://www.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/ip-country-chart-{country_code}?pageSize={limit}&startFrom={offset}"
-    )
-    TOP_TRACKS_CITY = (
-        "https://www.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/ip-city-chart-{city_id}?pageSize={limit}&startFrom={offset}"
+    TOP_TRACKS_PLAYLIST = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
+        "/playlists/{playlist_id}/tracks?limit={limit}&offset={offset}&"
+        "l={language}&relate[songs]=artists,music-videos"
     )
     LOCATIONS = "https://www.shazam.com/services/charts/locations"
-    GENRE_WORLD = (
-        "https://www.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/genre-global-chart-{genre}?pageSize={limit}&startFrom={offset}"
-    )
-    GENRE_COUNTRY = (
-        "https://www.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
-        "/genre-country-chart-{country}-{genre}?pageSize={limit}&startFrom={offset}"
-    )
     RELATED_SONGS = (
         "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
         "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
@@ -55,6 +40,9 @@ class ShazamUrl:
     ARTIST_ALBUMS = (
         "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
         "/artists/{artist_id}/albums?limit={limit}&offset={offset}"
+    )
+    ARTIST_ALBUM_INFO = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}/albums/{album_id}"
     )
 
 
