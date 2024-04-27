@@ -9,7 +9,8 @@ from shazamio.utils import get_file_bytes
 
 @pytest_asyncio.fixture(scope="session")
 async def song_bytes():
-    yield await get_file_bytes(file="examples/data/Gloria.ogg")
+    bytes_data = await get_file_bytes(file="examples/data/Gloria.ogg")
+    yield bytes_data
 
 
 @pytest.mark.asyncio
