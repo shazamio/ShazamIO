@@ -4,14 +4,10 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from shazamio.schemas.play_params import PlayParams
 from shazamio.schemas.attributes import AttributeName
 from shazamio.schemas.base import BaseIdTypeHrefAttributesModel
 from shazamio.schemas.photos import ImageModel
-
-
-class PlayParams(BaseModel):
-    id: str
-    kind: str
 
 
 class EditorialArtwork(BaseModel):
@@ -48,6 +44,12 @@ class AttributesFullAlbums(BaseModel):
 
 
 class FullAlbumsModel(BaseModel):
+    href: Optional[str] = None
+    attributes: Optional[AttributeName] = None
+    data: List[BaseIdTypeHrefAttributesModel[AttributesFullAlbums]] = Field([])
+
+
+class SmallAlbumsModel(BaseModel):
     href: Optional[str] = None
     attributes: Optional[AttributeName] = None
     data: List[BaseIdTypeHrefAttributesModel[AttributesFullAlbums]] = Field([])

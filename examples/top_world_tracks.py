@@ -5,9 +5,11 @@ from shazamio import Shazam, Serialize
 async def main():
     shazam = Shazam()
     top_world_tracks = await shazam.top_world_tracks(limit=10)
-    print(top_world_tracks)
-    for track in top_world_tracks["tracks"]:
-        serialized = Serialize.track(track)
+    serialized = Serialize.playlists(top_world_tracks)
+    print(serialized)
+
+    for playlist in top_world_tracks["data"]:
+        serialized = Serialize.playlist(data=playlist)
         print(serialized)
 
 

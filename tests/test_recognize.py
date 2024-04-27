@@ -9,25 +9,23 @@ from shazamio.utils import get_file_bytes
 
 @pytest_asyncio.fixture(scope="session")
 async def song_bytes():
-    yield await get_file_bytes(file="examples/data/dora.ogg")
+    yield await get_file_bytes(file="examples/data/Gloria.ogg")
 
 
 @pytest.mark.asyncio
 async def test_recognize_song_file():
     shazam = Shazam()
-    out = await shazam.recognize(data="examples/data/dora.ogg")
-
+    out = await shazam.recognize(data="examples/data/Gloria.ogg")
     assert out.get("matches") != []
-    assert out["track"]["key"] == "549679333"
+    assert out["track"]["key"] == "53982678"
 
 
 @pytest.mark.asyncio
 async def test_recognize_song_bytes(song_bytes: bytes):
     shazam = Shazam()
     out = await shazam.recognize(data=song_bytes)
-
     assert out.get("matches") != []
-    assert out["track"]["key"] == "549679333"
+    assert out["track"]["key"] == "53982678"
 
 
 @pytest.mark.asyncio

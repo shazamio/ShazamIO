@@ -7,6 +7,7 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic import Field
 
+from shazamio.schemas.base import BaseIdTypeHref
 from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
 from shazamio.schemas.artist.views.last_release import LastReleaseModel
 from shazamio.schemas.artist.views.simular_artists import SimularArtist
@@ -63,16 +64,10 @@ class ArtistAvatar:
         return cls.url.format(w=width, h=height)
 
 
-class AlbumRelationshipElement(BaseModel):
-    id: str
-    type: str
-    href: str
-
-
 class AlbumRelationship(BaseModel):
     href: str
     next: Optional[str] = None
-    data: List[AlbumRelationshipElement]
+    data: List[BaseIdTypeHref]
 
 
 class ArtistRelationships(BaseModel):

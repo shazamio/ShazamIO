@@ -1,25 +1,25 @@
-from enum import IntEnum
+from enum import IntEnum, Enum
 
 
-class GenreMusic(IntEnum):
-    POP = 1
-    HIP_HOP_RAP = 2
-    DANCE = 3
-    ELECTRONIC = 4
-    RNB_SOUL = 5
-    ALTERNATIVE = 6
-    ROCK = 7
-    LATIN = 8
-    FILM_TV_STAGE = 9
-    COUNTRY = 10
-    AFRO_BEATS = 11
-    WORLDWIDE = 12
-    REGGAE_DANCE_HALL = 13
-    HOUSE = 14
-    K_POP = 15
-    FRENCH_POP = 16
-    SINGER_SONGWRITER = 17
-    REGIONAL_MEXICANO = 18
+class GenreMusic(Enum):
+    POP = "pop"
+    HIP_HOP_RAP = "hip-hop-rap"
+    DANCE = "dance"
+    ELECTRONIC = "electronic"
+    RNB_SOUL = "randb-soul"
+    ALTERNATIVE = "alternative"
+    ROCK = "rock"
+    LATIN = "latin"
+    FILM_TV_STAGE = "film-tv-and-stage"
+    COUNTRY = "country"
+    AFRO_BEATS = "afrobeats"
+    WORLDWIDE = "worldwide"
+    REGGAE_DANCE_HALL = "reggae-dancehall"
+    HOUSE = "house"
+    K_POP = "k-pop"
+    FRENCH_POP = "french-pop"
+    SINGER_SONGWRITER = "singer-songwriter"
+    REGIONAL_MEXICANO = "regional-mexicano"
 
 
 class SampleRate(IntEnum):

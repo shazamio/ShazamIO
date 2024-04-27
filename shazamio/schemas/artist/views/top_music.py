@@ -4,14 +4,10 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
+from shazamio.schemas.play_params import PlayParams
 from shazamio.schemas.attributes import AttributeName
 from shazamio.schemas.base import BaseAttributesModel
 from shazamio.schemas.photos import ImageModel
-
-
-class PlayParams(BaseModel):
-    id: str
-    kind: str
 
 
 class Preview(BaseModel):

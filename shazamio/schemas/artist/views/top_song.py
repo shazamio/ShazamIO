@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from shazamio.schemas.artist.views.top_music import PlayParams
 from shazamio.schemas.attributes import AttributeName
-from shazamio.schemas.base import BaseAttributesModel
+from shazamio.schemas.base import BaseAttributesModel, BaseIdTypeHref
 from shazamio.schemas.photos import ImageModel
 from shazamio.schemas.urls import UrlDTO
 
@@ -36,9 +36,6 @@ class AttributesTopSong(BaseModel):
     content_rating: Optional[str] = Field(None, alias="contentRating")
 
 
-class TopSong(BaseModel):
-    id: Optional[str] = None
-    type: Optional[str] = None
-    href: Optional[str] = None
+class TopSong(BaseIdTypeHref):
     attributes: Optional[AttributeName] = None
     data: Optional[List[BaseAttributesModel[AttributesTopSong]]] = None
