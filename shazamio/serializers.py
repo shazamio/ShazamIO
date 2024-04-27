@@ -11,12 +11,21 @@ from shazamio.schemas.models import ResponseTrack
 from shazamio.schemas.models import TrackInfo
 from shazamio.schemas.models import YoutubeData
 from shazamio.schemas.album import AlbumModel
+from shazamio.schemas.playlist.playlist import PlayList
 
 
 class Serialize:
     @classmethod
     def track(cls, data):
         return FACTORY_TRACK.load(data, TrackInfo)
+
+    @classmethod
+    def playlist(cls, data) -> PlayList:
+        return PlayList.parse_obj(data)
+
+    @classmethod
+    def playlists(cls, data) -> List[PlayList]:
+        return [cls.playlist(pl) for pl in data.get("data", [])]
 
     @classmethod
     def youtube(cls, data):

@@ -32,3 +32,7 @@ class BaseDataModel(GenericModel, BaseModel, Generic[T]):
 class BaseHrefNextData(GenericModel, BaseHref, Generic[T]):
     next: Optional[str] = None
     data: T
+
+
+class BaseHrefData(GenericModel, BaseHref, Generic[T]):
+    data: T

@@ -1,7 +1,5 @@
-class CountryCode:
+class CountryCode(str):
     """ISO 3166-3 alpha-2 code. Example: RU,NL,UA"""
-
-    pass
 
 
 class ShazamResponse:

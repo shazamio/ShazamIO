@@ -12,9 +12,6 @@ class TrackInfoDTO(AttributesTopSong):
 
 
 class TrackInfoWithHref(BaseIdTypeHref):
-    id: str
-    type: str
-    href: str
     attributes: TrackInfoDTO
 
 
@@ -32,9 +29,6 @@ class AlbumRelationships(BaseModel):
     tracks: TrackModel
 
 
-class AlbumModel(BaseModel):
-    id: str
-    type: str
-    href: str
+class AlbumModel(BaseIdTypeHref):
     attributes: AttributesFullAlbums
     relationships: AlbumRelationships

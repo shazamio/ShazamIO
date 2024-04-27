@@ -64,9 +64,12 @@ class Shazam(Request):
             :param proxy: Proxy server
             :return: dict tracks
         """
+
+        top_playlist_id = await self.geo_service.get_top()
         return await self.http_client.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_WORLD.format(
+            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
+                playlist_id=top_playlist_id,
                 language=self.language,
                 endpoint_country=self.endpoint_country,
                 limit=limit,
@@ -135,7 +138,7 @@ class Shazam(Request):
 
     async def top_country_tracks(
         self,
-        country_code: Union[CountryCode, str],
+        country_code: str,
         limit: int = 200,
         offset: int = 0,
         proxy: Optional[str] = None,
@@ -153,9 +156,14 @@ class Shazam(Request):
             :param proxy: Proxy server
             :return: dict songs
         """
+        country_playlist_id = await self.geo_service.get_country_playlist(
+            country=CountryCode(country_code),
+        )
+
         return await self.http_client.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_COUNTRY.format(
+            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
+                playlist_id=country_playlist_id,
                 language=self.language,
                 endpoint_country=self.endpoint_country,
                 country_code=country_code,
@@ -168,7 +176,7 @@ class Shazam(Request):
 
     async def top_city_tracks(
         self,
-        country_code: Union[CountryCode, str],
+        country_code: str,
         city_name: str,
         limit: int = 200,
         offset: int = 0,
@@ -190,15 +198,20 @@ class Shazam(Request):
 
             :return: dict songs
         """
-        city_id = await self.geo_service.city_id_from(country=country_code, city=city_name)
+        city_playlist_id = await self.geo_service.get_city_playlist(
+            country=CountryCode(country_code),
+            city=city_name,
+        )
+
         return await self.http_client.request(
             "GET",
-            ShazamUrl.TOP_TRACKS_CITY.format(
+            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
+                playlist_id=city_playlist_id,
                 language=self.language,
                 endpoint_country=self.endpoint_country,
+                country_code=country_code,
                 limit=limit,
                 offset=offset,
-                city_id=city_id,
             ),
             headers=self.headers(),
             proxy=proxy,
@@ -206,7 +219,7 @@ class Shazam(Request):
 
     async def top_world_genre_tracks(
         self,
-        genre: Union[GenreMusic, int],
+        genre: Union[GenreMusic, str],
         limit: int = 100,
         offset: int = 0,
         proxy: Optional[str] = None,
@@ -215,14 +228,7 @@ class Shazam(Request):
         Get world tracks by certain genre
         https://www.shazam.com/charts/genre/world/rock
 
-            :param genre: Genre name or ID:
-                POP = 1, HIP_HOP_RAP = 2, DANCE = 3, ELECTRONIC = 4, RNB_SOUL = 5, ALTERNATIVE =
-                6, ROCK = 7
-                LATIN = 8, FILM_TV_STAGE = 9, COUNTRY = 10, AFRO_BEATS = 11, WORLDWIDE = 12,
-                REGGAE_DANCE_HALL = 13
-                HOUSE = 14, K_POP = 15, FRENCH_POP = 16, SINGER_SONGWRITER = 17,
-                REGIONAL_MEXICANO = 18
-
+            :param genre: Genre urlName from https://www.shazam.com/services/charts/locations
             :param limit: Determines how many songs the maximum can be in the request.
                     Example: If 5 is specified, the query will return no more than 5 songs.
             :param offset: A parameter that determines with which song to display the request.
@@ -231,14 +237,19 @@ class Shazam(Request):
             :param proxy: Proxy server
             :return: dict songs
         """
+
+        if isinstance(genre, str):
+            genre = GenreMusic(genre)
+
+        genre_playlist_id = await self.geo_service.get_genre(genre=genre)
         return await self.http_client.request(
             "GET",
-            ShazamUrl.GENRE_WORLD.format(
+            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
+                playlist_id=genre_playlist_id,
                 language=self.language,
                 endpoint_country=self.endpoint_country,
                 limit=limit,
                 offset=offset,
-                genre=genre,
             ),
             headers=self.headers(),
             proxy=proxy,
@@ -247,7 +258,7 @@ class Shazam(Request):
     async def top_country_genre_tracks(
         self,
         country_code: str,
-        genre: Union[GenreMusic, int],
+        genre: Union[GenreMusic, str],
         limit: int = 200,
         offset: int = 0,
         proxy: Optional[str] = None,
@@ -271,15 +282,23 @@ class Shazam(Request):
             :param proxy: Proxy server
             :return: dict songs
         """
+        if isinstance(genre, str):
+            genre = GenreMusic(genre)
+
+        genre_playlist_id = await self.geo_service.get_genre_from_country(
+            country=CountryCode(country_code),
+            genre=genre,
+        )
+
         return await self.http_client.request(
             "GET",
-            ShazamUrl.GENRE_COUNTRY.format(
+            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
+                playlist_id=genre_playlist_id,
                 language=self.language,
                 endpoint_country=self.endpoint_country,
+                country_code=country_code,
                 limit=limit,
                 offset=offset,
-                country=country_code,
-                genre=genre,
             ),
             headers=self.headers(),
             proxy=proxy,
@@ -543,7 +562,7 @@ class Shazam(Request):
 
     async def recognize(
         self,
-        data: Union[str, pathlib.Path, bytes, bytearray],
+        data: Union[str, bytes, bytearray],
         proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
