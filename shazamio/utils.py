@@ -1,14 +1,10 @@
 import pathlib
 from enum import Enum
 from io import BytesIO
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Dict, List, Optional, Union
 
 import aiofiles
-import aiohttp
-from aiohttp import ContentTypeError
+from aiohttp import ContentTypeError, ClientResponse
 from pydub import AudioSegment
 
 from shazamio.exceptions import FailedDecodeJson
@@ -18,7 +14,7 @@ SongT = Union[str, pathlib.Path, bytes, bytearray]
 FileT = Union[str, pathlib.Path]
 
 
-async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "application/json"):
+async def validate_json(resp: ClientResponse, content_type: str = "application/json"):
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
@@ -44,8 +40,8 @@ async def get_song(data: SongT) -> Union[AudioSegment]:
 
 class QueryBuilder:
     def __init__(
-        self,
-        source: List[Union[str, Enum]],
+            self,
+            source: List[Union[str, Enum]],
     ):
         self.source = source
 
@@ -55,8 +51,8 @@ class QueryBuilder:
 
 class ArtistQueryGenerator:
     def __init__(
-        self,
-        source: Optional[ArtistQuery] = None,
+            self,
+            source: Optional[ArtistQuery] = None,
     ):
         self.source = source
 

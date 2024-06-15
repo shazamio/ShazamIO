@@ -1,21 +1,19 @@
-from dataclasses import dataclass
-from dataclasses import field
-from typing import List
-from typing import Optional
-from typing import Union
+from dataclasses import dataclass, field
+from typing import List, Optional, Union
 
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from shazamio.schemas.base import BaseIdTypeHref
 from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
 from shazamio.schemas.artist.views.last_release import LastReleaseModel
 from shazamio.schemas.artist.views.simular_artists import SimularArtist
 from shazamio.schemas.artist.views.top_music import TopMusicVideosView
 from shazamio.schemas.artist.views.top_song import TopSong
 from shazamio.schemas.attributes import ArtistAttribute
-from shazamio.schemas.enums import ArtistExtend
-from shazamio.schemas.enums import ArtistView
+from shazamio.schemas.base import BaseIdTypeHref
+from shazamio.schemas.enums import (
+    ArtistExtend,
+    ArtistView,
+)
 from shazamio.schemas.errors import ErrorModel
 
 

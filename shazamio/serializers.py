@@ -1,16 +1,19 @@
 from typing import Union, List
 
-from shazamio.schemas.base import BaseDataModel
-from shazamio.factory_misc import FACTORY_ARTIST
-from shazamio.factory_misc import FACTORY_TRACK
-from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
-from shazamio.schemas.artists import ArtistInfo
-from shazamio.schemas.artists import ArtistResponse
-from shazamio.schemas.artists import ArtistV2
-from shazamio.schemas.models import ResponseTrack
-from shazamio.schemas.models import TrackInfo
-from shazamio.schemas.models import YoutubeData
+from shazamio.factory_misc import FACTORY_ARTIST, FACTORY_TRACK
 from shazamio.schemas.album import AlbumModel
+from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
+from shazamio.schemas.artists import (
+    ArtistInfo,
+    ArtistResponse,
+    ArtistV2,
+)
+from shazamio.schemas.base import BaseDataModel
+from shazamio.schemas.models import (
+    ResponseTrack,
+    TrackInfo,
+    YoutubeData,
+)
 from shazamio.schemas.playlist.playlist import PlayList
 
 

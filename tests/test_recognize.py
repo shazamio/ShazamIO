@@ -1,7 +1,8 @@
+from io import BytesIO
+
 import pytest
 import pytest_asyncio
 from pydub import AudioSegment
-from io import BytesIO
 
 from shazamio import Shazam
 from shazamio.utils import get_file_bytes

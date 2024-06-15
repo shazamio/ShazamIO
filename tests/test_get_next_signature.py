@@ -1,13 +1,17 @@
+import random
+
+import pytest
+
 from shazamio.algorithm import SignatureGenerator
 from shazamio.signature import DecodedMessage
-import random
-import pytest
 
 
 @pytest.fixture
 def signature_instance():
     instance = SignatureGenerator()
-    instance.input_pending_processing = [random.randint(-32768, 32767) for _ in range(128 * 2)]
+    instance.input_pending_processing = [
+        random.randint(-32768, 32767) for _ in range(128 * 2)
+    ]
     return instance
 
 
