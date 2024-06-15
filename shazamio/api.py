@@ -1,8 +1,7 @@
 import pathlib
 import time
-import uuid
-from typing import Dict, Any, Union, List
-from typing import Optional
+from uuid import uuid4
+from typing import Dict, Any, Union, List, Optional
 
 from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
@@ -27,10 +26,10 @@ class Shazam(Request):
     asyncio and aiohttp."""
 
     def __init__(
-        self,
-        language: str = "en-US",
-        endpoint_country: str = "GB",
-        http_client: Optional[HTTPClientInterface] = None,
+            self,
+            language: str = "en-US",
+            endpoint_country: str = "GB",
+            http_client: Optional[HTTPClientInterface] = None,
     ):
         super().__init__(language=language)
 
@@ -48,10 +47,10 @@ class Shazam(Request):
         self.geo_service = GeoService(self.http_client)
 
     async def top_world_tracks(
-        self,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            limit: int = 200,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Search top world tracks
@@ -80,10 +79,10 @@ class Shazam(Request):
         )
 
     async def artist_about(
-        self,
-        artist_id: int,
-        query: Optional[ArtistQuery] = None,
-        proxy: Optional[str] = None,
+            self,
+            artist_id: int,
+            query: Optional[ArtistQuery] = None,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Retrieving information from an artist profile
@@ -113,9 +112,9 @@ class Shazam(Request):
         )
 
     async def track_about(
-        self,
-        track_id: int,
-        proxy: Optional[str] = None,
+            self,
+            track_id: int,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Get track information
@@ -137,11 +136,11 @@ class Shazam(Request):
         )
 
     async def top_country_tracks(
-        self,
-        country_code: str,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            country_code: str,
+            limit: int = 200,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Get the best tracks by country code
@@ -175,12 +174,12 @@ class Shazam(Request):
         )
 
     async def top_city_tracks(
-        self,
-        country_code: str,
-        city_name: str,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            country_code: str,
+            city_name: str,
+            limit: int = 200,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Retrieving information from an artist profile
@@ -218,11 +217,11 @@ class Shazam(Request):
         )
 
     async def top_world_genre_tracks(
-        self,
-        genre: Union[GenreMusic, str],
-        limit: int = 100,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            genre: Union[GenreMusic, str],
+            limit: int = 100,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Get world tracks by certain genre
@@ -256,12 +255,12 @@ class Shazam(Request):
         )
 
     async def top_country_genre_tracks(
-        self,
-        country_code: str,
-        genre: Union[GenreMusic, str],
-        limit: int = 200,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            country_code: str,
+            genre: Union[GenreMusic, str],
+            limit: int = 200,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         The best tracks by a genre in the country
@@ -305,11 +304,11 @@ class Shazam(Request):
         )
 
     async def related_tracks(
-        self,
-        track_id: int,
-        limit: int = 20,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            track_id: int,
+            limit: int = 20,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Similar songs based song id
@@ -338,11 +337,11 @@ class Shazam(Request):
         )
 
     async def search_artist(
-        self,
-        query: str,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            query: str,
+            limit: int = 10,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Search all artists by prefix or fullname
@@ -369,11 +368,11 @@ class Shazam(Request):
         )
 
     async def search_track(
-        self,
-        query: str,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            query: str,
+            limit: int = 10,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Search all tracks by prefix
@@ -400,9 +399,9 @@ class Shazam(Request):
         )
 
     async def listening_counter(
-        self,
-        track_id: int,
-        proxy: Optional[str] = None,
+            self,
+            track_id: int,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Returns the total track listener counter.
@@ -423,9 +422,9 @@ class Shazam(Request):
         )
 
     async def listening_counter_many(
-        self,
-        track_ids: List[int],
-        proxy: Optional[str] = None,
+            self,
+            track_ids: List[int],
+            proxy: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Returns the total track listener counter.
@@ -443,11 +442,11 @@ class Shazam(Request):
         )
 
     async def artist_albums(
-        self,
-        artist_id: int,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: Optional[str] = None,
+            self,
+            artist_id: int,
+            limit: int = 10,
+            offset: int = 0,
+            proxy: Optional[str] = None,
     ):
         """
         Get all albums of a specific artist
@@ -475,9 +474,9 @@ class Shazam(Request):
         )
 
     async def search_album(
-        self,
-        album_id: int,
-        proxy: Optional[str] = None,
+            self,
+            album_id: int,
+            proxy: Optional[str] = None,
     ):
         """
         Get album info by id
@@ -498,9 +497,9 @@ class Shazam(Request):
         )
 
     async def get_youtube_data(
-        self,
-        link: str,
-        proxy: Optional[str] = None,
+            self,
+            link: str,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         return await self.http_client.request(
             "GET",
@@ -511,9 +510,9 @@ class Shazam(Request):
 
     @deprecated("Use recognize method instead of recognize_song")
     async def recognize_song(
-        self,
-        data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment],
-        proxy: Optional[str] = None,
+            self,
+            data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment],
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Creating a song signature based on a file and searching for this signature in the shazam
@@ -536,9 +535,9 @@ class Shazam(Request):
         )
 
     async def send_recognize_request(
-        self,
-        sig: DecodedMessage,
-        proxy: Optional[str] = None,
+            self,
+            sig: DecodedMessage,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         data = Converter.data_search(
             Request.TIME_ZONE,
@@ -552,8 +551,8 @@ class Shazam(Request):
                 language=self.language,
                 device=Device.random().value,
                 endpoint_country=self.endpoint_country,
-                uuid_1=str(uuid.uuid4()).upper(),
-                uuid_2=str(uuid.uuid4()).upper(),
+                uuid_1=str(uuid4()).upper(),
+                uuid_2=str(uuid4()).upper(),
             ),
             headers=self.headers(),
             proxy=proxy,
@@ -561,9 +560,9 @@ class Shazam(Request):
         )
 
     async def recognize(
-        self,
-        data: Union[str, bytes, bytearray],
-        proxy: Optional[str] = None,
+            self,
+            data: Union[str, bytes, bytearray],
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         All logic and mathematics are transferred to RUST lang.
@@ -584,9 +583,9 @@ class Shazam(Request):
         return await self.send_recognize_request_v2(sig=signature, proxy=proxy)
 
     async def send_recognize_request_v2(
-        self,
-        sig: Signature,
-        proxy: Optional[str] = None,
+            self,
+            sig: Signature,
+            proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         data = Converter.data_search(
             Request.TIME_ZONE,
@@ -600,8 +599,8 @@ class Shazam(Request):
                 language=self.language,
                 device=Device.random().value,
                 endpoint_country=self.endpoint_country,
-                uuid_1=str(uuid.uuid4()).upper(),
-                uuid_2=str(uuid.uuid4()).upper(),
+                uuid_1=str(uuid4()).upper(),
+                uuid_2=str(uuid4()).upper(),
             ),
             headers=self.headers(),
             proxy=proxy,

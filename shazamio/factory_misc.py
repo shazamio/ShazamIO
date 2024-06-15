@@ -1,8 +1,7 @@
 from dataclass_factory import Factory
 
 from shazamio.factory import FactorySchemas
-from shazamio.schemas.artists import ArtistInfo
-from shazamio.schemas.artists import ArtistV3
+from shazamio.schemas.artists import ArtistInfo, ArtistV3
 from shazamio.schemas.attributes import ArtistAttribute
 from shazamio.schemas.models import (
     SongSection,
@@ -13,10 +12,11 @@ from shazamio.schemas.models import (
     ArtistSection,
     MatchModel,
 )
-from shazamio.schemas.models import TrackInfo
-from shazamio.schemas.models import YoutubeData
-from shazamio.schemas.models import ResponseTrack
-
+from shazamio.schemas.models import (
+    TrackInfo,
+    YoutubeData,
+    ResponseTrack,
+)
 
 FACTORY_TRACK = Factory(
     schemas={

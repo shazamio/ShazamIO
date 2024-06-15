@@ -1,11 +1,8 @@
-from dataclasses import dataclass
-from dataclasses import field
-from typing import List
-from typing import Optional
-from typing import Union
-from urllib.parse import urlencode
-from urllib.parse import urlparse
-from urllib.parse import urlunparse
+from dataclasses import dataclass, field
+
+from typing import List, Optional, Union
+from urllib.parse import urlencode, urlparse, urlunparse
+
 from uuid import UUID
 
 
