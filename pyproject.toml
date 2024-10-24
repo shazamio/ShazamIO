@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "shazamio"
-version = "0.6.0"
+version = "0.7.0"
 description = "Is a asynchronous framework from reverse engineered Shazam API written in Python 3.8+ with asyncio and aiohttp."
 authors = ["dotX12"]
 license = "MIT License"
@@ -21,7 +21,6 @@ pydub = "^0.25.1"
 dataclass-factory = "2.16"
 aiofiles = "23.2.1"
 anyio = "4.3.0"
-pydantic = "^1.10.2"
 shazamio-core = "^1.0.7"
 aiohttp-retry = "^2.8.3"
 
