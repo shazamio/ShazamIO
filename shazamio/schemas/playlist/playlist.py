@@ -29,7 +29,7 @@ class PlayListAttributes(BaseModel):
     url: str
     play_params: Optional[PlayParams] = Field(None, alias="playParams")
     disc_number: int = Field(..., alias="discNumber")
-    has_credits: bool = Field(..., alias="hasCredits")
+    has_credits: Optional[bool] = Field(None, alias="hasCredits")
     is_apple_digital_master: bool = Field(..., alias="isAppleDigitalMaster")
     has_lyrics: bool = Field(..., alias="hasLyrics")
     audio_traits: List[str] = Field(..., alias="audioTraits")

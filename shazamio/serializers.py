@@ -21,7 +21,7 @@ class Serialize:
 
     @classmethod
     def playlist(cls, data) -> PlayList:
-        return PlayList.parse_obj(data)
+        return PlayList.model_validate(data)
 
     @classmethod
     def playlists(cls, data) -> List[PlayList]:
@@ -33,11 +33,11 @@ class Serialize:
 
     @classmethod
     def artist_v2(cls, data) -> ArtistResponse:
-        return ArtistResponse.parse_obj(data)
+        return ArtistResponse.model_validate(data)
 
     @classmethod
     def artist_albums(cls, data) -> FullAlbumsModel:
-        return FullAlbumsModel.parse_obj(data)
+        return FullAlbumsModel.model_validate(data)
 
     @classmethod
     def artist(cls, data):
@@ -49,4 +49,4 @@ class Serialize:
 
     @classmethod
     def album_info(cls, data) -> BaseDataModel[List[AlbumModel]]:
-        return BaseDataModel[List[AlbumModel]].parse_obj(data)
+        return BaseDataModel[List[AlbumModel]].model_validate(data)

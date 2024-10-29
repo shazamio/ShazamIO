@@ -16,6 +16,10 @@ class BaseIdTypeHref(BaseHref):
     type: str
 
 
+class BaseHrefNext(BaseHref):
+    next: Optional[str] = None
+
+
 class BaseIdTypeHrefAttributesModel(BaseIdTypeHref, Generic[T]):
     attributes: T
 
@@ -28,8 +32,7 @@ class BaseDataModel(BaseModel, Generic[T]):
     data: T
 
 
-class BaseHrefNextData(BaseHref, Generic[T]):
-    next: Optional[str] = None
+class BaseHrefNextData(BaseHrefNext, Generic[T]):
     data: T
 
 
