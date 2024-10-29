@@ -3,7 +3,6 @@ from typing import Optional
 from typing import TypeVar
 
 from pydantic import BaseModel
-from pydantic.generics import GenericModel
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -17,22 +16,25 @@ class BaseIdTypeHref(BaseHref):
     type: str
 
 
-class BaseIdTypeHrefAttributesModel(GenericModel, BaseIdTypeHref, Generic[T]):
-    attributes: T
-
-
-class BaseAttributesModel(GenericModel, BaseModel, Generic[T]):
-    attributes: T
-
-
-class BaseDataModel(GenericModel, BaseModel, Generic[T]):
-    data: T
-
-
-class BaseHrefNextData(GenericModel, BaseHref, Generic[T]):
+class BaseHrefNext(BaseHref):
     next: Optional[str] = None
+
+
+class BaseIdTypeHrefAttributesModel(BaseIdTypeHref, Generic[T]):
+    attributes: T
+
+
+class BaseAttributesModel(BaseModel, Generic[T]):
+    attributes: T
+
+
+class BaseDataModel(BaseModel, Generic[T]):
     data: T
 
 
-class BaseHrefData(GenericModel, BaseHref, Generic[T]):
+class BaseHrefNextData(BaseHrefNext, Generic[T]):
+    data: T
+
+
+class BaseHrefData(BaseHref, Generic[T]):
     data: T
