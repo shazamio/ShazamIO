@@ -24,7 +24,7 @@ from .utils import get_song
 
 class Shazam(Request):
     """
-    Is asynchronous framework for reverse engineered Shazam API written in Python 3.9+ with
+    Is asynchronous framework for reverse engineered Shazam API written in Python 3.10+ with
     asyncio and aiohttp.
     """
 
