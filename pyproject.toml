@@ -25,15 +25,14 @@ aiohttp-retry = "^2.8.3"
 pydantic = "2.9.2"
 shazamio-core = "1.1.2"
 
-[tool.poetry.dev-dependencies]
+[poetry.group.dev.dependencies]
 black = {version = "^24.2.0", allow-prereleases = true}
 pytest = "8.1.2"
 pytest-asyncio = "^0.23.6"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "wheel>=0.36,<1.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.pytest.ini_options]
 addopts = "-scoped"
