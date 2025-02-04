@@ -42,7 +42,7 @@ jobs:
         id: setup-ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v1
       - name: Install libasound2-dev
-        run: sudo apt-get install -y libasound2-dev build-essential libudev-dev
+        run: sudo apt-get install -y libasound2-dev build-essential
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
