@@ -23,7 +23,7 @@ aiofiles = "23.2.1"
 anyio = "4.3.0"
 aiohttp-retry = "^2.8.3"
 pydantic = "2.9.2"
-shazamio-core = "1.1.1"
+shazamio-core = "1.1.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^24.2.0", allow-prereleases = true}
