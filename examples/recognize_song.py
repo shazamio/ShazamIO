@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiohttp_retry import ExponentialRetry
-from shazamio import Shazam, Serialize, HTTPClient
+from shazamio import Shazam, Serialize, HTTPClient, SearchParams
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -19,15 +19,14 @@ async def main():
                 attempts=12, max_timeout=204.8, statuses={500, 502, 503, 504, 429}
             ),
         ),
+        segment_duration_seconds=10,
     )
 
-    # pass path (deprecated)
-    # old_version = await shazam.recognize_song(data="data/dora.ogg")  # deprecated
-    # serialized_old = Serialize.full_track(old_version)
-    # print(serialized_old)
-
     # pass path
-    new_version_path = await shazam.recognize("data/Gloria.ogg")
+    new_version_path = await shazam.recognize(
+        "data/Gloria.ogg",
+        options=SearchParams(segment_duration_seconds=5),
+    )
     serialized_new_path = Serialize.full_track(new_version_path)
     print(serialized_new_path)
 
