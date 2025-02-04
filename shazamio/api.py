@@ -6,7 +6,7 @@ from typing import Optional
 
 from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
-from shazamio_core import Recognizer, Signature
+from shazamio_core import Recognizer, Signature, SearchParams
 
 from .client import HTTPClient
 from .converter import Converter, GeoService
@@ -23,18 +23,23 @@ from .utils import get_song
 
 
 class Shazam(Request):
-    """Is asynchronous framework for reverse engineered Shazam API written in Python 3.7 with
-    asyncio and aiohttp."""
+    """
+    Is asynchronous framework for reverse engineered Shazam API written in Python 3.9+ with
+    asyncio and aiohttp.
+    """
 
     def __init__(
         self,
         language: str = "en-US",
         endpoint_country: str = "GB",
         http_client: Optional[HTTPClientInterface] = None,
+        segment_duration_seconds: int = 10,
     ):
         super().__init__(language=language)
 
-        self.core_recognizer = Recognizer()
+        self.core_recognizer = Recognizer(
+            segment_duration_seconds=segment_duration_seconds,
+        )
         self.language = language
         self.endpoint_country = endpoint_country
 
@@ -564,6 +569,7 @@ class Shazam(Request):
         self,
         data: Union[str, bytes, bytearray],
         proxy: Optional[str] = None,
+        options: Optional[SearchParams] = None,
     ) -> Dict[str, Any]:
         """
         All logic and mathematics are transferred to RUST lang.
@@ -572,12 +578,13 @@ class Shazam(Request):
         database.
             :param data: Path to song file or bytes
             :param proxy: Proxy server
+            :param options: Search parameters
             :return: Dictionary with information about the found song
         """
         if isinstance(data, (str, pathlib.Path)):
-            signature = await self.core_recognizer.recognize_path(data)
+            signature = await self.core_recognizer.recognize_path(value=data, options=options)
         elif isinstance(data, (bytes, bytearray)):
-            signature = await self.core_recognizer.recognize_bytes(data)
+            signature = await self.core_recognizer.recognize_bytes(value=data, options=options)
         else:
             raise ValueError("Invalid data type")
 
