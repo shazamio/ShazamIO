@@ -12,3 +12,10 @@ class HTTPClientInterface(ABC):
         **kwargs,
     ) -> Union[List[Any], Dict[str, Any]]:
         raise NotImplementedError
+
+    async def request_csv(
+        self,
+        url: str,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        raise NotImplementedError

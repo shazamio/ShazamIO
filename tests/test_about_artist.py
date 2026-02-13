@@ -31,3 +31,13 @@ async def test_about_artist():
     serialized = Serialize.artist_v2(about_artist)
     assert serialized.data[0].attributes.name == "Markul"
     assert "Hip-Hop/Rap" in serialized.data[0].attributes.genre_names
+
+
+@pytest.mark.asyncio
+async def test_about_artist_by_name():
+    shazam = Shazam()
+    about_artist = await shazam.artist_about(artist_name="Markul")
+
+    serialized = Serialize.artist_v2(about_artist)
+    assert serialized.data[0].attributes.name == "Markul"
+    assert "Hip-Hop/Rap" in serialized.data[0].attributes.genre_names

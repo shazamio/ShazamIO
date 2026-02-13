@@ -1,6 +1,9 @@
+import csv
+import io
 import pathlib
 from enum import Enum
 from io import BytesIO
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -23,6 +26,41 @@ async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "appli
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
         raise FailedDecodeJson("Failed to decode json") from e
+
+
+async def validate_csv(resp: aiohttp.ClientResponse) -> Dict[str, Any]:
+    """Parse a Shazam chart CSV response into a dict with a 'tracks' list."""
+    text = await resp.text()
+    reader = csv.reader(io.StringIO(text))
+    rows = list(reader)
+
+    # CSV format:
+    #   Row 0: empty or BOM
+    #   Row 1: date header like "Friday, 13 February 2026 [performance over the past 7 days]"
+    #   Row 2: column headers "Rank,Artist,Title"
+    #   Row 3+: data rows
+    tracks = []
+    data_started = False
+    for row in rows:
+        if not row or len(row) < 3:
+            continue
+        if row[0] == "Rank":
+            data_started = True
+            continue
+        if data_started:
+            try:
+                rank = int(row[0])
+                tracks.append(
+                    {
+                        "rank": rank,
+                        "subtitle": row[1],
+                        "title": row[2],
+                    }
+                )
+            except (ValueError, IndexError):
+                continue
+
+    return {"tracks": tracks}
 
 
 async def get_file_bytes(file: FileT) -> bytes:

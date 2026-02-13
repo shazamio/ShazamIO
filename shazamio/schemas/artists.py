@@ -87,7 +87,7 @@ class ArtistV3(BaseModel):
     type: str
     attributes: ArtistAttribute
     relationships: ArtistRelationships
-    views: ArtistViews
+    views: Optional[ArtistViews] = None
 
 
 class ArtistResponse(BaseModel):

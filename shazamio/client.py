@@ -7,7 +7,7 @@ from aiohttp_retry import RetryClient, RetryOptionsBase
 from shazamio.exceptions import BadMethod, FailedDecodeJson
 from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.loggers import request as request_logger
-from shazamio.utils import validate_json
+from shazamio.utils import validate_csv, validate_json
 
 
 class HTTPClient(HTTPClientInterface):
@@ -61,3 +61,17 @@ class HTTPClient(HTTPClientInterface):
                         raise e
             else:
                 raise BadMethod("Accept only GET/POST")
+
+    async def request_csv(
+        self,
+        url: str,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        """Fetch a CSV endpoint and parse the response into a dict."""
+        async with RetryClient(
+            retry_options=self.retry_options,
+            raise_for_status=False,
+            trace_configs=[self.trace_config],
+        ) as client:
+            async with client.get(url, **kwargs) as resp:
+                return await validate_csv(resp)

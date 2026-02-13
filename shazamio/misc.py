@@ -11,26 +11,25 @@ class ShazamUrl:
     )
     ABOUT_TRACK = (
         "https://www.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
-        "/{track_id}?shazamapiversion=v3&video=v3 "
-    )
-    TOP_TRACKS_PLAYLIST = (
-        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
-        "/playlists/{playlist_id}/tracks?limit={limit}&offset={offset}&"
-        "l={language}&relate[songs]=artists,music-videos"
+        "/{track_id}?shazamapiversion=v3&video=v3"
     )
     LOCATIONS = "https://www.shazam.com/services/charts/locations"
     RELATED_SONGS = (
         "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
         "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
     )
-    SEARCH_ARTIST = (
-        "https://www.shazam.com/services/search/v4/{language}/{endpoint_country}/web"
-        "/search?term={query}&limit={limit}&offset={offset}&types=artists"
+
+    # New amapi search endpoint (replaces old search/v3 and search/v4)
+    SEARCH_AMAPI = (
+        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
+        "/search?term={query}&limit={limit}&offset={offset}&types={types}"
     )
-    SEARCH_MUSIC = (
-        "https://www.shazam.com/services/search/v3/{language}/{endpoint_country}/web"
-        "/search?query={query}&numResults={limit}&offset={offset}&types=songs"
-    )
+
+    # Chart CSV endpoint (replaces broken amapi playlist endpoint)
+    CHART_CSV = "https://www.shazam.com/services/charts/csv/{chart_path}"
+
+    # Deprecated URLs kept for reference (all return 405 or 404 as of 2025)
+    # The amapi proxy for direct resource access has been shut down by Shazam.
     LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
     LISTENING_COUNTER_MANY = "https://www.shazam.com/services/count/v2/web/track"
 
