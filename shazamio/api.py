@@ -596,7 +596,7 @@ class Shazam(Request):
         proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         data = Converter.data_search(
-            Request.TIME_ZONE,
+            sig.timezone,
             sig.signature.uri,
             sig.signature.samples,
             sig.timestamp,
