@@ -5,7 +5,6 @@ from typing import Dict, Any, Union, List
 from typing import Optional
 
 from aiohttp_retry import ExponentialRetry
-from pydub import AudioSegment
 from shazamio_core import Recognizer, Signature, SearchParams
 
 from .client import HTTPClient
@@ -517,7 +516,7 @@ class Shazam(Request):
     @deprecated("Use recognize method instead of recognize_song")
     async def recognize_song(
         self,
-        data: Union[str, pathlib.Path, bytes, bytearray, AudioSegment],
+        data: Union[str, pathlib.Path, bytes, bytearray],
         proxy: Optional[str] = None,
     ) -> Dict[str, Any]:
         """

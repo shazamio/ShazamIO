@@ -9,8 +9,6 @@ from typing import Union
 import aiofiles
 import aiohttp
 from aiohttp import ContentTypeError
-from pydub import AudioSegment
-
 from shazamio.exceptions import FailedDecodeJson
 from shazamio.schemas.artists import ArtistQuery
 
@@ -30,7 +28,12 @@ async def get_file_bytes(file: FileT) -> bytes:
         return await f.read()
 
 
-async def get_song(data: SongT) -> Union[AudioSegment]:
+async def get_song(data: SongT):
+    try:
+        from pydub import AudioSegment
+    except ImportError:
+        raise ImportError("pydub is required for recognize_song. Install it with: pip install pydub")
+
     if isinstance(data, (str, pathlib.Path)):
         song_bytes = await get_file_bytes(file=data)
         return AudioSegment.from_file(BytesIO(song_bytes))

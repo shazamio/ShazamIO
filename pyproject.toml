@@ -17,13 +17,19 @@ include = [
 python = "^3.10"
 numpy = "^2.2.2"
 aiohttp = "^3.8.3"
-pydub = "^0.25.1"
 dataclass-factory = "^2.16"
 aiofiles = "^23.2.1"
 anyio = "^4.3.0"
 aiohttp-retry = "^2.8.3"
 pydantic = "^2.9.2"
 shazamio-core = "1.1.2"
+
+[tool.poetry.extras]
+legacy = ["pydub"]
+
+[tool.poetry.dependencies.pydub]
+version = "^0.25.1"
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = {version = "^24.2.0", allow-prereleases = true}

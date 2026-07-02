@@ -1,7 +1,5 @@
 from typing import Any, Dict
 
-from pydub import AudioSegment
-
 from shazamio.enums import GenreMusic
 from shazamio.algorithm import SignatureGenerator
 from shazamio.exceptions import BadCityName, BadCountryName, BadParseData
@@ -110,7 +108,11 @@ class Converter:
         }
 
     @staticmethod
-    def normalize_audio_data(audio: AudioSegment) -> AudioSegment:
+    def normalize_audio_data(audio):
+        try:
+            from pydub import AudioSegment
+        except ImportError:
+            raise ImportError("pydub is required for recognize_song. Install it with: pip install pydub")
         audio = audio.set_sample_width(2)
         audio = audio.set_frame_rate(16000)
         audio = audio.set_channels(1)
@@ -118,7 +120,7 @@ class Converter:
         return audio
 
     @staticmethod
-    def create_signature_generator(audio: AudioSegment) -> SignatureGenerator:
+    def create_signature_generator(audio) -> SignatureGenerator:
         signature_generator = SignatureGenerator()
         signature_generator.feed_input(audio.get_array_of_samples())
         signature_generator.MAX_TIME_SECONDS = 12
