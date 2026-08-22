@@ -5,6 +5,12 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.14 is missing on purpose: `shazamio-core` 1.1.2 publishes no wheel for
+        # it, so the job would try to build the Rust extension from source.
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
@@ -15,7 +21,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v7
         with:
-          python-version: 3.10.15
+          python-version: ${{ matrix.python-version }}
       #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
