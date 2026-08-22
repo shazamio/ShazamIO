@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Black
-        run: pip install 'black==24.10.0'
+        run: pip install 'black==26.5.1'
       - name: Run black --check .
         id: black-check
         run: black --check .
