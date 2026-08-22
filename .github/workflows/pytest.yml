@@ -5,6 +5,13 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.14 is missing on purpose: `dataclass-factory` cannot build a parser
+        #  for `uuid.UUID | None` there (`TypeError: 'getset_descriptor' object
+        #  is not iterable`), so the suite is red until it is replaced.
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
@@ -15,7 +22,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v7
         with:
-          python-version: 3.10.15
+          python-version: ${{ matrix.python-version }}
       #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
