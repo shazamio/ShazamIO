@@ -22,7 +22,8 @@ async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "appli
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as e:
-        raise FailedDecodeJson("Failed to decode json") from e
+        body = await resp.text()
+        raise FailedDecodeJson(f"Failed to decode json (status={resp.status}): {body[:200]}") from e
 
 
 async def get_file_bytes(file: FileT) -> bytes:
