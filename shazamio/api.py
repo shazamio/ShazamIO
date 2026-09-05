@@ -567,7 +567,7 @@ class Shazam(Request):
 
     async def recognize(
         self,
-        data: Union[str, bytes, bytearray],
+        data: Union[str, pathlib.Path, bytes, bytearray],
         proxy: Optional[str] = None,
         options: Optional[SearchParams] = None,
     ) -> Dict[str, Any]:
