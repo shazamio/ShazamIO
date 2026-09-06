@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # `repository` defaults to the base repository, which does not hold a
+          #  fork's branch, so checkout on a fork pull request died before black
+          #  was ever installed.
+          #  https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/action.yml#L4-L6
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -25,10 +30,15 @@ jobs:
         run: black --check .
         continue-on-error: true
       - name: If needed, commit black changes to the pull request
-        if: steps.black-check.outcome == 'failure'
+        # `GITHUB_TOKEN` is read-only on fork pull requests, so only same-repository
+        #  ones get the fixup commit; fork ones fail the step below instead.
+        if: steps.black-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
           black .
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -am "fixup: Format Python code with Black"
           git push
+      - name: Fail when black reports issues on a fork pull request
+        if: steps.black-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name != github.repository
+        run: exit 1
