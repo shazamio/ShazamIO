@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from dataclasses import field
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Union
 
+from pydantic import AliasPath
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -19,18 +21,23 @@ from shazamio.schemas.enums import ArtistView
 from shazamio.schemas.errors import ErrorModel
 
 
-@dataclass
-class ArtistInfo:
+class ArtistInfo(BaseModel):
     name: str
     verified: Optional[bool]
-    genres: Optional[List[str]] = field(default_factory=list)
+    genres: Optional[List[str]] = Field(
+        default_factory=list,
+        validation_alias=AliasPath("genres", "secondaries"),
+    )
     alias: Optional[str] = None
-    genres_primary: Optional[str] = None
+    genres_primary: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("genres", "primary"),
+    )
     avatar: Optional[Union[dict, str]] = None
-    adam_id: Optional[int] = None
-    url: Optional[str] = ""
+    adam_id: Optional[int] = Field(default=None, validation_alias="adamid")
+    url: Optional[str] = Field(default="", validation_alias="weburl")
 
-    def __post_init__(self):
+    def model_post_init(self, context: Any, /) -> None:
         self.avatar = self.__optional_avatar()
 
     def __optional_avatar(self) -> Optional[str]:
@@ -42,8 +49,7 @@ class ArtistInfo:
             return "".join(self.avatar)
 
 
-@dataclass
-class ArtistV2:
+class ArtistV2(BaseModel):
     artist: ArtistInfo
 
 
@@ -75,11 +81,11 @@ class ArtistRelationships(BaseModel):
 
 
 class ArtistViews(BaseModel):
-    top_music_videos: Optional[TopMusicVideosView] = Field(None, alias="top-music-videos")
-    simular_artists: Optional[SimularArtist] = Field(None, alias="similar-artists")
-    latest_release: Optional[LastReleaseModel] = Field(None, alias="latest-release")
-    full_albums: Optional[FullAlbumsModel] = Field(None, alias="full-albums")
-    top_songs: Optional[TopSong] = Field(None, alias="top-songs")
+    top_music_videos: Optional[TopMusicVideosView] = Field(default=None, alias="top-music-videos")
+    simular_artists: Optional[SimularArtist] = Field(default=None, alias="similar-artists")
+    latest_release: Optional[LastReleaseModel] = Field(default=None, alias="latest-release")
+    full_albums: Optional[FullAlbumsModel] = Field(default=None, alias="full-albums")
+    top_songs: Optional[TopSong] = Field(default=None, alias="top-songs")
 
 
 class ArtistV3(BaseModel):

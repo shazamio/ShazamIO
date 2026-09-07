@@ -9,7 +9,7 @@ async def main():
     serialized = Serialize.track(data=about_track)
 
     print(about_track)  # dict
-    print(serialized)  # serialized from dataclass factory
+    print(serialized)  # pydantic model
 
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
