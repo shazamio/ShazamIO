@@ -138,9 +138,10 @@ class TrackInfo(BaseModel):
     subtitle: str
     artist_id: Optional[str] = Field(default=None, validation_alias=AliasPath("artists", 0, "id"))
     shazam_url: Optional[str] = None
-    # The old loader never populated this field, so no alias yet: it declared
-    #  `init=False`, which `dataclass-factory` skips entirely.
-    photo_url: Optional[str] = None
+    photo_url: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("images", "coverarthq"),
+    )
     spotify_uri_query: Optional[str] = None
     apple_music_url: Optional[str] = Field(
         default=None,
