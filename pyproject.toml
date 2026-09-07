@@ -32,7 +32,6 @@ pydub = "^0.25.1"
 #  `pydub` has not released since 2021, so the shim is ours to declare.
 #  https://docs.python.org/3.13/whatsnew/3.13.html#pep-594-remove-dead-batteries-from-the-standard-library
 audioop-lts = { version = "^0.2.2", python = ">=3.13" }
-dataclass-factory = "^2.16"
 # A caret here excluded 24.x and 25.x, which conflicts with anything else in the
 #  environment that asks for a current `aiofiles`. Only `aiofiles.open` is used.
 aiofiles = ">=23.2.1,<26.0.0"

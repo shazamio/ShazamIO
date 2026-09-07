@@ -394,17 +394,6 @@ files = [
 ]
 
 [[package]]
-name = "dataclass-factory"
-version = "2.16"
-description = "An utility class for creating instances of dataclasses"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "dataclass_factory-2.16-py3-none-any.whl", hash = "sha256:9d01e73d40b8f74051df822f21d8dc8bbf2754b11670cd1c477357e8b21323ed"},
-]
-
-[[package]]
 name = "exceptiongroup"
 version = "1.3.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -1505,4 +1494,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "752f198673c4c0c28c7b86f83a1e1907f3715d5c549a73a423c48a9b0734631e"
+content-hash = "4d2ee992b8f3b63fe2806c2b15a3ad889b4102c45cce7a9384253e9e6597d0aa"
