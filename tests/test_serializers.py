@@ -40,6 +40,36 @@ def test_track_missing_paths_fall_back_to_defaults() -> None:
     }
 
 
+def test_sections_resolve_by_type_discriminator() -> None:
+    track = Serialize.track(
+        {
+            "key": "1",
+            "title": "t",
+            "subtitle": "s",
+            "sections": [
+                {"type": "SONG", "metapages": [], "tabname": "Song", "metadata": []},
+                {"type": "VIDEO", "tabname": "Video", "youtubeurl": "https://youtu.be/x"},
+                # The ARTIST entry is the case the discriminator exists for:
+                #  structurally it also matches `RelatedSection`.
+                {
+                    "type": "ARTIST",
+                    "id": "10194644",
+                    "name": "Steve Jablonsky",
+                    "verified": False,
+                    "url": "https://related-lookalike.example",
+                    "actions": [{"type": "artist", "id": "10194644"}],
+                    "tabname": "Artist",
+                    "toptracks": {"url": "https://tracks.example/top"},
+                },
+                {"type": "RELATED", "url": "https://related.example", "tabname": "Related"},
+            ],
+        }
+    )
+
+    section_types = [type(section).__name__ for section in track.sections]
+    assert section_types == ["SongSection", "VideoSection", "ArtistSection", "RelatedSection"]
+
+
 def test_artist_union_resolves_flat_and_wrapped_payloads() -> None:
     flat: dict[str, Any] = {
         "name": "Steve Jablonsky",

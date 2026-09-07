@@ -1,6 +1,7 @@
 from typing import Annotated
 from typing import Any
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Union
 from urllib.parse import urlencode
@@ -41,7 +42,7 @@ class SongMetadata(BaseModel):
 
 
 class SongSection(BaseModel):
-    type: str
+    type: Literal["SONG"]
     meta_pages: List[SongMetaPages] = Field(validation_alias="metapages")
     tab_name: str = Field(validation_alias="tabname")
     metadata: List[SongMetadata]
@@ -57,7 +58,7 @@ class TopTracksModel(BaseModel):
 
 
 class ArtistSection(BaseModel):
-    type: str
+    type: Literal["ARTIST"]
     id: str
     name: str
     verified: bool
@@ -74,7 +75,7 @@ class BeaconDataLyricsSection(BaseModel):
 
 
 class LyricsSection(BaseModel):
-    type: str
+    type: Literal["LYRICS"]
     text: List[str]
     footer: str
     tab_name: str = Field(validation_alias="tabname")
@@ -84,11 +85,11 @@ class LyricsSection(BaseModel):
 class VideoSection(BaseModel):
     tab_name: str = Field(validation_alias="tabname")
     youtube_url: str = Field(validation_alias="youtubeurl")
-    type: str = "VIDEO"
+    type: Literal["VIDEO"] = "VIDEO"
 
 
 class RelatedSection(BaseModel):
-    type: str
+    type: Literal["RELATED"]
     url: str
     tab_name: str = Field(validation_alias="tabname")
 
@@ -160,8 +161,6 @@ class TrackInfo(BaseModel):
         validation_alias=AliasPath("hub", "providers", 0, "actions", 1, "uri"),
     )
     youtube_link: Optional[str] = None
-    # `left_to_right` keeps the old first-match parsing: an ARTIST section that
-    #  also carries `url` and `tabname` still loads as `RelatedSection`.
     sections: Optional[
         List[
             Annotated[
@@ -172,7 +171,7 @@ class TrackInfo(BaseModel):
                     RelatedSection,
                     ArtistSection,
                 ],
-                Field(union_mode="left_to_right"),
+                Field(discriminator="type"),
             ]
         ]
     ] = Field(default_factory=list)
