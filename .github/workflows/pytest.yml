@@ -45,9 +45,11 @@ jobs:
       #----------------------------------------------
       # install dependencies if cache does not exist
       #----------------------------------------------
+      # `FedericoCarboni/setup-ffmpeg` resolves its download by scraping a
+      #  third-party readme at run time and failed two runs in one day with
+      #  `AssertionError [ERR_ASSERTION]: Failed to read version from readme`.
       - name: Install ffmpeg
-        id: setup-ffmpeg
-        uses: FedericoCarboni/setup-ffmpeg@36c6454b5a2348e7794ba2d82a21506605921e3d # v3
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
