@@ -5,22 +5,29 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.14 is missing on purpose: `dataclass-factory` cannot build a parser
+        #  for `uuid.UUID | None` there (`TypeError: 'getset_descriptor' object
+        #  is not iterable`), so the suite is red until it is replaced.
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: 3.10.15
+          python-version: ${{ matrix.python-version }}
       #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@a783c322200f0519c7926aa6faa857c4e23e9263 # v1.4
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
@@ -31,16 +38,18 @@ jobs:
       #----------------------------------------------
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       #----------------------------------------------
       # install dependencies if cache does not exist
       #----------------------------------------------
+      # `FedericoCarboni/setup-ffmpeg` resolves its download by scraping a
+      #  third-party readme at run time and failed two runs in one day with
+      #  `AssertionError [ERR_ASSERTION]: Failed to read version from readme`.
       - name: Install ffmpeg
-        id: setup-ffmpeg
-        uses: FedericoCarboni/setup-ffmpeg@v1
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'

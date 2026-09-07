@@ -11,20 +11,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # `repository` defaults to the base repository, which does not hold a
           #  fork's branch, so checkout on a fork pull request died before black
           #  was ever installed.
-          #  https://github.com/actions/checkout/blob/11d5960a326750d5838078e36cf38b85af677262/action.yml#L4-L6
+          #  https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml#L4-L6
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.10"
       - name: Install Black
-        run: pip install 'black==24.10.0'
+        run: pip install 'black==26.5.1'
       - name: Run black --check .
         id: black-check
         run: black --check .
