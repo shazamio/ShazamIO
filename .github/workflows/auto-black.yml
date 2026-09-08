@@ -19,26 +19,28 @@ jobs:
           #  https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml#L4-L6
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
         with:
           python-version: "3.10"
-      - name: Install Black
-        run: pip install 'black==26.5.1'
-      - name: Run black --check .
+
+      - name: Check the formatting
         id: black-check
-        run: black --check .
+        run: just lint
         continue-on-error: true
+
       - name: If needed, commit black changes to the pull request
         # `GITHUB_TOKEN` is read-only on fork pull requests, so only same-repository
         #  ones get the fixup commit; fork ones fail the step below instead.
         if: steps.black-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
-          black .
+          just format
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -am "fixup: Format Python code with Black"
           git push
+
       - name: Fail when black reports issues on a fork pull request
         if: steps.black-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name != github.repository
         run: exit 1
