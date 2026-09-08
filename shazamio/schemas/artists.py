@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from dataclasses import field
+from typing import Annotated
 from typing import Any
 from typing import List
 from typing import Optional
+from typing import TypeAlias
 from typing import Union
 
 from pydantic import AliasPath
@@ -51,6 +53,14 @@ class ArtistInfo(BaseModel):
 
 class ArtistV2(BaseModel):
     artist: ArtistInfo
+
+
+# `left_to_right` keeps the old parser's first-match union semantics; the two
+#  shapes share no field a discriminator could read.
+ArtistType: TypeAlias = Annotated[
+    Union[ArtistV2, ArtistInfo],
+    Field(union_mode="left_to_right"),
+]
 
 
 @dataclass
