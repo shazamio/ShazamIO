@@ -66,7 +66,7 @@ async def main():
     serialized = Serialize.artist(about_artist)
 
     print(about_artist)  # dict
-    print(serialized)  # serialized from dataclass factory
+    print(serialized)  # pydantic model
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -94,7 +94,7 @@ async def main():
     serialized = Serialize.track(data=about_track)
 
     print(about_track)  # dict
-    print(serialized)  # serialized from dataclass factory
+    print(serialized)  # pydantic model
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
@@ -258,7 +258,7 @@ async def main():
     # ALL TRACKS DICT
     for track in top_ten_moscow_tracks['tracks']:
         serialized = Serialize.track(data=track)
-        # SERIALIZE FROM DATACLASS FACTORY
+        # PYDANTIC MODEL
         print(serialized)
 
 loop = asyncio.get_event_loop()

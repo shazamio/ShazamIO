@@ -1,6 +1,7 @@
-from dataclasses import dataclass
-from dataclasses import field
+from typing import Annotated
+from typing import Any
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Union
 from urllib.parse import urlencode
@@ -8,9 +9,12 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 from uuid import UUID
 
+from pydantic import AliasPath
+from pydantic import BaseModel
+from pydantic import Field
 
-@dataclass
-class ShareModel:
+
+class ShareModel(BaseModel):
     subject: str
     text: str
     href: str
@@ -20,182 +24,191 @@ class ShareModel:
     snapchat: str
 
 
-@dataclass
-class ActionModel:
+class ActionModel(BaseModel):
     name: str
     type: str
     share: ShareModel
     uri: str
 
 
-@dataclass
-class SongMetaPages:
+class SongMetaPages(BaseModel):
     image: str
     caption: str
 
 
-@dataclass
-class SongMetadata:
+class SongMetadata(BaseModel):
     title: str
     text: str
 
 
-@dataclass
-class SongSection:
-    type: str
-    meta_pages: List[SongMetaPages]
-    tab_name: str
+class SongSection(BaseModel):
+    type: Literal["SONG"]
+    meta_pages: List[SongMetaPages] = Field(validation_alias="metapages")
+    tab_name: str = Field(validation_alias="tabname")
     metadata: List[SongMetadata]
 
 
-@dataclass
-class BaseIdTypeModel:
+class BaseIdTypeModel(BaseModel):
     type: str
     id: str
 
 
-@dataclass
-class TopTracksModel:
+class TopTracksModel(BaseModel):
     url: str
 
 
-@dataclass
-class ArtistSection:
-    type: str
+class ArtistSection(BaseModel):
+    type: Literal["ARTIST"]
     id: str
     name: str
     verified: bool
     actions: List[BaseIdTypeModel]
-    tab_name: str
-    top_tracks: TopTracksModel
+    tab_name: str = Field(validation_alias="tabname")
+    top_tracks: TopTracksModel = Field(validation_alias="toptracks")
 
 
-class BeaconDataLyricsSection:
-    lyrics_id: str
-    provider_name: str
-    common_track_id: str
+# Optional so a partial `beacondata` payload cannot fail the whole track load.
+class BeaconDataLyricsSection(BaseModel):
+    lyrics_id: Optional[str] = Field(default=None, validation_alias="lyricsid")
+    provider_name: Optional[str] = Field(default=None, validation_alias="providername")
+    common_track_id: Optional[str] = Field(default=None, validation_alias="commontrackid")
 
 
-@dataclass
-class LyricsSection:
-    type: str
+class LyricsSection(BaseModel):
+    type: Literal["LYRICS"]
     text: List[str]
     footer: str
-    tab_name: str
-    beacon_data: Optional[BeaconDataLyricsSection]
+    tab_name: str = Field(validation_alias="tabname")
+    beacon_data: Optional[BeaconDataLyricsSection] = Field(validation_alias="beacondata")
 
 
-@dataclass
-class VideoSection:
-    tab_name: str
-    youtube_url: str
-    type: str = "VIDEO"
+class VideoSection(BaseModel):
+    tab_name: str = Field(validation_alias="tabname")
+    youtube_url: str = Field(validation_alias="youtubeurl")
+    type: Literal["VIDEO"] = "VIDEO"
 
 
-@dataclass
-class RelatedSection:
-    type: str
+class RelatedSection(BaseModel):
+    type: Literal["RELATED"]
     url: str
-    tab_name: str
+    tab_name: str = Field(validation_alias="tabname")
 
 
-@dataclass
-class DimensionsModel:
+class DimensionsModel(BaseModel):
     width: int
     height: int
 
 
-@dataclass
-class YoutubeImageModel:
+class YoutubeImageModel(BaseModel):
     dimensions: DimensionsModel
     url: str
 
 
-@dataclass
-class MatchModel:
+class MatchModel(BaseModel):
     id: str
     offset: float
-    time_skew: float
-    frequency_skew: float
-    channel: Optional[str] = field(default=None)
+    time_skew: float = Field(validation_alias="timeskew")
+    frequency_skew: float = Field(validation_alias="frequencyskew")
+    channel: Optional[str] = None
 
 
-@dataclass
-class LocationModel:
+class LocationModel(BaseModel):
     accuracy: float
 
 
-@dataclass
-class YoutubeData:
+class YoutubeData(BaseModel):
     caption: str
     image: YoutubeImageModel
     actions: List[ActionModel]
     uri: Optional[str] = None
 
-    def __post_init__(self):
+    def model_post_init(self, context: Any, /) -> None:
         self.uri = self.__get_youtube_uri()
 
-    def __get_youtube_uri(self):
+    def __get_youtube_uri(self) -> Optional[str]:
         if self.actions:
             for action in self.actions:
                 if action.uri:
                     return action.uri
+        return None
 
 
-@dataclass
-class TrackInfo:
+class TrackInfo(BaseModel):
     key: int
     title: str
     subtitle: str
-    artist_id: Optional[str] = field(default=None)
-    shazam_url: str = None
-    photo_url: Optional[str] = field(init=False, default=None)
+    artist_id: Optional[str] = Field(default=None, validation_alias=AliasPath("artists", 0, "id"))
+    shazam_url: Optional[str] = None
+    photo_url: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("images", "coverarthq"),
+    )
     spotify_uri_query: Optional[str] = None
-    apple_music_url: Optional[str] = None
-    ringtone: Optional[str] = None
-    spotify_url: Optional[str] = field(default=None)
-    spotify_uri: Optional[str] = field(default=None)
+    apple_music_url: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("hub", "options", 0, "actions", 0, "uri"),
+    )
+    ringtone: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("hub", "actions", 1, "uri"),
+    )
+    spotify_url: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("hub", "providers", 0, "actions", 0, "uri"),
+    )
+    spotify_uri: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasPath("hub", "providers", 0, "actions", 1, "uri"),
+    )
     youtube_link: Optional[str] = None
     sections: Optional[
         List[
-            Union[
-                SongSection,
-                VideoSection,
-                LyricsSection,
-                RelatedSection,
-                ArtistSection,
+            Annotated[
+                Union[
+                    SongSection,
+                    VideoSection,
+                    LyricsSection,
+                    RelatedSection,
+                    ArtistSection,
+                ],
+                Field(discriminator="type"),
             ]
         ]
-    ] = field(default_factory=list)
+    ] = Field(default_factory=list)
 
-    def __post_init__(self):
+    def model_post_init(self, context: Any, /) -> None:
         self.shazam_url = f"https://www.shazam.com/track/{self.artist_id}"
         self.apple_music_url = self.__apple_music_url()
         self.spotify_uri_query = self.__short_uri()
         self.youtube_link = self.__youtube_link()
 
-    def __apple_music_url(self):
+    # `urlparse(None)` takes the bytes path, so a payload without `hub.options`
+    #  ends with `apple_music_url = b""`.
+    def __apple_music_url(self) -> Union[str, bytes]:
         url_parse_list = list(urlparse(self.apple_music_url))
         url_parse_list[4] = urlencode({}, doseq=True)
         url_deleted_query = urlunparse(url_parse_list)
         return url_deleted_query
 
-    def __short_uri(self):
+    def __short_uri(self) -> Optional[str]:
         if self.spotify_uri:
             return self.spotify_uri.split("spotify:search:")[1]
 
-    def __youtube_link(self):
-        for i in self.sections:
-            if type(i) is VideoSection:
-                return i.youtube_url
+        return None
+
+    def __youtube_link(self) -> Optional[str]:
+        for section in self.sections:
+            if type(section) is VideoSection:
+                return section.youtube_url
+
+        return None
 
 
-@dataclass
-class ResponseTrack:
-    tag_id: Optional[UUID]
-    retry_ms: Optional[int] = field(default=None)
-    location: Optional[LocationModel] = field(default=None)
-    matches: List[MatchModel] = field(default_factory=list)
-    timestamp: Optional[int] = field(default=None)
-    timezone: Optional[str] = field(default=None)
-    track: Optional[TrackInfo] = field(default=None)
+class ResponseTrack(BaseModel):
+    tag_id: Optional[UUID] = Field(validation_alias="tagid")
+    retry_ms: Optional[int] = Field(default=None, validation_alias="retryms")
+    location: Optional[LocationModel] = None
+    matches: List[MatchModel] = Field(default_factory=list)
+    timestamp: Optional[int] = None
+    timezone: Optional[str] = None
+    track: Optional[TrackInfo] = None
