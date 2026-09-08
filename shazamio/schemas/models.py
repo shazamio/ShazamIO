@@ -3,6 +3,7 @@ from typing import Any
 from typing import List
 from typing import Literal
 from typing import Optional
+from typing import TypeAlias
 from typing import Union
 from urllib.parse import urlencode
 from urllib.parse import urlparse
@@ -94,6 +95,18 @@ class RelatedSection(BaseModel):
     tab_name: str = Field(validation_alias="tabname")
 
 
+TrackSectionType: TypeAlias = Annotated[
+    Union[
+        SongSection,
+        VideoSection,
+        LyricsSection,
+        RelatedSection,
+        ArtistSection,
+    ],
+    Field(discriminator="type"),
+]
+
+
 class DimensionsModel(BaseModel):
     width: int
     height: int
@@ -161,20 +174,7 @@ class TrackInfo(BaseModel):
         validation_alias=AliasPath("hub", "providers", 0, "actions", 1, "uri"),
     )
     youtube_link: Optional[str] = None
-    sections: Optional[
-        List[
-            Annotated[
-                Union[
-                    SongSection,
-                    VideoSection,
-                    LyricsSection,
-                    RelatedSection,
-                    ArtistSection,
-                ],
-                Field(discriminator="type"),
-            ]
-        ]
-    ] = Field(default_factory=list)
+    sections: Optional[List[TrackSectionType]] = Field(default_factory=list)
 
     def model_post_init(self, context: Any, /) -> None:
         self.shazam_url = f"https://www.shazam.com/track/{self.artist_id}"

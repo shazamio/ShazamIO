@@ -1,23 +1,18 @@
-from typing import Annotated, Any, Dict, Final, List, Union
+from typing import Any, Dict, Final, List
 
-from pydantic import Field
 from pydantic import TypeAdapter
 
 from shazamio.schemas.base import BaseDataModel
 from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
-from shazamio.schemas.artists import ArtistInfo
 from shazamio.schemas.artists import ArtistResponse
-from shazamio.schemas.artists import ArtistV2
+from shazamio.schemas.artists import ArtistType
 from shazamio.schemas.models import ResponseTrack
 from shazamio.schemas.models import TrackInfo
 from shazamio.schemas.models import YoutubeData
 from shazamio.schemas.album import AlbumModel
 from shazamio.schemas.playlist.playlist import PlayList
 
-# `left_to_right` keeps the old parser's first-match union semantics.
-ARTIST_ADAPTER: Final = TypeAdapter(
-    Annotated[Union[ArtistV2, ArtistInfo], Field(union_mode="left_to_right")]
-)
+ARTIST_ADAPTER: Final = TypeAdapter(ArtistType)
 
 
 class Serialize:
@@ -46,7 +41,7 @@ class Serialize:
         return FullAlbumsModel.model_validate(data)
 
     @classmethod
-    def artist(cls, data: Dict[str, Any]) -> Union[ArtistV2, ArtistInfo]:
+    def artist(cls, data: Dict[str, Any]) -> ArtistType:
         return ARTIST_ADAPTER.validate_python(data)
 
     @classmethod
