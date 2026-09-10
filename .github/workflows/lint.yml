@@ -2,7 +2,13 @@
 #  code: fixes are the author's to make locally, with `just format`.
 
 name: lint
-on: pull_request
+
+# What the filter costs and when it stops being safe: `.github/workflows/pytest.yml`.
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - LICENSE.txt
 permissions:
   contents: read
 jobs:

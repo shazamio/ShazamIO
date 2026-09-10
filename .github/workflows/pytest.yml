@@ -1,6 +1,14 @@
 name: test
 
-on: pull_request
+# Safe only while `master` requires no status checks: `paths-ignore` skips the
+#  whole workflow, and a required check from a run that never happened stays
+#  pending forever. Move the filter into a gate job's `if:` if that changes.
+#  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - LICENSE.txt
 
 jobs:
   test:
@@ -26,9 +34,6 @@ jobs:
 
       - name: Install dependencies
         run: just install
-
-      - name: Check the formatting
-        run: just lint
 
       - name: Run tests
         run: just test
