@@ -1,0 +1,23 @@
+name: Set up `just`
+description: Install `uv` and the `just` runner.
+
+inputs:
+  python-version:
+    description: Python version for `uv` to pin; empty leaves the choice to `uv`.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      with:
+        python-version: ${{ inputs.python-version }}
+        enable-cache: true
+
+    # No version: upstream promises no release breaks an existing `justfile` and that
+    #  there will never be a `just` 2.0, so a pin could only strand us on a version
+    #  carrying a bug, with nothing to bump it. `just --fmt` is the one carve-out from
+    #  that promise, and no recipe here calls it.
+    #  https://github.com/casey/just/blob/7f4ef81bd6a93faa2b28430912c8e9ab0e3dd29a/README.md#L501
+    - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
