@@ -1,5 +1,6 @@
 from copy import copy
-from typing import List, Optional, Any
+from typing import Any
+
 import numpy as np
 
 from .enums import FrequencyBand
@@ -32,7 +33,7 @@ class SignatureGenerator:
         # Used when storing input that will be processed when requiring to
         # generate a signature:
 
-        self.input_pending_processing: List[int] = []
+        self.input_pending_processing: list[int] = []
         # Signed 16-bits, 16 KHz mono samples to be processed
 
         self.samples_processed: int = 0
@@ -42,15 +43,17 @@ class SignatureGenerator:
 
         self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
 
-        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(
-            buffer_size=256, default_value=[0.0 * 1025]
+        self.fft_outputs: RingBuffer[list[float]] = RingBuffer(
+            buffer_size=256,
+            default_value=[0.0 * 1025],
         )
         # Lists of 1025 floats, premultiplied with a Hanning function before being
         # passed through FFT, computed from
         # the ring buffer every new 128 samples
 
-        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(
-            buffer_size=256, default_value=[0] * 1025
+        self.spread_fft_output: RingBuffer[list[float]] = RingBuffer(
+            buffer_size=256,
+            default_value=[0] * 1025,
         )
 
         # How much data to send to Shazam at once?
@@ -72,7 +75,7 @@ class SignatureGenerator:
         function expects signed 16-bit 16 KHz mono PCM samples.
     """
 
-    def feed_input(self, s16le_mono_samples: List[int]):
+    def feed_input(self, s16le_mono_samples: list[int]) -> None:
         self.input_pending_processing += s16le_mono_samples
 
     """
@@ -84,7 +87,7 @@ class SignatureGenerator:
         we will return None.
     """
 
-    def get_next_signature(self) -> Optional[DecodedMessage]:
+    def get_next_signature(self) -> DecodedMessage | None:
         if len(self.input_pending_processing) - self.samples_processed < 128:
             return None
         while len(self.input_pending_processing) - self.samples_processed >= 128 and (
@@ -96,21 +99,25 @@ class SignatureGenerator:
             < self.MAX_PEAKS
         ):
             self.process_input(
-                self.input_pending_processing[self.samples_processed : self.samples_processed + 128]
+                self.input_pending_processing[
+                    self.samples_processed : self.samples_processed + 128
+                ],
             )
             self.samples_processed += 128
 
         self.ring_buffer_of_samples: RingBuffer[int] = RingBuffer(buffer_size=2048, default_value=0)
-        self.fft_outputs: RingBuffer[List[float]] = RingBuffer(
-            buffer_size=256, default_value=[0.0 * 1025]
+        self.fft_outputs: RingBuffer[list[float]] = RingBuffer(
+            buffer_size=256,
+            default_value=[0.0 * 1025],
         )
-        self.spread_fft_output: RingBuffer[List[float]] = RingBuffer(
-            buffer_size=256, default_value=[0] * 1025
+        self.spread_fft_output: RingBuffer[list[float]] = RingBuffer(
+            buffer_size=256,
+            default_value=[0] * 1025,
         )
 
         return self.next_signature
 
-    def process_input(self, s16le_mono_samples: List[int]):
+    def process_input(self, s16le_mono_samples: list[int]) -> None:
         self.next_signature.number_samples += len(s16le_mono_samples)
         for position_of_chunk in range(0, len(s16le_mono_samples), 128):
             self.do_fft(s16le_mono_samples[position_of_chunk : position_of_chunk + 128])
@@ -125,7 +132,7 @@ class SignatureGenerator:
         self.ring_buffer_of_samples.position %= 2048
         self.ring_buffer_of_samples.num_written += len(batch_of_128_s16le_mono_samples)
 
-        excerpt_from_ring_buffer: list = (
+        excerpt_from_ring_buffer: list[int] = (
             self.ring_buffer_of_samples[self.ring_buffer_of_samples.position :]
             + self.ring_buffer_of_samples[: self.ring_buffer_of_samples.position]
         )
@@ -146,7 +153,7 @@ class SignatureGenerator:
             self.do_peak_recognition()
 
     def do_peak_spreading(self):
-        origin_last_fft: List[float] = self.fft_outputs[self.fft_outputs.position - 1]
+        origin_last_fft: list[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
         temporary_array_1 = np.tile(origin_last_fft, 3).reshape((3, -1))
         temporary_array_1[1] = np.roll(temporary_array_1[1], -1)
@@ -165,7 +172,7 @@ class SignatureGenerator:
                 self.spread_fft_output[i1],
                 self.spread_fft_output[i2],
                 self.spread_fft_output[i3],
-            ]
+            ],
         )
 
         temporary_array_2[1] = np.max(temporary_array_2[:2, :], axis=0)
@@ -178,7 +185,9 @@ class SignatureGenerator:
 
         self.spread_fft_output.append(list(origin_last_fft_np))
 
-    def do_peak_recognition(self):
+    # The branchy shape mirrors the reverse-engineered Shazam algorithm; each
+    #  split point would need a name the original does not have.
+    def do_peak_recognition(self) -> None:  # noqa: C901
         fft_minus_46 = self.fft_outputs[
             (self.fft_outputs.position - 46) % self.fft_outputs.buffer_size
         ]
@@ -269,5 +278,5 @@ class SignatureGenerator:
                                 int(peak_magnitude),
                                 int(corrected_peak_frequency_bin),
                                 16000,
-                            )
+                            ),
                         )

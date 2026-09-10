@@ -1,10 +1,7 @@
 import pathlib
 from enum import Enum
 from io import BytesIO
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import TypeAlias
 
 import aiofiles
 import aiohttp
@@ -14,16 +11,17 @@ from pydub import AudioSegment
 from shazamio.exceptions import FailedDecodeJson
 from shazamio.schemas.artists import ArtistQuery
 
-SongT = Union[str, pathlib.Path, bytes, bytearray]
-FileT = Union[str, pathlib.Path]
+SongT: TypeAlias = str | pathlib.Path | bytes | bytearray
+FileT: TypeAlias = str | pathlib.Path
 
 
 async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "application/json"):
     try:
         return await resp.json(content_type=content_type)
-    except ContentTypeError as e:
+    except ContentTypeError as er:
         body = await resp.text()
-        raise FailedDecodeJson(f"Failed to decode json (status={resp.status}): {body[:200]}") from e
+        msg = f"Failed to decode json (status={resp.status}): {body[:200]}"
+        raise FailedDecodeJson(msg) from er
 
 
 async def get_file_bytes(file: FileT) -> bytes:
@@ -31,7 +29,7 @@ async def get_file_bytes(file: FileT) -> bytes:
         return await f.read()
 
 
-async def get_song(data: SongT) -> Union[AudioSegment]:
+async def get_song(data: SongT) -> AudioSegment:
     if isinstance(data, (str, pathlib.Path)):
         song_bytes = await get_file_bytes(file=data)
         return AudioSegment.from_file(BytesIO(song_bytes))
@@ -42,11 +40,14 @@ async def get_song(data: SongT) -> Union[AudioSegment]:
     if isinstance(data, AudioSegment):
         return data
 
+    msg = f"Unsupported data type: {type(data)}"
+    raise TypeError(msg)
+
 
 class QueryBuilder:
     def __init__(
         self,
-        source: List[Union[str, Enum]],
+        source: list[str | Enum],
     ):
         self.source = source
 
@@ -57,11 +58,11 @@ class QueryBuilder:
 class ArtistQueryGenerator:
     def __init__(
         self,
-        source: Optional[ArtistQuery] = None,
+        source: ArtistQuery | None = None,
     ):
         self.source = source
 
-    def params(self) -> Dict[str, str]:
+    def params(self) -> dict[str, str]:
         return {
             "extend": QueryBuilder(source=self.source.extend or []).to_str(),
             "views": QueryBuilder(source=self.source.views or []).to_str(),

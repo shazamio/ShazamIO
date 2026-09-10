@@ -13,7 +13,7 @@ def song_response():
                 "offset": 187.4215,
                 "timeskew": -0.0001565814,
                 "frequencyskew": -0.000080525875,
-            }
+            },
         ],
         "location": {"accuracy": 0.01},
         "timestamp": 1652380596486,
@@ -100,7 +100,7 @@ def song_response():
                                 "?i=265018693&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid"
                                 "=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D"
                                 "-3235-3830-44754D6D5973&itscg=30201&app=itunes&itsct=Shazam_ios",
-                            }
+                            },
                         ],
                         "beacondata": {"type": "buy", "providername": "itunes"},
                         "image": "https://images.shazam.com/static/icons/hub/ios/v5/itunes"
@@ -127,7 +127,7 @@ def song_response():
                                 "name": "hub:spotify:searchdeeplink",
                                 "type": "uri",
                                 "uri": "spotify:search:Arrival%20To%20Earth%20Steve%20Jablonsky",
-                            }
+                            },
                         ],
                         "type": "SPOTIFY",
                     },
@@ -145,7 +145,7 @@ def song_response():
                                 "type": "uri",
                                 "uri": "deezer-query://www.deezer.com/play?query=%7Btrack%3A"
                                 "%27Arrival+To+Earth%27%20artist%3A%27Steve+Jablonsky%27%7D ",
-                            }
+                            },
                         ],
                         "type": "DEEZER",
                     },
@@ -199,7 +199,7 @@ def song_response():
                     "tabname": "Artist",
                     "toptracks": {
                         "url": "https://cdn.shazam.com/shazam/v3/en/GB/iphone/-/tracks"
-                        "/artisttoptracks_10194644?startFrom=0&pageSize=20&connected="
+                        "/artisttoptracks_10194644?startFrom=0&pageSize=20&connected=",
                     },
                 },
                 {
@@ -227,9 +227,9 @@ def song_response():
                             "=265018693&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple"
                             "-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830"
                             "-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios",
-                        }
-                    ]
-                }
+                        },
+                    ],
+                },
             },
             "highlightsurls": {
                 "artisthighlightsurl": "https://cdn.shazam.com/video/v3/en/GB/iphone/21402948/highlights?affiliate"

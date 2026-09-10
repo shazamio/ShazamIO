@@ -1,7 +1,7 @@
 import asyncio
 from pprint import pprint
 
-from shazamio import Shazam, Serialize
+from shazamio import Serialize, Shazam
 from shazamio.schemas.artists import ArtistQuery
 from shazamio.schemas.enums import ArtistView
 

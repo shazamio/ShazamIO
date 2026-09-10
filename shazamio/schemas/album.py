@@ -1,5 +1,3 @@
-from typing import Optional, List
-
 from pydantic import BaseModel, Field
 
 from shazamio.schemas.artist.views.full_albums import AttributesFullAlbums
@@ -8,7 +6,7 @@ from shazamio.schemas.base import BaseHref, BaseIdTypeHref
 
 
 class TrackInfoDTO(AttributesTopSong):
-    has_credits: Optional[bool] = Field(None, alias="hasCredits")
+    has_credits: bool | None = Field(default=None, alias="hasCredits")
 
 
 class TrackInfoWithHref(BaseIdTypeHref):
@@ -17,11 +15,11 @@ class TrackInfoWithHref(BaseIdTypeHref):
 
 class TrackModel(BaseHref):
     href: str
-    data: List[TrackInfoWithHref] = Field([])
+    data: list[TrackInfoWithHref] = Field(default_factory=list)
 
 
 class ArtistModel(BaseHref):
-    data: List[BaseIdTypeHref] = Field([])
+    data: list[BaseIdTypeHref] = Field(default_factory=list)
 
 
 class AlbumRelationships(BaseModel):

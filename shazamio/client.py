@@ -1,17 +1,17 @@
 from types import SimpleNamespace
-from typing import Any, Optional, List, Dict, Union
+from typing import Any
 
-from aiohttp import ClientSession, TraceRequestStartParams, TraceConfig
+from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
 from aiohttp_retry import RetryClient, RetryOptionsBase
 
-from shazamio.exceptions import BadMethod, FailedDecodeJson
+from shazamio.exceptions import BadMethod
 from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.loggers import request as request_logger
 from shazamio.utils import validate_json
 
 
 class HTTPClient(HTTPClientInterface):
-    def __init__(self, retry_options: Optional[RetryOptionsBase] = None):
+    def __init__(self, retry_options: RetryOptionsBase | None = None) -> None:
         self.retry_options = retry_options
         self.trace_config = TraceConfig()
         self.trace_config.on_request_start.append(self.on_request_start)
@@ -40,7 +40,7 @@ class HTTPClient(HTTPClientInterface):
         url: str,
         *args,
         **kwargs,
-    ) -> Union[List[Any], Dict[str, Any]]:
+    ) -> list[Any] | dict[str, Any]:
         async with RetryClient(
             retry_options=self.retry_options,
             raise_for_status=False,
@@ -48,16 +48,11 @@ class HTTPClient(HTTPClientInterface):
         ) as client:
             if method.upper() == "GET":
                 async with client.get(url, **kwargs) as resp:
-                    try:
-                        return await validate_json(resp, *args)
-                    except FailedDecodeJson as e:
-                        raise e
+                    return await validate_json(resp, *args)
 
             elif method.upper() == "POST":
                 async with client.post(url, **kwargs) as resp:
-                    try:
-                        return await validate_json(resp, *args)
-                    except FailedDecodeJson as e:
-                        raise e
+                    return await validate_json(resp, *args)
             else:
-                raise BadMethod("Accept only GET/POST")
+                msg: str = "Accept only GET/POST"
+                raise BadMethod(msg)

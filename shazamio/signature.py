@@ -1,9 +1,10 @@
-from typing import Dict, List
-from base64 import b64decode, b64encode
-from math import exp, sqrt
+from base64 import b64encode
 from binascii import crc32
+from ctypes import LittleEndianStructure, c_uint32
 from io import BytesIO
-from ctypes import *
+from math import exp, sqrt
+from typing import ClassVar
+
 from .enums import FrequencyBand, SampleRate
 
 DATA_URI_PREFIX = "data:audio/vnd.shazam.sig;base64,"
@@ -12,7 +13,7 @@ DATA_URI_PREFIX = "data:audio/vnd.shazam.sig;base64,"
 class RawSignatureHeader(LittleEndianStructure):
     _pack = True
 
-    _fields_ = [
+    _fields_: ClassVar[list[tuple[str, type]]] = [
         ("magic1", c_uint32),  # Fixed 0xcafe2580 - 80 25 fe ca
         (
             "crc32",
@@ -78,7 +79,7 @@ class DecodedMessage:
     sample_rate_hz: int = None
     number_samples: int = None
 
-    frequency_band_to_sound_peaks: Dict[FrequencyBand, List[FrequencyPeak]] = None
+    frequency_band_to_sound_peaks: dict[FrequencyBand, list[FrequencyPeak]] = None
 
     @classmethod
     def decode_from_binary(cls, data: bytes):
@@ -103,7 +104,7 @@ class DecodedMessage:
         self.sample_rate_hz = int(SampleRate(header.shifted_sample_rate_id >> 27).name.strip("_"))
 
         self.number_samples = int(
-            header.number_samples_plus_divided_sample_rate - self.sample_rate_hz * 0.24
+            header.number_samples_plus_divided_sample_rate - self.sample_rate_hz * 0.24,
         )
 
         # Read the type-length-value sequence that follows the header
@@ -147,8 +148,7 @@ class DecodedMessage:
                 if fft_pass_offset == 0xFF:
                     fft_pass_number = int.from_bytes(frequency_peaks_buf.read(4), "little")
                     continue
-                else:
-                    fft_pass_number += fft_pass_offset
+                fft_pass_number += fft_pass_offset
 
                 peak_magnitude = int.from_bytes(frequency_peaks_buf.read(2), "little")
                 corrected_peak_frequency_bin = int.from_bytes(frequency_peaks_buf.read(2), "little")
@@ -159,7 +159,7 @@ class DecodedMessage:
                         peak_magnitude,
                         corrected_peak_frequency_bin,
                         self.sample_rate_hz,
-                    )
+                    ),
                 )
 
         return self
@@ -169,10 +169,10 @@ class DecodedMessage:
 
         header.magic1 = 0xCAFE2580
         header.magic2 = 0x94119C00
-        header.shifted_sample_rate_id = int(getattr(SampleRate, "_%s" % self.sample_rate_hz)) << 27
+        header.shifted_sample_rate_id = int(getattr(SampleRate, f"_{self.sample_rate_hz}")) << 27
         header.fixed_value = (15 << 19) + 0x40000
         header.number_samples_plus_divided_sample_rate = int(
-            self.number_samples + self.sample_rate_hz * 0.24
+            self.number_samples + self.sample_rate_hz * 0.24,
         )
 
         contents_buf = BytesIO()

@@ -1,11 +1,9 @@
 import pytest
 
-from shazamio import Serialize
-from shazamio import Shazam
+from shazamio import Serialize, Shazam
 from shazamio.exceptions import FailedDecodeJson
 from shazamio.schemas.artists import ArtistQuery
-from shazamio.schemas.enums import ArtistExtend
-from shazamio.schemas.enums import ArtistView
+from shazamio.schemas.enums import ArtistExtend, ArtistView
 
 
 @pytest.mark.asyncio

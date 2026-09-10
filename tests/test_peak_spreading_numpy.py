@@ -1,15 +1,15 @@
+from types import MethodType
+
 import pytest
 from pydub import AudioSegment
-from typing import List
 
 from shazamio.algorithm import SignatureGenerator
-from types import MethodType
 
 
 def do_peak_spreading_non_numpy(self):
-    origin_last_fft: List[float] = self.fft_outputs[self.fft_outputs.position - 1]
+    origin_last_fft: list[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
-    spread_last_fft: List[float] = list(origin_last_fft)
+    spread_last_fft: list[float] = list(origin_last_fft)
 
     for position in range(1025):
         # Perform frequency-domain spreading of peak values
@@ -33,8 +33,6 @@ def do_peak_spreading_non_numpy(self):
 
     self.spread_fft_output.append(spread_last_fft)
 
-    pass
-
 
 @pytest.mark.asyncio
 async def test_do_peak_spreading_numpy():
@@ -46,7 +44,8 @@ async def test_do_peak_spreading_numpy():
 
     signature_generator_non_numpy = SignatureGenerator()
     signature_generator_non_numpy.do_peak_spreading = MethodType(
-        do_peak_spreading_non_numpy, signature_generator_non_numpy
+        do_peak_spreading_non_numpy,
+        signature_generator_non_numpy,
     )
     signature_generator_non_numpy.feed_input(audio.get_array_of_samples())
     signature_generator_non_numpy.MAX_TIME_SECONDS = 12

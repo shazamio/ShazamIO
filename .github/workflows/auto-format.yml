@@ -1,0 +1,47 @@
+# Lints and format-checks an incoming pull request. Auto-fixable findings are
+#  fixed and committed back to the pull request; anything left after that fails
+#  the job.
+
+name: autoformat
+on: pull_request
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # `repository` defaults to the base repository, which does not hold a
+          #  fork's branch, so checkout on a fork pull request died before the
+          #  tooling was ever installed.
+          #  https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml#L4-L6
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: "3.10"
+
+      - name: Check the formatting and lint
+        id: lint-check
+        run: just lint
+        continue-on-error: true
+
+      - name: If needed, commit the auto-fixes to the pull request
+        # `GITHUB_TOKEN` is read-only on fork pull requests, so only same-repository
+        #  ones get the fixup commit; fork ones fail the step below instead. The
+        #  re-run of `just lint` fails the job when findings survive the auto-fix.
+        if: steps.lint-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          just format
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am 'style: apply `ruff` fixes and formatting'
+          git push
+          just lint
+
+      - name: Fail when lint reports issues on a fork pull request
+        if: steps.lint-check.outcome == 'failure' && github.event.pull_request.head.repo.full_name != github.repository
+        run: exit 1

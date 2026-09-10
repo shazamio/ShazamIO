@@ -1,8 +1,10 @@
 import asyncio
 import logging
 
+import aiofiles
 from aiohttp_retry import ExponentialRetry
-from shazamio import Shazam, Serialize, HTTPClient, SearchParams
+
+from shazamio import HTTPClient, SearchParams, Serialize, Shazam
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -16,7 +18,9 @@ async def main():
     shazam = Shazam(
         http_client=HTTPClient(
             retry_options=ExponentialRetry(
-                attempts=12, max_timeout=204.8, statuses={500, 502, 503, 504, 429}
+                attempts=12,
+                max_timeout=204.8,
+                statuses={500, 502, 503, 504, 429},
             ),
         ),
         segment_duration_seconds=10,
@@ -31,10 +35,11 @@ async def main():
     print(serialized_new_path)
 
     # pass bytes
-    with open("data/Gloria.ogg", "rb") as file:
-        new_version_path = await shazam.recognize(file.read())
-        serialized_new_path = Serialize.full_track(new_version_path)
-        print(serialized_new_path)
+    async with aiofiles.open("data/Gloria.ogg", mode="rb") as file:
+        song_bytes = await file.read()
+    new_version_path = await shazam.recognize(song_bytes)
+    serialized_new_path = Serialize.full_track(new_version_path)
+    print(serialized_new_path)
 
 
 loop = asyncio.get_event_loop_policy().get_event_loop()

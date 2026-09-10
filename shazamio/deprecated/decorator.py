@@ -1,6 +1,7 @@
-from typing import Callable, Any, TypeVar, cast
 import functools
 import warnings
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -18,6 +19,6 @@ def deprecated(reason: str) -> Callable[[F], F]:
             warnings.simplefilter("default", DeprecationWarning)
             return func(*args, **kwargs)
 
-        return cast(F, new_func)
+        return cast("F", new_func)
 
     return decorator

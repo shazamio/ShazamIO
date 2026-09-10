@@ -56,7 +56,7 @@ tests = [
     "pytest-asyncio>=0.23.6,<0.24",
 ]
 lint = [
-    "black>=26.5.1,<27",
+    "ruff>=0.16.5",
 ]
 
 # Supply-chain safety net: only resolve packages published at least 7 days ago,
@@ -82,6 +82,74 @@ addopts = "-scoped"
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
-
-[tool.black]
+[tool.ruff]
+target-version = "py310"
 line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812",  # Conflicts with `ruff format`
+    "ISC001",  # Conflicts with `ruff format`
+    "D203",    # Conflicts with D211 (no blank line before class docstring)
+    "D213",    # Conflicts with D212 (summary on first line)
+
+    # Per-file copyright headers are not this project's convention; the root
+    #  `LICENSE` covers everything.
+    "CPY001",
+
+    # The tree predates any docstring or annotation convention: documenting and
+    #  typing the public surface is its own effort, and turning these on now
+    #  would bury real findings under hundreds of legacy ones.
+    "D1",      # Undocumented public module/class/method/function
+    "D205",    # Legacy docstrings have no summary-line structure to enforce
+    "D401",    # Same: rewording legacy docstrings is not lint's job
+    "ANN",     # Missing annotations
+
+    # Public exception classes have carried these names since 0.0.x; renaming
+    #  them to `*Error` is a breaking change, not a lint fix.
+    "N818",
+
+    # The exception classes are plain `Exception` subclasses that take a message
+    #  at the raise site; moving every message into a custom class is a redesign
+    #  of the (public) exception surface, not a lint fix.
+    "TRY003",
+]
+
+[tool.ruff.lint.flake8-type-checking]
+# Pydantic resolves field annotations at import time, so moving a model import
+#  into `if TYPE_CHECKING:` raises `PydanticUndefinedAnnotation` when the model
+#  is built.
+#  https://docs.astral.sh/ruff/settings/#lint_flake8-type-checking_runtime-evaluated-base-classes
+#  `ruff` cannot follow the chain across modules, so the project's own pydantic
+#  base needs listing too.
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "shazamio.schemas.base.BaseHrefNext",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"shazamio/user_agent.py" = [
+    "E501",    # A data file: one user-agent string per line, many past 100 chars
+]
+"shazamio/algorithm.py" = [
+    "PLR2004", # DSP thresholds (frequency bands, FFT sizes) are readable inline
+    "S101",    # An invariant of the reverse-engineered algorithm, same story as
+               #  the `signature.py` checksum guards below.
+]
+"shazamio/signature.py" = [
+    "PLR2004", # Same: binary-format offsets and magic numbers of the signature
+    "S101",    # The checksum guards predate the lint; replacing `assert` with
+               #  raises changes what a corrupted stream throws, a behavior
+               #  change owned by the exception-surface work, not by lint.
+]
+"examples/*" = [
+    "T20",     # `print`/`pprint` is what an example is for
+    "INP001",  # Standalone scripts, not a package
+    "E501",    # Long Shazam URLs in comments
+]
+"tests/*" = [
+    "S101",    # `assert` is how pytest works
+    "PLR2004", # Expected values are literal in asserts
+    "S311",    # Non-cryptographic randomness is fine in test data
+]

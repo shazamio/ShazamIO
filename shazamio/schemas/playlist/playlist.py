@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from pydantic import BaseModel, Field
 
 from shazamio.schemas.base import BaseHrefData, BaseIdTypeHref
@@ -10,33 +8,36 @@ from shazamio.schemas.urls import UrlDTO
 
 
 class PlayListRelationshipDTO(BaseModel):
-    music_videos: BaseHrefData[List[BaseIdTypeHref]] = Field([], alias="music-videos")
-    artists: BaseHrefData[List[BaseIdTypeHref]] = Field([], alias="artists")
+    music_videos: BaseHrefData[list[BaseIdTypeHref]] = Field(
+        default_factory=list,
+        alias="music-videos",
+    )
+    artists: BaseHrefData[list[BaseIdTypeHref]] = Field(default_factory=list, alias="artists")
 
 
 class PlayListAttributes(BaseModel):
-    has_time_synced_lyrics: bool = Field(..., alias="hasTimeSyncedLyrics")
-    album_name: str = Field(..., alias="albumName")
-    genre_names: List[str] = Field(..., alias="genreNames")
-    track_number: int = Field(..., alias="trackNumber")
-    release_date: Optional[str] = Field(None, alias="releaseDate")
-    duration_in_millis: Optional[int] = Field(None, alias="durationInMillis")
-    is_vocal_attenuation_allowed: bool = Field(..., alias="isVocalAttenuationAllowed")
-    is_mastered_for_itunes: bool = Field(..., alias="isMasteredForItunes")
+    has_time_synced_lyrics: bool = Field(alias="hasTimeSyncedLyrics")
+    album_name: str = Field(alias="albumName")
+    genre_names: list[str] = Field(alias="genreNames")
+    track_number: int = Field(alias="trackNumber")
+    release_date: str | None = Field(default=None, alias="releaseDate")
+    duration_in_millis: int | None = Field(default=None, alias="durationInMillis")
+    is_vocal_attenuation_allowed: bool = Field(alias="isVocalAttenuationAllowed")
+    is_mastered_for_itunes: bool = Field(alias="isMasteredForItunes")
     isrc: str
     artwork: ImageModel
-    audio_locale: str = Field(..., alias="audioLocale")
+    audio_locale: str = Field(alias="audioLocale")
     url: str
-    play_params: Optional[PlayParams] = Field(None, alias="playParams")
-    disc_number: int = Field(..., alias="discNumber")
-    has_credits: Optional[bool] = Field(None, alias="hasCredits")
-    is_apple_digital_master: bool = Field(..., alias="isAppleDigitalMaster")
-    has_lyrics: bool = Field(..., alias="hasLyrics")
-    audio_traits: List[str] = Field(..., alias="audioTraits")
+    play_params: PlayParams | None = Field(default=None, alias="playParams")
+    disc_number: int = Field(alias="discNumber")
+    has_credits: bool | None = Field(default=None, alias="hasCredits")
+    is_apple_digital_master: bool = Field(alias="isAppleDigitalMaster")
+    has_lyrics: bool = Field(alias="hasLyrics")
+    audio_traits: list[str] = Field(alias="audioTraits")
     name: str
-    previews: List[UrlDTO]
-    content_rating: Optional[str] = Field(None, alias="contentRating")
-    artist_name: str = Field(..., alias="artistName")
+    previews: list[UrlDTO]
+    content_rating: str | None = Field(default=None, alias="contentRating")
+    artist_name: str = Field(alias="artistName")
 
 
 class PlayList(BaseIdTypeHref):

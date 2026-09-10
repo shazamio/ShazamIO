@@ -1,7 +1,9 @@
+import random
+
+import pytest
+
 from shazamio.algorithm import SignatureGenerator
 from shazamio.signature import DecodedMessage
-import random
-import pytest
 
 
 @pytest.fixture

@@ -1,8 +1,4 @@
-from typing import List
-from typing import Optional
-
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 
 class AttributeName(BaseModel):
@@ -10,7 +6,7 @@ class AttributeName(BaseModel):
 
 
 class ArtistAttribute(BaseModel):
-    genre_names: List[str] = Field([], alias="genreNames")
+    genre_names: list[str] = Field(default_factory=list, alias="genreNames")
     name: str
     url: str
-    artist_bio: Optional[str] = Field(None, alias="artistBio")
+    artist_bio: str | None = Field(default=None, alias="artistBio")
