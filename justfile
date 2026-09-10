@@ -14,13 +14,15 @@ default:
 install:
     uv sync --locked
 
-[doc("Check the formatting")]
+[doc("Check the formatting and lint")]
 lint:
-    uv run black --check .
+    uv run ruff format --check .
+    uv run ruff check .
 
-[doc("Reformat the tree")]
+[doc("Auto-fix lint findings, then reformat")]
 format:
-    uv run black .
+    uv run ruff check --fix-only .
+    uv run ruff format .
 
 [doc("Run the test suite")]
 test:
