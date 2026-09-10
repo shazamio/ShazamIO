@@ -1116,7 +1116,7 @@ tests = [
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", specifier = ">=0.3.0" },
-    { name = "aiohttp", specifier = ">=3.14.3" },
+    { name = "aiohttp", specifier = ">=3.8.0" },
     { name = "aiohttp-retry", specifier = ">=2.3" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = ">=0.2.2" },
     { name = "numpy", specifier = ">=1.21.3" },
