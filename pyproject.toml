@@ -62,6 +62,13 @@ Issues = "https://github.com/shazamio/ShazamIO/issues"
 dev = [
     { include-group = "tests" },
     { include-group = "lint" },
+    { include-group = "hooks" },
+]
+hooks = [
+    # 3.1.1 cannot read the pinned hook repos: they declare the `pre-commit`
+    #  stage name introduced in 3.2.0, and older versions reject it with
+    #  `Expected one of commit, commit-msg, ... but got: 'pre-commit'`.
+    "pre-commit>=3.2.0",
 ]
 tests = [
     # The oldest release `pytest-asyncio` below can run on; the suite passes there.

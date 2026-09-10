@@ -14,9 +14,23 @@ python_floor := `sed -n 's/^requires-python = ">=\([0-9]*\.[0-9]*\).*/\1/p' pypr
 default:
     @just --list
 
-[doc("Install the dependencies, exactly as locked")]
+[doc("Install the dependencies exactly as locked, plus the git hooks")]
 install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
     uv sync --locked
+
+    # The hooks gate a commit, and CI has none to gate: it calls the same
+    #  recipes as workflow steps. Building their environments there would cost a
+    #  download per hook for nothing.
+    if [[ -z "${CI:-}" ]]; then
+        uv run pre-commit install --install-hooks
+    fi
+
+[doc("Check that `uv.lock` agrees with `pyproject.toml`")]
+check-lock:
+    uv lock --check
 
 [doc("Check the formatting and lint")]
 lint:

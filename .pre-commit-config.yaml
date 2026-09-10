@@ -1,0 +1,63 @@
+# Install these hooks with `just install`. The project gates at the bottom run
+#  through `just`; the `justfile` header says why every command lives there.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # Without `--enforce-all` only files newly added to the index are measured,
+      #  so the 2.7 MB `examples/data/Gloria.ogg` fixture already tracked here
+      #  never trips this; a second sample of that size would.
+      #  https://github.com/pre-commit/pre-commit-hooks/blob/3e8a8703264a2f4a69428a0aa4dcb512790b2c8c/pre_commit_hooks/check_added_large_files.py#L45
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+
+  # `dependabot.yml` is the one configuration file nothing else here parses.
+  #  The workflows are covered by `actionlint` below, which reads them anyway
+  #  and rejects more than a schema can express.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.38.0
+    hooks:
+      - id: check-dependabot
+
+  # Expression errors, unknown contexts, and shellcheck over every `run` block.
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  # `just test` is deliberately not a hook: the suite recognizes real audio
+  #  against the live Shazam API (`tests/test_recognize.py`), so with DNS blocked
+  #  it fails with `ClientConnectorDNSError: Cannot connect to host
+  #  amp.shazam.com:443` and committing offline becomes impossible. The workflows
+  #  run it instead.
+  - repo: local
+    hooks:
+      - id: format
+        name: Format
+        entry: just
+        args: [format]
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: lint
+        name: Lint
+        entry: just
+        args: [lint]
+        language: system
+        always_run: true
+        pass_filenames: false
+
+      - id: check-lock
+        name: Check `uv.lock`
+        entry: just
+        args: [check-lock]
+        language: system
+        files: ^(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
