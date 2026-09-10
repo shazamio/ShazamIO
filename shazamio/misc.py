@@ -10,9 +10,12 @@ class ShazamUrl:
         "/{uuid_1}/{uuid_2}?sync=true&webv3=true&sampling=true"
         "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
     )
+    # `discovery/v5` answers on `amp.` and `cdn.` only. On `www.` it returns the
+    #  1.7MB single-page-app shell as `text/html`, which surfaces as
+    #  `FailedDecodeJson` and reads like a parsing bug.
     ABOUT_TRACK = (
-        "https://www.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
-        "/{track_id}?shazamapiversion=v3&video=v3 "
+        "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
+        "/{track_id}?shazamapiversion=v3&video=v3"
     )
     TOP_TRACKS_PLAYLIST = (
         "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
