@@ -1,5 +1,6 @@
 import asyncio
-from shazamio import Shazam, Serialize
+
+from shazamio import Serialize, Shazam
 
 
 async def main():
@@ -9,7 +10,7 @@ async def main():
     serialized = Serialize.artist_albums(data=albums)
     for i in serialized.data:
         print(
-            f"{i.id} | {i.attributes.artist_name} ->>>>>>>> {i.attributes.name} - {i.attributes.track_count} {i.attributes.release_date}"
+            f"{i.id} | {i.attributes.artist_name} ->>>>>>>> {i.attributes.name} - {i.attributes.track_count} {i.attributes.release_date}",
         )
 
 

@@ -1,5 +1,6 @@
 import asyncio
-from shazamio import Shazam, Serialize
+
+from shazamio import Serialize, Shazam
 
 
 async def main():

@@ -1,9 +1,7 @@
-from typing import Any
-from typing import Final
+from typing import Any, Final
 
 from shazamio import Serialize
-from shazamio.schemas.artists import ArtistInfo
-from shazamio.schemas.artists import ArtistV2
+from shazamio.schemas.artists import ArtistInfo, ArtistV2
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path
@@ -63,7 +61,7 @@ def test_sections_resolve_by_type_discriminator() -> None:
                 },
                 {"type": "RELATED", "url": "https://related.example", "tabname": "Related"},
             ],
-        }
+        },
     )
 
     section_types = [type(section).__name__ for section in track.sections]

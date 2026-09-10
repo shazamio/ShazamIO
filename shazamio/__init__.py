@@ -1,15 +1,16 @@
-from .serializers import Serialize
-from .api import Shazam
-from .converter import GeoService
-from .enums import GenreMusic
-from .client import HTTPClient
 from shazamio_core.shazamio_core import SearchParams
 
+from .api import Shazam
+from .client import HTTPClient
+from .converter import GeoService
+from .enums import GenreMusic
+from .serializers import Serialize
+
 __all__ = (
-    "Serialize",
-    "Shazam",
-    "GeoService",
     "GenreMusic",
+    "GeoService",
     "HTTPClient",
     "SearchParams",
+    "Serialize",
+    "Shazam",
 )

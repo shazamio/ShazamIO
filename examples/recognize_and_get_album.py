@@ -3,7 +3,7 @@ import logging
 
 from aiohttp_retry import ExponentialRetry
 
-from shazamio import Shazam, Serialize, HTTPClient
+from shazamio import HTTPClient, Serialize, Shazam
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -17,7 +17,9 @@ async def main():
     shazam = Shazam(
         http_client=HTTPClient(
             retry_options=ExponentialRetry(
-                attempts=12, max_timeout=204.8, statuses={500, 502, 503, 504, 429}
+                attempts=12,
+                max_timeout=204.8,
+                statuses={500, 502, 503, 504, 429},
             ),
         ),
     )

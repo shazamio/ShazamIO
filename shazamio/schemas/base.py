@@ -1,6 +1,4 @@
-from typing import Generic
-from typing import Optional
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
@@ -17,7 +15,7 @@ class BaseIdTypeHref(BaseHref):
 
 
 class BaseHrefNext(BaseHref):
-    next: Optional[str] = None
+    next: str | None = None
 
 
 class BaseIdTypeHrefAttributesModel(BaseIdTypeHref, Generic[T]):
