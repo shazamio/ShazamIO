@@ -81,7 +81,6 @@ build-backend = "uv_build"
 module-root = ""
 
 [tool.pytest.ini_options]
-addopts = "-scoped"
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
