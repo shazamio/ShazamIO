@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Shazam
 
 
-async def main():
+async def main() -> None:
     # Example: https://www.shazam.com/track/559284007/rampampam
 
     shazam = Shazam()

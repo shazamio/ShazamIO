@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam(language="EN")
     top_ten_moscow_tracks = await shazam.top_city_tracks(
         country_code="RU",

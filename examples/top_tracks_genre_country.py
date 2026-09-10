@@ -3,7 +3,7 @@ import asyncio
 from shazamio import GenreMusic, Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     top_spain_rap = await shazam.top_country_genre_tracks(
         country_code="ES",

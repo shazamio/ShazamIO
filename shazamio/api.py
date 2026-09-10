@@ -30,7 +30,7 @@ class Shazam(Request):
         endpoint_country: str = "GB",
         http_client: HTTPClientInterface | None = None,
         segment_duration_seconds: int = 10,
-    ):
+    ) -> None:
         super().__init__(language=language)
 
         self.core_recognizer = Recognizer(
@@ -433,7 +433,7 @@ class Shazam(Request):
         limit: int = 10,
         offset: int = 0,
         proxy: str | None = None,
-    ):
+    ) -> dict[str, Any]:
         """Get all albums of a specific artist.
 
         :param artist_id: Artist number. Example (203347991)
@@ -461,7 +461,7 @@ class Shazam(Request):
         self,
         album_id: int,
         proxy: str | None = None,
-    ):
+    ) -> dict[str, Any]:
         """Get album info by id.
 
         :param album_id: Album number. Example (203347991)

@@ -1,3 +1,6 @@
+from collections.abc import Iterator
+from typing import Any
+
 import pytest
 import pytest_asyncio
 
@@ -5,7 +8,7 @@ from shazamio import Serialize
 
 
 @pytest_asyncio.fixture(scope="session")
-def song_response():
+def song_response() -> Iterator[dict[str, Any]]:
     response = {
         "matches": [
             {
@@ -252,6 +255,6 @@ def song_response():
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_bug(song_response: bytes):
+async def test_recognize_song_bug(song_response: dict[str, Any]) -> None:
     serialize_out = Serialize.full_track(data=song_response)
     assert serialize_out.matches[0].channel is None

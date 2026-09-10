@@ -3,7 +3,7 @@ import asyncio
 from shazamio import GenreMusic, Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     top_rock_in_the_world = await shazam.top_world_genre_tracks(genre=GenreMusic.ROCK, limit=10)
 

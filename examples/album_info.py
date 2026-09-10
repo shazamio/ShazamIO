@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     albums = await shazam.search_album(album_id=1544741796)
     serialized = Serialize.album_info(data=albums)

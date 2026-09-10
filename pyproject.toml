@@ -125,13 +125,19 @@ ignore = [
     #  `LICENSE` covers everything.
     "CPY001",
 
-    # The tree predates any docstring or annotation convention: documenting and
-    #  typing the public surface is its own effort, and turning these on now
-    #  would bury real findings under hundreds of legacy ones.
+    # The tree predates any docstring convention and there are 250 undocumented
+    #  public names; writing them is its own effort, and turning this on now
+    #  would bury real findings under legacy ones.
     "D1",      # Undocumented public module/class/method/function
     "D205",    # Legacy docstrings have no summary-line structure to enforce
     "D401",    # Same: rewording legacy docstrings is not lint's job
-    "ANN",     # Missing annotations
+
+    # `Any` is the honest annotation in all 11 places this fires: the generic
+    #  `RingBuffer`, the `**kwargs` both HTTP clients forward to `aiohttp`, the
+    #  argument-forwarding deprecation decorator, pydantic's own
+    #  `model_post_init(self, _context: Any)` hook, and `validate_json`, which
+    #  returns whatever the endpoint sent. The rest of `ANN` is enforced.
+    "ANN401",  # `Any` in an argument or return annotation
 
     # Public exception classes have carried these names since 0.0.x; renaming
     #  them to `*Error` is a breaking change, not a lint fix.

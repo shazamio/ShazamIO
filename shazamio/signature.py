@@ -50,7 +50,7 @@ class FrequencyPeak:
         peak_magnitude: int,
         corrected_peak_frequency_bin: int,
         sample_rate_hz: int,
-    ):
+    ) -> None:
         self.fft_pass_number = fft_pass_number
         self.peak_magnitude = peak_magnitude
         self.corrected_peak_frequency_bin = corrected_peak_frequency_bin
@@ -82,7 +82,7 @@ class DecodedMessage:
     frequency_band_to_sound_peaks: dict[FrequencyBand, list[FrequencyPeak]] = None
 
     @classmethod
-    def decode_from_binary(cls, data: bytes):
+    def decode_from_binary(cls, data: bytes) -> "DecodedMessage":
         self = cls()
 
         buf = BytesIO(data)

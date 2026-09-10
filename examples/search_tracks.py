@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     tracks = await shazam.search_track(query="Lil", limit=5)
     print(tracks)
