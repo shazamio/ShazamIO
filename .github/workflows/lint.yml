@@ -1,0 +1,22 @@
+# Fails the pull request when `just lint` reports anything. CI never edits the
+#  code: fixes are the author's to make locally, with `just format`.
+
+name: lint
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: "3.10"
+
+      - name: Check the formatting and lint
+        run: just lint
