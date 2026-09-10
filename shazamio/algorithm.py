@@ -10,7 +10,7 @@ HANNING_MATRIX = np.hanning(2050)[1:-1]  # Wipe trailing and leading zeroes
 
 
 class RingBuffer(list):
-    def __init__(self, buffer_size: int, default_value: Any = None):
+    def __init__(self, buffer_size: int, default_value: Any = None) -> None:
         if default_value is not None:
             list.__init__(self, [copy(default_value) for _ in range(buffer_size)])
         else:
@@ -20,7 +20,7 @@ class RingBuffer(list):
         self.buffer_size: int = buffer_size
         self.num_written: int = 0
 
-    def append(self, value: Any):
+    def append(self, value: Any) -> None:
         self[self.position] = value
 
         self.position += 1
@@ -29,7 +29,7 @@ class RingBuffer(list):
 
 
 class SignatureGenerator:
-    def __init__(self):
+    def __init__(self) -> None:
         # Used when storing input that will be processed when requiring to
         # generate a signature:
 
@@ -123,7 +123,7 @@ class SignatureGenerator:
             self.do_fft(s16le_mono_samples[position_of_chunk : position_of_chunk + 128])
             self.do_peak_spreading_and_recognition()
 
-    def do_fft(self, batch_of_128_s16le_mono_samples):
+    def do_fft(self, batch_of_128_s16le_mono_samples: list[int]) -> None:
         type_ring = self.ring_buffer_of_samples.position + len(batch_of_128_s16le_mono_samples)
         self.ring_buffer_of_samples[self.ring_buffer_of_samples.position : type_ring] = (
             batch_of_128_s16le_mono_samples
@@ -147,12 +147,12 @@ class SignatureGenerator:
 
         self.fft_outputs.append(fft_results)
 
-    def do_peak_spreading_and_recognition(self):
+    def do_peak_spreading_and_recognition(self) -> None:
         self.do_peak_spreading()
         if self.spread_fft_output.num_written >= 46:
             self.do_peak_recognition()
 
-    def do_peak_spreading(self):
+    def do_peak_spreading(self) -> None:
         origin_last_fft: list[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
         temporary_array_1 = np.tile(origin_last_fft, 3).reshape((3, -1))

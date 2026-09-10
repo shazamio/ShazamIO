@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     out = await shazam.recognize_song("data/dora.ogg")
     result = Serialize.full_track(data=out)

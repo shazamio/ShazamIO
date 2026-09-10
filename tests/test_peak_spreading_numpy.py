@@ -6,7 +6,7 @@ from pydub import AudioSegment
 from shazamio.algorithm import SignatureGenerator
 
 
-def do_peak_spreading_non_numpy(self):
+def do_peak_spreading_non_numpy(self: SignatureGenerator) -> None:
     origin_last_fft: list[float] = self.fft_outputs[self.fft_outputs.position - 1]
 
     spread_last_fft: list[float] = list(origin_last_fft)
@@ -35,7 +35,7 @@ def do_peak_spreading_non_numpy(self):
 
 
 @pytest.mark.asyncio
-async def test_do_peak_spreading_numpy():
+async def test_do_peak_spreading_numpy() -> None:
     audio = AudioSegment.from_file(file="examples/data/dora.ogg")
 
     audio = audio.set_sample_width(2)

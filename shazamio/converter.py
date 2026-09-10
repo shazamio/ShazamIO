@@ -11,7 +11,7 @@ from shazamio.typehints import CountryCode
 
 
 class GeoService:
-    def __init__(self, client: HTTPClientInterface):
+    def __init__(self, client: HTTPClientInterface) -> None:
         self.client = client
 
     async def get_country_playlist(self, country: CountryCode) -> str:

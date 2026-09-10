@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Serialize, Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     artists = await shazam.search_artist(query="LIL", limit=5)
     for artist in artists["artists"]["hits"]:

@@ -8,7 +8,7 @@ class HTTPClientInterface(ABC):
         self,
         method: str,
         url: str,
-        *args,
-        **kwargs,
+        *args: str,
+        **kwargs: Any,
     ) -> list[Any] | dict[str, Any]:
         raise NotImplementedError

@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam(
         http_client=HTTPClient(
             retry_options=ExponentialRetry(

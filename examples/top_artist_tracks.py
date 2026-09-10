@@ -6,7 +6,7 @@ from shazamio.schemas.artists import ArtistQuery
 from shazamio.schemas.enums import ArtistView
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     artist_id = 1081606072
 

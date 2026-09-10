@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from io import BytesIO
 
 import pytest
@@ -9,13 +10,13 @@ from shazamio.utils import get_file_bytes
 
 
 @pytest_asyncio.fixture(scope="session")
-async def song_bytes():
+async def song_bytes() -> AsyncIterator[bytes]:
     bytes_data = await get_file_bytes(file="examples/data/Gloria.ogg")
     yield bytes_data
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_file():
+async def test_recognize_song_file() -> None:
     shazam = Shazam()
     out = await shazam.recognize(data="examples/data/Gloria.ogg")
     assert out.get("matches") != []
@@ -23,7 +24,7 @@ async def test_recognize_song_file():
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_bytes(song_bytes: bytes):
+async def test_recognize_song_bytes(song_bytes: bytes) -> None:
     shazam = Shazam()
     out = await shazam.recognize(data=song_bytes)
     assert out.get("matches") != []
@@ -31,7 +32,7 @@ async def test_recognize_song_bytes(song_bytes: bytes):
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_too_short():
+async def test_recognize_song_too_short() -> None:
     short_audio_segment = AudioSegment.from_file(
         file=BytesIO(b"0" * 126),
         format="pcm",

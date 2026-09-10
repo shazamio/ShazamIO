@@ -3,7 +3,7 @@ import asyncio
 from shazamio import Shazam
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam()
     track_id = 546891609
     related = await shazam.related_tracks(track_id=track_id, limit=5, offset=2)

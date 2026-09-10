@@ -50,10 +50,10 @@ class ShazamUrl:
 class Request:
     TIME_ZONE = "Europe/Moscow"
 
-    def __init__(self, language: str):
+    def __init__(self, language: str) -> None:
         self.language = language
 
-    def headers(self):
+    def headers(self) -> dict[str, str]:
         return {
             "X-Shazam-Platform": "IPHONE",
             "X-Shazam-AppVersion": "14.1.0",

@@ -6,7 +6,7 @@ from shazamio.schemas.artists import ArtistQuery
 from shazamio.schemas.enums import ArtistExtend, ArtistView
 
 
-async def main():
+async def main() -> None:
     shazam = Shazam(language="ES")
     artist_id = 1124753799
     # extend: artistBio,bornOrFormed,editorialArtwork,origin

@@ -38,8 +38,8 @@ class HTTPClient(HTTPClientInterface):
         self,
         method: str,
         url: str,
-        *args,
-        **kwargs,
+        *args: str,
+        **kwargs: Any,
     ) -> list[Any] | dict[str, Any]:
         async with RetryClient(
             retry_options=self.retry_options,

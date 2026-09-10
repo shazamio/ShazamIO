@@ -1,7 +1,7 @@
 import pathlib
 from enum import Enum
 from io import BytesIO
-from typing import TypeAlias
+from typing import Any, TypeAlias
 
 import aiofiles
 import aiohttp
@@ -15,7 +15,10 @@ SongT: TypeAlias = str | pathlib.Path | bytes | bytearray
 FileT: TypeAlias = str | pathlib.Path
 
 
-async def validate_json(resp: aiohttp.ClientResponse, content_type: str = "application/json"):
+async def validate_json(
+    resp: aiohttp.ClientResponse,
+    content_type: str = "application/json",
+) -> Any:
     try:
         return await resp.json(content_type=content_type)
     except ContentTypeError as er:
@@ -48,7 +51,7 @@ class QueryBuilder:
     def __init__(
         self,
         source: list[str | Enum],
-    ):
+    ) -> None:
         self.source = source
 
     def to_str(self) -> str:
@@ -59,7 +62,7 @@ class ArtistQueryGenerator:
     def __init__(
         self,
         source: ArtistQuery | None = None,
-    ):
+    ) -> None:
         self.source = source
 
     def params(self) -> dict[str, str]:
