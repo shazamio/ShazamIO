@@ -68,7 +68,7 @@ lint = [
 exclude-newer = "7 days"
 
 [build-system]
-requires = ["uv_build>=0.12.5,<0.13"]
+requires = ["uv_build>=0.12.8,<0.13"]
 build-backend = "uv_build"
 
 # The package is a flat `shazamio/` directory, not the `src/` layout the backend
