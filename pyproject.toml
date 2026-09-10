@@ -83,8 +83,11 @@ lint = [
 exclude-newer = "7 days"
 
 [build-system]
-# The cap stays: `uv_build` is pre-1.0 and the bounded minor range is the shape
-#  its own docs prescribe.
+# `uv_build` is pre-1.0, so a minor (`0.13`) is allowed to break the build; the
+#  range takes `0.12.x` patches automatically and holds the next series back.
+#  Bumping to a new series is fine and routine: raise both bounds, run
+#  `uv build`, and check the wheel still looks right. The bounded shape is what
+#  uv's own docs prescribe.
 #  https://docs.astral.sh/uv/concepts/build-backend/
 requires = ["uv_build>=0.12.8,<0.13"]
 build-backend = "uv_build"
