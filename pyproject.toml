@@ -35,7 +35,6 @@ dependencies = [
     #  in the environment that asks for a current `aiofiles`. Only `aiofiles.open`
     #  is used.
     "aiofiles>=23.2.1,<26.0.0",
-    "anyio>=4.3.0,<5",
     "aiohttp-retry>=2.8.3,<3",
     "pydantic>=2.9.2,<3",
     "shazamio-core==1.2.0",
