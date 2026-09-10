@@ -19,25 +19,37 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
+# Floors only, verified by `just test-floor`: each one is the oldest release the
+#  suite passes with, and the comment says what breaks one release below it. A
+#  library's upper caps conflict with everything else in a consumer's
+#  environment, so a cap needs a reason.
 dependencies = [
-    "numpy>=2.2.2,<3",
-    # Every release below 3.14.3 carries at least one open advisory, request
-    #  smuggling and header injection among them.
-    #  https://github.com/aio-libs/aiohttp/security/advisories
-    "aiohttp>=3.14.3,<4",
-    "pydub>=0.25.1,<0.26",
+    # Oldest release with CPython 3.10 wheels on every platform; 1.21.2 shipped
+    #  them for Linux only.
+    "numpy>=1.21.3",
+    # Oldest release with CPython 3.10 wheels; 3.7.4.post0 ships none at all.
+    "aiohttp>=3.8.0",
+    # `AudioSegment.get_array_of_samples`, which the converter feeds to the
+    #  signature generator, first appeared in 0.16.0: 0.15.0 fails the suite
+    #  with `AttributeError`.
+    "pydub>=0.16.0",
     # `audioop` left the standard library in 3.13, and `pydub` imports it at module
     #  scope: `import pydub` raises `ModuleNotFoundError: No module named 'pyaudioop'`.
-    #  `pydub` has not released since 2021, so the shim is ours to declare.
+    #  `pydub` has not released since 2021, so the shim is ours to declare. Every
+    #  release passes the suite; 0.2.2 is the only one shipping CPython 3.14 wheels.
     #  https://docs.python.org/3.13/whatsnew/3.13.html#pep-594-remove-dead-batteries-from-the-standard-library
-    "audioop-lts>=0.2.2,<0.3; python_version >= '3.13'",
-    # A lower cap here excluded 24.x and 25.x, which conflicts with anything else
-    #  in the environment that asks for a current `aiofiles`. Only `aiofiles.open`
-    #  is used.
-    "aiofiles>=23.2.1,<26.0.0",
-    "anyio>=4.3.0,<5",
-    "aiohttp-retry>=2.8.3,<3",
-    "pydantic>=2.9.2,<3",
+    "audioop-lts>=0.2.2; python_version >= '3.13'",
+    # `async with aiofiles.open(...)` needs the async context manager added in
+    #  0.3.0: 0.2.1 fails the suite with `AttributeError: __aenter__`.
+    "aiofiles>=0.3.0",
+    # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
+    "aiohttp-retry>=2.3",
+    # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
+    #  the artist union is silently ignored before 2.2.0, so the union parses in
+    #  smart mode there.
+    "pydantic>=2.2.0",
+    # The sibling crate is released in lockstep with this package; an exact pin
+    #  ships the one pair that was tested together.
     "shazamio-core==1.2.0",
 ]
 
@@ -52,8 +64,11 @@ dev = [
     { include-group = "lint" },
 ]
 tests = [
-    "pytest==8.1.2",
-    "pytest-asyncio>=0.23.6,<0.24",
+    # The oldest release `pytest-asyncio` below can run on; the suite passes there.
+    "pytest>=7.0.0",
+    # The session-scoped async fixtures error at teardown on 0.23.2 and hit
+    #  `ScopeMismatch` on anything below 0.23.
+    "pytest-asyncio>=0.23.3",
 ]
 lint = [
     "ruff>=0.16.5",
@@ -68,6 +83,12 @@ lint = [
 exclude-newer = "7 days"
 
 [build-system]
+# `uv_build` is pre-1.0, so a minor (`0.13`) is allowed to break the build; the
+#  range takes `0.12.x` patches automatically and holds the next series back.
+#  Bumping to a new series is fine and routine: raise both bounds, run
+#  `uv build`, and check the wheel still looks right. The bounded shape is what
+#  uv's own docs prescribe.
+#  https://docs.astral.sh/uv/concepts/build-backend/
 requires = ["uv_build>=0.12.8,<0.13"]
 build-backend = "uv_build"
 
@@ -78,7 +99,6 @@ build-backend = "uv_build"
 module-root = ""
 
 [tool.pytest.ini_options]
-addopts = "-scoped"
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
