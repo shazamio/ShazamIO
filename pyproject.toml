@@ -19,24 +19,25 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
+# Floors only, verified by `just test-floor`; a library's upper caps conflict
+#  with everything else in a consumer's environment, so a cap needs a reason.
 dependencies = [
-    "numpy>=2.2.2,<3",
+    "numpy>=2.2.2",
     # Every release below 3.14.3 carries at least one open advisory, request
     #  smuggling and header injection among them.
     #  https://github.com/aio-libs/aiohttp/security/advisories
-    "aiohttp>=3.14.3,<4",
-    "pydub>=0.25.1,<0.26",
+    "aiohttp>=3.14.3",
+    "pydub>=0.25.1",
     # `audioop` left the standard library in 3.13, and `pydub` imports it at module
     #  scope: `import pydub` raises `ModuleNotFoundError: No module named 'pyaudioop'`.
     #  `pydub` has not released since 2021, so the shim is ours to declare.
     #  https://docs.python.org/3.13/whatsnew/3.13.html#pep-594-remove-dead-batteries-from-the-standard-library
-    "audioop-lts>=0.2.2,<0.3; python_version >= '3.13'",
-    # A lower cap here excluded 24.x and 25.x, which conflicts with anything else
-    #  in the environment that asks for a current `aiofiles`. Only `aiofiles.open`
-    #  is used.
-    "aiofiles>=23.2.1,<26.0.0",
-    "aiohttp-retry>=2.8.3,<3",
-    "pydantic>=2.9.2,<3",
+    "audioop-lts>=0.2.2; python_version >= '3.13'",
+    "aiofiles>=23.2.1",
+    "aiohttp-retry>=2.8.3",
+    "pydantic>=2.9.2",
+    # The sibling crate is released in lockstep with this package; an exact pin
+    #  ships the one pair that was tested together.
     "shazamio-core==1.2.0",
 ]
 
@@ -51,8 +52,8 @@ dev = [
     { include-group = "lint" },
 ]
 tests = [
-    "pytest==8.1.2",
-    "pytest-asyncio>=0.23.6,<0.24",
+    "pytest>=8.1.2",
+    "pytest-asyncio>=0.23.6",
 ]
 lint = [
     "ruff>=0.16.5",
@@ -67,6 +68,9 @@ lint = [
 exclude-newer = "7 days"
 
 [build-system]
+# The cap stays: `uv_build` is pre-1.0 and the bounded minor range is the shape
+#  its own docs prescribe.
+#  https://docs.astral.sh/uv/concepts/build-backend/
 requires = ["uv_build>=0.12.8,<0.13"]
 build-backend = "uv_build"
 
