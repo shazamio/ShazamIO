@@ -6,6 +6,10 @@
 #  to have put on `PATH`.
 set shell := ["bash", "-uc"]
 
+# The oldest interpreter this package supports, read from `requires-python` in
+#  `pyproject.toml` so the two cannot drift.
+python_floor := `sed -n 's/^requires-python = ">=\([0-9]*\.[0-9]*\).*/\1/p' pyproject.toml`
+
 [doc("Show the recipes")]
 default:
     @just --list
@@ -42,8 +46,8 @@ test-floor:
     # Floors bind hardest on the oldest supported interpreter. `--upgrade` is
     #  what makes the strategy apply: without it the resolver keeps the locked
     #  versions, which already satisfy the floors.
-    uv sync --python 3.10 --upgrade --resolution lowest-direct
-    uv run --no-sync --python 3.10 pytest
+    uv sync --python {{ python_floor }} --upgrade --resolution lowest-direct
+    uv run --no-sync --python {{ python_floor }} pytest
 
 [doc("Run everything CI runs")]
 ci: lint test
