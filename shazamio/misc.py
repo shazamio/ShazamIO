@@ -1,5 +1,6 @@
 from enum import Enum
 from random import choice
+
 from shazamio.user_agent import USER_AGENTS
 
 
@@ -59,7 +60,8 @@ class Request:
             "Accept": "*/*",
             "Accept-Language": self.language,
             "Accept-Encoding": "gzip, deflate",
-            "User-Agent": choice(USER_AGENTS),
+            # Picking a user agent is not cryptographic.
+            "User-Agent": choice(USER_AGENTS),  # noqa: S311
         }
 
 
@@ -70,4 +72,5 @@ class Device(str, Enum):
 
     @classmethod
     def random(cls) -> "Device":
-        return choice([cls.IPHONE, cls.ANDROID, cls.WEB])
+        # Picking a device profile is not cryptographic.
+        return choice([cls.IPHONE, cls.ANDROID, cls.WEB])  # noqa: S311

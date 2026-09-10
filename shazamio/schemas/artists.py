@@ -1,54 +1,44 @@
-from dataclasses import dataclass
-from dataclasses import field
-from typing import Annotated
-from typing import Any
-from typing import List
-from typing import Optional
-from typing import TypeAlias
-from typing import Union
+from dataclasses import dataclass, field
+from typing import Annotated, Any, TypeAlias
 
-from pydantic import AliasPath
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import AliasPath, BaseModel, Field
 
-from shazamio.schemas.base import BaseIdTypeHref
 from shazamio.schemas.artist.views.full_albums import FullAlbumsModel
 from shazamio.schemas.artist.views.last_release import LastReleaseModel
 from shazamio.schemas.artist.views.simular_artists import SimularArtist
 from shazamio.schemas.artist.views.top_music import TopMusicVideosView
 from shazamio.schemas.artist.views.top_song import TopSong
 from shazamio.schemas.attributes import ArtistAttribute
-from shazamio.schemas.enums import ArtistExtend
-from shazamio.schemas.enums import ArtistView
+from shazamio.schemas.base import BaseIdTypeHref
+from shazamio.schemas.enums import ArtistExtend, ArtistView
 from shazamio.schemas.errors import ErrorModel
 
 
 class ArtistInfo(BaseModel):
     name: str
-    verified: Optional[bool]
-    genres: Optional[List[str]] = Field(
+    verified: bool | None
+    genres: list[str] | None = Field(
         default_factory=list,
         validation_alias=AliasPath("genres", "secondaries"),
     )
-    alias: Optional[str] = None
-    genres_primary: Optional[str] = Field(
+    alias: str | None = None
+    genres_primary: str | None = Field(
         default=None,
         validation_alias=AliasPath("genres", "primary"),
     )
-    avatar: Optional[Union[dict, str]] = None
-    adam_id: Optional[int] = Field(default=None, validation_alias="adamid")
-    url: Optional[str] = Field(default="", validation_alias="weburl")
+    avatar: dict[str, str] | str | None = None
+    adam_id: int | None = Field(default=None, validation_alias="adamid")
+    url: str | None = Field(default="", validation_alias="weburl")
 
-    def model_post_init(self, context: Any, /) -> None:
+    def model_post_init(self, _context: Any, /) -> None:
         self.avatar = self.__optional_avatar()
 
-    def __optional_avatar(self) -> Optional[str]:
+    def __optional_avatar(self) -> str | None:
         if self.avatar is None:
             return None
-        elif "default" in self.avatar:
+        if "default" in self.avatar:
             return self.avatar.get("default")
-        else:
-            return "".join(self.avatar)
+        return "".join(self.avatar)
 
 
 class ArtistV2(BaseModel):
@@ -58,15 +48,15 @@ class ArtistV2(BaseModel):
 # `left_to_right` keeps the old parser's first-match union semantics; the two
 #  shapes share no field a discriminator could read.
 ArtistType: TypeAlias = Annotated[
-    Union[ArtistV2, ArtistInfo],
+    ArtistV2 | ArtistInfo,
     Field(union_mode="left_to_right"),
 ]
 
 
 @dataclass
 class ArtistQuery:
-    views: List[ArtistView] = field(default_factory=list)
-    extend: List[ArtistExtend] = field(default_factory=list)
+    views: list[ArtistView] = field(default_factory=list)
+    extend: list[ArtistExtend] = field(default_factory=list)
 
 
 @dataclass
@@ -82,8 +72,8 @@ class ArtistAvatar:
 
 class AlbumRelationship(BaseModel):
     href: str
-    next: Optional[str] = None
-    data: List[BaseIdTypeHref]
+    next: str | None = None
+    data: list[BaseIdTypeHref]
 
 
 class ArtistRelationships(BaseModel):
@@ -91,11 +81,11 @@ class ArtistRelationships(BaseModel):
 
 
 class ArtistViews(BaseModel):
-    top_music_videos: Optional[TopMusicVideosView] = Field(default=None, alias="top-music-videos")
-    simular_artists: Optional[SimularArtist] = Field(default=None, alias="similar-artists")
-    latest_release: Optional[LastReleaseModel] = Field(default=None, alias="latest-release")
-    full_albums: Optional[FullAlbumsModel] = Field(default=None, alias="full-albums")
-    top_songs: Optional[TopSong] = Field(default=None, alias="top-songs")
+    top_music_videos: TopMusicVideosView | None = Field(default=None, alias="top-music-videos")
+    simular_artists: SimularArtist | None = Field(default=None, alias="similar-artists")
+    latest_release: LastReleaseModel | None = Field(default=None, alias="latest-release")
+    full_albums: FullAlbumsModel | None = Field(default=None, alias="full-albums")
+    top_songs: TopSong | None = Field(default=None, alias="top-songs")
 
 
 class ArtistV3(BaseModel):
@@ -107,5 +97,5 @@ class ArtistV3(BaseModel):
 
 
 class ArtistResponse(BaseModel):
-    errors: List[ErrorModel] = []
-    data: List[ArtistV3] = []
+    errors: list[ErrorModel] = []
+    data: list[ArtistV3] = []
