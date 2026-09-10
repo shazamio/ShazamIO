@@ -7,10 +7,10 @@
 <img src="https://pepy.tech/badge/shazamio/month" alt="https://pepy.tech/project/shazamio">
 <img src="https://img.shields.io/github/license/dotX12/shazamio.svg" alt="https://github.com/dotX12/ShazamIO/blob/master/LICENSE.txt">
 <br><br>
-  
+
   <img width="1000" src="https://user-images.githubusercontent.com/64792903/109359596-ca561a00-7896-11eb-9c93-9cf1f283b1a5.png">
   🎵 Is a FREE asynchronous library from reverse engineered Shazam API written in Python 3.10+ with asyncio and aiohttp. Includes all the methods that Shazam has, including searching for a song by file.
- 
+
 -----
 </p>
 
@@ -23,7 +23,7 @@
 ## 💻 Example
 
 
-<details> 
+<details>
 <summary>
 <i>🔎🎵 Recognize track</i>
 </summary>
@@ -47,7 +47,7 @@ Recognize a track based on a file<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>👨‍🎤 About artist</i>
 </summary>
@@ -76,7 +76,7 @@ Retrieving information from an artist profile<br>
 </details>
 
 
-<details> 
+<details>
 <summary>
 <i>🎵📄 About track</i>
 </summary>
@@ -104,7 +104,7 @@ Get track information<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🎵⌛ Track listenings count</i>
 </summary>
@@ -131,7 +131,7 @@ Returns the number of times a particular song has been played<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🎶💬 Similar songs</i>
 </summary>
@@ -157,7 +157,7 @@ Similar songs based song id<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔎👨‍🎤 Search artists</i>
 </summary>
@@ -181,7 +181,7 @@ Search all artists by prefix<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔎🎶 Search tracks</i>
 </summary>
@@ -204,7 +204,7 @@ Search all tracks by prefix<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶👨‍🎤 Top artist tracks</i>
 </summary>
@@ -241,7 +241,7 @@ Get the top songs according to Shazam<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶🏙️ Top tracks in city</i>
 </summary>
@@ -272,7 +272,7 @@ Retrieving information from an artist profile<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶🏳️‍🌈 Top tracks in country</i>
 </summary>
@@ -298,7 +298,7 @@ Get the best tracks by country code<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶🏳️‍🌈🎸 Top tracks in country by genre</i>
 </summary>
@@ -324,7 +324,7 @@ The best tracks by a genre in the country<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶🌏🎸 Top tracks in world by genre</i>
 </summary>
@@ -351,7 +351,7 @@ Get world tracks by certain genre<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>🔝🎶🌏Top tracks in world</i>
 </summary>
@@ -381,7 +381,7 @@ Get the best tracks from all over the world<br>
 
 ## How to use data serialization
 
-<details> 
+<details>
 <summary>
 <i>Open Code</i>
 </summary>
@@ -404,7 +404,7 @@ Get the best tracks from all over the world<br>
   ```
 </details>
 
-<details> 
+<details>
 <summary>
 <i>Open photo: What song information looks like (Dict)</i>
 </summary>
@@ -412,7 +412,7 @@ Get the best tracks from all over the world<br>
 
 </details>
 
-<details> 
+<details>
 <summary>
 <i>Open photo: what song information looks like (Custom serializer)</i>
 </summary>
