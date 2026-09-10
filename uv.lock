@@ -1124,9 +1124,9 @@ requires-dist = [
 dev = [
     { name = "pytest", specifier = "==8.1.2" },
     { name = "pytest-asyncio", specifier = ">=0.23.6,<0.24" },
-    { name = "ruff", specifier = ">=0.16.5,<0.17" },
+    { name = "ruff", specifier = ">=0.16.5" },
 ]
-lint = [{ name = "ruff", specifier = ">=0.16.5,<0.17" }]
+lint = [{ name = "ruff", specifier = ">=0.16.5" }]
 tests = [
     { name = "pytest", specifier = "==8.1.2" },
     { name = "pytest-asyncio", specifier = ">=0.23.6,<0.24" },

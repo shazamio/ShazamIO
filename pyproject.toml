@@ -56,10 +56,7 @@ tests = [
     "pytest-asyncio>=0.23.6,<0.24",
 ]
 lint = [
-    # `ruff` changes findings between 0.x minors, so an uncapped range would let
-    #  two checkouts disagree on what is clean; the cap keeps the gate
-    #  deterministic and Dependabot bumps it.
-    "ruff>=0.16.5,<0.17",
+    "ruff>=0.16.5",
 ]
 
 # Supply-chain safety net: only resolve packages published at least 7 days ago,
