@@ -9,7 +9,7 @@
 <br><br>
 
   <img width="1000" src="https://user-images.githubusercontent.com/64792903/109359596-ca561a00-7896-11eb-9c93-9cf1f283b1a5.png">
-  🎵 Is a FREE asynchronous library from reverse engineered Shazam API written in Python 3.10+ with asyncio and aiohttp. Includes all the methods that Shazam has, including searching for a song by file.
+  🎵 Is a FREE asynchronous library from reverse engineered Shazam API written in Python 3.10+ with asyncio and aiohttp. Recognizes a song from a file or from bytes, reads a track and the tracks related to it, and returns every chart Shazam publishes.
 
 -----
 </p>
@@ -22,59 +22,30 @@
 
 ## 💻 Example
 
-
 <details>
 <summary>
 <i>🔎🎵 Recognize track</i>
 </summary>
 
-Recognize a track based on a file<br>
+Recognize a track from a file, a `pathlib.Path`, or the bytes of one. The
+sample below ships with the repository, in `examples/data/`<br>
 
   ```python3
   import asyncio
-  from shazamio import Shazam
+  from shazamio import Serialize, Shazam
 
 
   async def main():
       shazam = Shazam()
-      # out = await shazam.recognize_song('dora.ogg') # slow and deprecated, don't use this!
-      out = await shazam.recognize("dora.ogg")  # rust version, use this!
-      print(out)
+      out = await shazam.recognize("Gloria.ogg")
+
+      print(out)  # dict
+      print(Serialize.full_track(out).track.title)  # I Will Survive
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
-
-<details>
-<summary>
-<i>👨‍🎤 About artist</i>
-</summary>
-
-Retrieving information from an artist profile<br>
-<a href="https://www.shazam.com/artist/43328183/nathan-evans">https://www.shazam.com/artist/43328183/nathan-evans</a>
-
-  ```python3
-  import asyncio
-  from shazamio import Shazam, Serialize
-
-
-  async def main():
-      shazam = Shazam()
-      artist_id = 43328183
-      about_artist = await shazam.artist_about(artist_id)
-      serialized = Serialize.artist(about_artist)
-
-      print(about_artist)  # dict
-      print(serialized)  # pydantic model
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
-
 
 <details>
 <summary>
@@ -86,48 +57,18 @@ Get track information<br>
 
   ```python3
   import asyncio
-  from shazamio import Shazam, Serialize
+  from shazamio import Serialize, Shazam
 
 
   async def main():
       shazam = Shazam()
-      track_id = 552406075
-      about_track = await shazam.track_about(track_id=track_id)
-      serialized = Serialize.track(data=about_track)
+      about_track = await shazam.track_about(track_id=552406075)
 
       print(about_track)  # dict
-      print(serialized)  # pydantic model
+      print(Serialize.track(data=about_track))  # pydantic model
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
-
-<details>
-<summary>
-<i>🎵⌛ Track listenings count</i>
-</summary>
-
-Returns the number of times a particular song has been played<br>
-<a href="https://www.shazam.com/track/559284007/rampampam">https://www.shazam.com/track/559284007/rampampam</a>
-
-  ```python3
-  import asyncio
-  from shazamio import Shazam
-
-
-  async def main():
-      # Example: https://www.shazam.com/track/559284007/rampampam
-
-      shazam = Shazam()
-      track_id = 559284007
-      count = await shazam.listening_counter(track_id=track_id)
-      print(count)
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
@@ -136,7 +77,7 @@ Returns the number of times a particular song has been played<br>
 <i>🎶💬 Similar songs</i>
 </summary>
 
-Similar songs based song id<br>
+Similar songs based on a song id<br>
 <a href="https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix">https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix</a>
 
   ```python3
@@ -146,47 +87,21 @@ Similar songs based song id<br>
 
   async def main():
       shazam = Shazam()
-      track_id = 546891609
-      related = await shazam.related_tracks(track_id=track_id, limit=5, offset=2)
-      # ONLY №3, №4 SONG
+      related = await shazam.related_tracks(track_id=546891609, limit=5, offset=2)
       print(related)
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
 <details>
 <summary>
-<i>🔎👨‍🎤 Search artists</i>
+<i>🔝🎶🌏 Top tracks in world</i>
 </summary>
 
-Search all artists by prefix<br>
-  ```python3
-  import asyncio
-  from shazamio import Shazam, Serialize
-
-
-  async def main():
-      shazam = Shazam()
-      artists = await shazam.search_artist(query="Lil", limit=5)
-      for artist in artists["artists"]["hits"]:
-          serialized = Serialize.artist(data=artist)
-          print(serialized)
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
-
-<details>
-<summary>
-<i>🔎🎶 Search tracks</i>
-</summary>
-
-Search all tracks by prefix<br>
+The 200 most shazamed tracks worldwide<br>
+<a href="https://www.shazam.com/charts/top-200/world">https://www.shazam.com/charts/top-200/world</a>
 
   ```python3
   import asyncio
@@ -195,49 +110,38 @@ Search all tracks by prefix<br>
 
   async def main():
       shazam = Shazam()
-      tracks = await shazam.search_track(query="Lil", limit=5)
-      print(tracks)
+      tracks = await shazam.top_world_tracks(limit=10)
+
+      for track in tracks:
+          print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
 <details>
 <summary>
-<i>🔝🎶👨‍🎤 Top artist tracks</i>
+<i>🔝🎶🏳️ Top tracks in country</i>
 </summary>
 
-Get the top songs according to Shazam<br>
-<a href="https://www.shazam.com/artist/201896832/kizaru">https://www.shazam.com/artist/201896832/kizaru</a>
+The 200 most shazamed tracks in a country<br>
+<a href="https://www.shazam.com/charts/top-200/netherlands">https://www.shazam.com/charts/top-200/netherlands</a>
 
   ```python3
   import asyncio
-  from shazamio import Shazam, Serialize
-  from shazamio.schemas.artists import ArtistQuery
-  from shazamio.schemas.enums import ArtistView
+  from shazamio import Shazam
 
 
   async def main():
       shazam = Shazam()
-      artist_id = 1081606072
+      tracks = await shazam.top_country_tracks("NL", limit=5)
 
-      about_artist = await shazam.artist_about(
-          artist_id,
-          query=ArtistQuery(
-              views=[
-                  ArtistView.TOP_SONGS,
-              ],
-          ),
-      )
-      serialized = Serialize.artist_v2(about_artist)
-      for i in serialized.data[0].views.top_songs.data:
-          print(i.attributes.name)
+      for track in tracks:
+          print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-  loop = asyncio.get_event_loop_policy().get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
@@ -246,81 +150,28 @@ Get the top songs according to Shazam<br>
 <i>🔝🎶🏙️ Top tracks in city</i>
 </summary>
 
-Retrieving information from an artist profile<br>
+The 50 most shazamed tracks in a city. The city name is the one
+`services/charts/locations` publishes<br>
 <a href="https://www.shazam.com/charts/top-50/russia/moscow">https://www.shazam.com/charts/top-50/russia/moscow</a>
 
   ```python3
   import asyncio
-  from shazamio import Shazam, Serialize
+  from shazamio import Shazam
 
 
   async def main():
       shazam = Shazam()
-      top_ten_moscow_tracks = await shazam.top_city_tracks(
-          country_code="RU", city_name="Moscow", limit=10
+      tracks = await shazam.top_city_tracks(
+          "RU",
+          city_name="Moscow",
+          limit=10,
       )
-      print(top_ten_moscow_tracks)
-      # ALL TRACKS DICT
-      for track in top_ten_moscow_tracks["tracks"]:
-          serialized = Serialize.track(data=track)
-          # PYDANTIC MODEL
-          print(serialized)
+
+      for track in tracks:
+          print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
-
-<details>
-<summary>
-<i>🔝🎶🏳️‍🌈 Top tracks in country</i>
-</summary>
-
-Get the best tracks by country code<br>
-<a href="https://www.shazam.com/charts/discovery/netherlands">https://www.shazam.com/charts/discovery/netherlands</a>
-
-  ```python3
-  import asyncio
-  from shazamio import Shazam, Serialize
-
-
-  async def main():
-      shazam = Shazam()
-      top_five_track_from_amsterdam = await shazam.top_country_tracks("NL", 5)
-      for track in top_five_track_from_amsterdam["tracks"]:
-          serialized = Serialize.track(data=track)
-          print(serialized)
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
-
-<details>
-<summary>
-<i>🔝🎶🏳️‍🌈🎸 Top tracks in country by genre</i>
-</summary>
-
-The best tracks by a genre in the country<br>
-<a href="https://www.shazam.com/charts/genre/spain/hip-hop-rap">https://www.shazam.com/charts/genre/spain/hip-hop-rap</a>
-
-  ```python3
-  import asyncio
-  from shazamio import Shazam, GenreMusic
-
-
-  async def main():
-      shazam = Shazam()
-      top_spain_rap = await shazam.top_country_genre_tracks(
-          country_code="ES", genre=GenreMusic.HIP_HOP_RAP, limit=4
-      )
-      print(top_spain_rap)
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
@@ -329,80 +180,75 @@ The best tracks by a genre in the country<br>
 <i>🔝🎶🌏🎸 Top tracks in world by genre</i>
 </summary>
 
-Get world tracks by certain genre<br>
+The most shazamed tracks worldwide in one genre<br>
 <a href="https://www.shazam.com/charts/genre/world/rock">https://www.shazam.com/charts/genre/world/rock</a>
 
   ```python3
   import asyncio
-  from shazamio import Shazam, Serialize, GenreMusic
+  from shazamio import GenreMusic, Shazam
 
 
   async def main():
       shazam = Shazam()
-      top_rock_in_the_world = await shazam.top_world_genre_tracks(genre=GenreMusic.ROCK, limit=10)
+      tracks = await shazam.top_world_genre_tracks(GenreMusic.ROCK, limit=10)
 
-      for track in top_rock_in_the_world["tracks"]:
-          serialized_track = Serialize.track(data=track)
-          print(serialized_track.spotify_url)
+      for track in tracks:
+          print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
 <details>
 <summary>
-<i>🔝🎶🌏Top tracks in world</i>
+<i>🔝🎶🏳️🎸 Top tracks in country by genre</i>
 </summary>
 
-Get the best tracks from all over the world<br>
-<a href="https://www.shazam.com/charts/top-200/world">https://www.shazam.com/charts/top-200/world</a>
+The most shazamed tracks in a country in one genre. Shazam offers only a
+handful of genres per country, and asking for one it does not offer answers
+`404`, which surfaces as `aiohttp.ClientResponseError`<br>
+<a href="https://www.shazam.com/charts/genre/spain/hip-hop-rap">https://www.shazam.com/charts/genre/spain/hip-hop-rap</a>
 
   ```python3
   import asyncio
-  from shazamio import Shazam, Serialize
+  from shazamio import GenreMusic, Shazam
 
 
   async def main():
       shazam = Shazam()
-      top_world_tracks = await shazam.top_world_tracks(limit=10)
-      print(top_world_tracks)
-      for track in top_world_tracks["tracks"]:
-          serialized = Serialize.track(track)
-          print(serialized)
+      tracks = await shazam.top_country_genre_tracks(
+          "ES",
+          genre=GenreMusic.HIP_HOP_RAP,
+          limit=4,
+      )
+
+      for track in tracks:
+          print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
+  asyncio.run(main())
   ```
 </details>
 
+## 📊 What the chart methods return
 
-## How to use data serialization
+Shazam publishes its charts as CSV with three columns, so a chart entry is a
+`ChartTrack` carrying a rank, an artist and a title, and nothing else. A chart
+has no ids, no artwork and no provider links, so a chart entry cannot be passed
+to `Serialize`. Nothing in the library resolves a chart row to a track id
+either: Shazam retired the search endpoints that used to do it.
 
-<details>
-<summary>
-<i>Open Code</i>
-</summary>
+`limit` defaults to the whole chart, and `offset` skips entries from the top:
+both are applied to the chart the service returns, which is always the full
+one.
 
-  ```python3
-  import asyncio
-  from shazamio import Shazam, Serialize
+## 🔧 What data serialization gives you
 
-
-  async def main():
-      shazam = Shazam()
-      top_five_track_from_amsterdam = await shazam.top_country_tracks("NL", 5)
-      for track in top_five_track_from_amsterdam["tracks"]:
-          serialized = Serialize.track(data=track)
-          print(serialized.title)
-
-
-  loop = asyncio.get_event_loop()
-  loop.run_until_complete(main())
-  ```
-</details>
+`Serialize.full_track` turns the output of `recognize` into a `ResponseTrack`,
+and `Serialize.track` turns the output of `track_about` into a `TrackInfo`.
+Both carry the title, the artist, the artwork and the provider links, so you
+no longer have to pick the fields out of the raw dictionary by hand.
 
 <details>
 <summary>
@@ -419,5 +265,3 @@ Get the best tracks from all over the world<br>
 <img src="https://user-images.githubusercontent.com/64792903/109454465-57e76480-7a65-11eb-956c-1bcac41d7de5.png">
 
 </details>
-
-Agree, thanks to the serializer, you no longer need to manually select the necessary data from the dictionary. Now the serializer contains the most necessary information about an artist or a track.
