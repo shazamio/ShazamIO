@@ -1,7 +1,6 @@
 from typing import Any, Final
 
 from shazamio import Serialize
-from shazamio.schemas.artists import ArtistInfo, ArtistV2
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path
@@ -66,33 +65,3 @@ def test_sections_resolve_by_type_discriminator() -> None:
 
     section_types = [type(section).__name__ for section in track.sections]
     assert section_types == ["SongSection", "VideoSection", "ArtistSection", "RelatedSection"]
-
-
-def test_artist_union_resolves_flat_and_wrapped_payloads() -> None:
-    flat: dict[str, Any] = {
-        "name": "Steve Jablonsky",
-        "verified": False,
-        "adamid": "21402948",
-        "genres": {"secondaries": ["Soundtrack"], "primary": "Soundtrack"},
-        "weburl": "https://www.shazam.com/artist/10194644",
-    }
-    expected_artist: dict[str, Any] = {
-        "name": "Steve Jablonsky",
-        "verified": False,
-        "genres": ["Soundtrack"],
-        "alias": None,
-        "genres_primary": "Soundtrack",
-        "avatar": None,
-        "adam_id": 21402948,
-        "url": "https://www.shazam.com/artist/10194644",
-    }
-
-    artist = Serialize.artist(flat)
-
-    assert isinstance(artist, ArtistInfo)
-    assert artist.model_dump() == expected_artist
-
-    wrapped = Serialize.artist({"artist": flat})
-
-    assert isinstance(wrapped, ArtistV2)
-    assert wrapped.artist.model_dump() == expected_artist

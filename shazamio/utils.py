@@ -1,5 +1,4 @@
 import pathlib
-from enum import Enum
 from io import BytesIO
 from typing import Any, TypeAlias
 
@@ -9,7 +8,6 @@ from aiohttp import ContentTypeError
 from pydub import AudioSegment
 
 from shazamio.exceptions import FailedDecodeJson
-from shazamio.schemas.artists import ArtistQuery
 
 SongT: TypeAlias = str | pathlib.Path | bytes | bytearray
 FileT: TypeAlias = str | pathlib.Path
@@ -45,28 +43,3 @@ async def get_song(data: SongT) -> AudioSegment:
 
     msg = f"Unsupported data type: {type(data)}"
     raise TypeError(msg)
-
-
-class QueryBuilder:
-    def __init__(
-        self,
-        source: list[str | Enum],
-    ) -> None:
-        self.source = source
-
-    def to_str(self) -> str:
-        return ",".join(self.source)
-
-
-class ArtistQueryGenerator:
-    def __init__(
-        self,
-        source: ArtistQuery | None = None,
-    ) -> None:
-        self.source = source
-
-    def params(self) -> dict[str, str]:
-        return {
-            "extend": QueryBuilder(source=self.source.extend or []).to_str(),
-            "views": QueryBuilder(source=self.source.views or []).to_str(),
-        }

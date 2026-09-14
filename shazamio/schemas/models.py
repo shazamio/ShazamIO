@@ -91,16 +91,6 @@ TrackSectionType: TypeAlias = Annotated[
 ]
 
 
-class DimensionsModel(BaseModel):
-    width: int
-    height: int
-
-
-class YoutubeImageModel(BaseModel):
-    dimensions: DimensionsModel
-    url: str
-
-
 class MatchModel(BaseModel):
     id: str
     offset: float
@@ -111,23 +101,6 @@ class MatchModel(BaseModel):
 
 class LocationModel(BaseModel):
     accuracy: float
-
-
-class YoutubeData(BaseModel):
-    caption: str
-    image: YoutubeImageModel
-    actions: list[ActionModel]
-    uri: str | None = None
-
-    def model_post_init(self, _context: Any, /) -> None:
-        self.uri = self.__get_youtube_uri()
-
-    def __get_youtube_uri(self) -> str | None:
-        if self.actions:
-            for action in self.actions:
-                if action.uri:
-                    return action.uri
-        return None
 
 
 class TrackInfo(BaseModel):

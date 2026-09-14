@@ -10,10 +10,6 @@ class BadCountryName(Exception):
     pass
 
 
-class BadRegionName(Exception):
-    pass
-
-
 class BadMethod(Exception):
     pass
 
