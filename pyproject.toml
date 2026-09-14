@@ -96,7 +96,7 @@ exclude-newer = "7 days"
 #  `uv build`, and check the wheel still looks right. The bounded shape is what
 #  uv's own docs prescribe.
 #  https://docs.astral.sh/uv/concepts/build-backend/
-requires = ["uv_build>=0.12.8,<0.13"]
+requires = ["uv_build>=0.12.10,<0.13"]
 build-backend = "uv_build"
 
 # The package is a flat `shazamio/` directory, not the `src/` layout the backend
