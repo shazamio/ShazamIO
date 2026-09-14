@@ -6,12 +6,7 @@ import shazamio
 # What the package promises to keep working. Removing a name from here is a
 #  breaking change for anyone importing it, so it takes two deliberate edits.
 _EXPORTS: Final[tuple[str, ...]] = (
-    "BadCityName",
-    "BadCountryName",
-    "BadRegionName",
     "FailedDecodeJson",
-    "GenreMusic",
-    "GeoService",
     "HTTPClient",
     "SearchParams",
     "Serialize",
