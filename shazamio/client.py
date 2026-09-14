@@ -38,7 +38,6 @@ class HTTPClient(HTTPClientInterface):
         self,
         method: str,
         url: str,
-        *args: str,
         **kwargs: Any,
     ) -> list[Any] | dict[str, Any]:
         async with RetryClient(
@@ -47,15 +46,15 @@ class HTTPClient(HTTPClientInterface):
             trace_configs=[self.trace_config],
         ) as client:
             if method.upper() == "GET":
-                async with client.get(url, **kwargs) as resp:
-                    return await validate_json(resp, *args)
+                async with client.get(url, **kwargs) as response:
+                    return await validate_json(response)
 
-            elif method.upper() == "POST":
-                async with client.post(url, **kwargs) as resp:
-                    return await validate_json(resp, *args)
-            else:
-                msg: str = "Accept only GET/POST"
-                raise BadMethod(msg)
+            if method.upper() == "POST":
+                async with client.post(url, **kwargs) as response:
+                    return await validate_json(response)
+
+            msg: str = "Accept only GET/POST"
+            raise BadMethod(msg)
 
     async def request_text(
         self,

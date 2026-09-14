@@ -13,15 +13,12 @@ SongT: TypeAlias = str | pathlib.Path | bytes | bytearray
 FileT: TypeAlias = str | pathlib.Path
 
 
-async def validate_json(
-    resp: aiohttp.ClientResponse,
-    content_type: str = "application/json",
-) -> Any:
+async def validate_json(response: aiohttp.ClientResponse) -> Any:
     try:
-        return await resp.json(content_type=content_type)
+        return await response.json()
     except ContentTypeError as er:
-        body = await resp.text()
-        msg = f"Failed to decode json (status={resp.status}): {body[:200]}"
+        body = await response.text()
+        msg = f"Failed to decode json (status={response.status}): {body[:200]}"
         raise FailedDecodeJson(msg) from er
 
 
