@@ -12,3 +12,11 @@ class HTTPClientInterface(ABC):
         **kwargs: Any,
     ) -> list[Any] | dict[str, Any]:
         raise NotImplementedError
+
+    @abstractmethod
+    async def request_text(
+        self,
+        url: str,
+        **kwargs: Any,
+    ) -> str:
+        raise NotImplementedError

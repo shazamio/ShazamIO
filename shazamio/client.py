@@ -56,3 +56,19 @@ class HTTPClient(HTTPClientInterface):
             else:
                 msg: str = "Accept only GET/POST"
                 raise BadMethod(msg)
+
+    async def request_text(
+        self,
+        url: str,
+        **kwargs: Any,
+    ) -> str:
+        """Fetch a body no JSON decoder should see, such as the chart CSV."""
+        async with (
+            RetryClient(
+                retry_options=self.retry_options,
+                raise_for_status=True,
+                trace_configs=[self.trace_config],
+            ) as client,
+            client.get(url, **kwargs) as response,
+        ):
+            return await response.text()

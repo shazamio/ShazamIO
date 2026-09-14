@@ -7,12 +7,17 @@ from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
 from shazamio_core import Recognizer, SearchParams, Signature
 
+from .charts import parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
 from .deprecated.decorator import deprecated
+from .enums import GenreMusic
+from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .misc import Device, Request, ShazamUrl
+from .schemas.charts import ChartTrack
 from .signature import DecodedMessage
+from .typehints import CountryCode
 from .utils import get_song
 
 
@@ -43,6 +48,167 @@ class Shazam(Request):
                 statuses={500, 502, 503, 504, 429},
             ),
         )
+        self.geo_service = GeoService(self.http_client, request=self)
+
+    async def top_world_tracks(
+        self,
+        *,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks worldwide, 200 of them.
+
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        return await self._chart(
+            ShazamUrl.TOP_WORLD_TRACKS,
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_country_tracks(
+        self,
+        country_code: str,
+        *,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a country, 200 of them.
+
+        :param country_code: ISO 3166-3 alpha-2 code. Example: RU, NL, UA
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        country = await self.geo_service.country_url_name(
+            CountryCode(country_code),
+            proxy=proxy,
+        )
+
+        return await self._chart(
+            ShazamUrl.TOP_COUNTRY_TRACKS.format(country=country),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_city_tracks(
+        self,
+        country_code: str,
+        *,
+        city_name: str,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a city, 50 of them.
+
+        :param country_code: ISO 3166-3 alpha-2 code. Example: RU, NL, UA
+        :param city_name: City name as `services/charts/locations` spells it. Example: Moscow
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        country = CountryCode(country_code)
+        city = await self.geo_service.city_url_name(
+            country,
+            city=city_name,
+            proxy=proxy,
+        )
+
+        return await self._chart(
+            ShazamUrl.TOP_CITY_TRACKS.format(
+                country=await self.geo_service.country_url_name(country, proxy=proxy),
+                city=city,
+            ),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_world_genre_tracks(
+        self,
+        genre: GenreMusic | str,
+        *,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks worldwide in one genre, 50 to 200 of them.
+
+        :param genre: Genre, as a `GenreMusic` member or its value. Example: rock
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        return await self._chart(
+            ShazamUrl.TOP_WORLD_GENRE_TRACKS.format(genre=GenreMusic(genre).value),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_country_genre_tracks(
+        self,
+        country_code: str,
+        *,
+        genre: GenreMusic | str,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a country in one genre, 100 of them.
+
+        Shazam offers only a handful of genres per country, and asking for one it
+        does not offer answers `404`.
+
+        :param country_code: ISO 3166-3 alpha-2 code. Example: ES, RU, NL
+        :param genre: Genre, as a `GenreMusic` member or its value. Example: hip-hop-rap
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        country = await self.geo_service.country_url_name(
+            CountryCode(country_code),
+            proxy=proxy,
+        )
+
+        return await self._chart(
+            ShazamUrl.TOP_COUNTRY_GENRE_TRACKS.format(
+                country=country,
+                genre=GenreMusic(genre).value,
+            ),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def _chart(
+        self,
+        url: str,
+        *,
+        limit: int | None,
+        offset: int,
+        proxy: str | None,
+    ) -> list[ChartTrack]:
+        payload = await self.http_client.request_text(
+            url,
+            headers=self.headers(),
+            proxy=proxy,
+        )
+        tracks = parse_chart_csv(payload)
+
+        return tracks[offset : None if limit is None else offset + limit]
 
     async def track_about(
         self,
