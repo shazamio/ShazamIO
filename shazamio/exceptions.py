@@ -16,3 +16,11 @@ class BadMethod(Exception):
 
 class BadParseData(Exception):
     pass
+
+
+class BadResponseStatus(Exception):
+    pass
+
+
+class BadContentType(Exception):
+    pass

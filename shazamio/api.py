@@ -7,7 +7,7 @@ from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
 from shazamio_core import Recognizer, SearchParams, Signature
 
-from .charts import parse_chart_csv
+from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
 from .deprecated.decorator import deprecated
@@ -203,6 +203,7 @@ class Shazam(Request):
     ) -> list[ChartTrack]:
         payload = await self.http_client.request_text(
             url,
+            content_type=CHART_CONTENT_TYPE,
             headers=self.headers(),
             proxy=proxy,
         )

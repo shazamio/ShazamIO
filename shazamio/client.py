@@ -1,10 +1,11 @@
+from http import HTTPStatus
 from types import SimpleNamespace
 from typing import Any
 
 from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
 from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
 
-from shazamio.exceptions import BadMethod
+from shazamio.exceptions import BadContentType, BadMethod, BadResponseStatus
 from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.loggers import request as request_logger
 from shazamio.utils import validate_json
@@ -63,15 +64,28 @@ class HTTPClient(HTTPClientInterface):
     async def request_text(
         self,
         url: str,
+        *,
+        content_type: str,
         **kwargs: Any,
     ) -> str:
         """Fetch a body no JSON decoder should see, such as the chart CSV."""
         async with (
             RetryClient(
                 retry_options=self.retry_options,
-                raise_for_status=True,
+                raise_for_status=False,
                 trace_configs=[self.trace_config],
             ) as client,
             client.get(url, **kwargs) as response,
         ):
+            if response.status != HTTPStatus.OK:
+                msg = f"{url} answered {response.status}"
+                raise BadResponseStatus(msg)
+
+            # A path the edge does not route to the API is answered by the website
+            #  itself, `200 text/html`, so the status alone says nothing about the
+            #  body. Without this the caller gets a parse error naming the parser.
+            if response.content_type != content_type:
+                msg = f"{url} answered {response.content_type}, expected {content_type}"
+                raise BadContentType(msg)
+
             return await response.text()

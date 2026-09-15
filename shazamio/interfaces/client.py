@@ -16,6 +16,8 @@ class HTTPClientInterface(ABC):
     async def request_text(
         self,
         url: str,
+        *,
+        content_type: str,
         **kwargs: Any,
     ) -> str:
         raise NotImplementedError

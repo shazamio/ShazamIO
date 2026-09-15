@@ -5,6 +5,8 @@ from typing import Final
 from shazamio.exceptions import BadParseData
 from shazamio.schemas.charts import ChartTrack
 
+CHART_CONTENT_TYPE: Final[str] = "text/csv"
+
 # The body opens with a byte order mark, a blank line and a quoted caption
 #  ("Monday, 14 September 2026 [performance over the past 7 days]"), so the
 #  header row is the only place the rows can be keyed off.
