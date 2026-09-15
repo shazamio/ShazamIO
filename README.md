@@ -135,7 +135,10 @@ The 200 most shazamed tracks in a country<br>
 
   async def main():
       shazam = Shazam()
-      tracks = await shazam.top_country_tracks("NL", limit=5)
+      tracks = await shazam.top_country_tracks(
+          country_code="NL",
+          limit=5,
+      )
 
       for track in tracks:
           print(f"{track.rank}. {track.artist} - {track.title}")
@@ -162,7 +165,7 @@ The 50 most shazamed tracks in a city. The city name is the one
   async def main():
       shazam = Shazam()
       tracks = await shazam.top_city_tracks(
-          "RU",
+          country_code="RU",
           city_name="Moscow",
           limit=10,
       )
@@ -190,7 +193,10 @@ The most shazamed tracks worldwide in one genre<br>
 
   async def main():
       shazam = Shazam()
-      tracks = await shazam.top_world_genre_tracks(GenreMusic.ROCK, limit=10)
+      tracks = await shazam.top_world_genre_tracks(
+          genre=GenreMusic.ROCK,
+          limit=10,
+      )
 
       for track in tracks:
           print(f"{track.rank}. {track.artist} - {track.title}")
@@ -218,7 +224,7 @@ handful of genres per country, and asking for one it does not offer answers
   async def main():
       shazam = Shazam()
       tracks = await shazam.top_country_genre_tracks(
-          "ES",
+          country_code="ES",
           genre=GenreMusic.HIP_HOP_RAP,
           limit=4,
       )

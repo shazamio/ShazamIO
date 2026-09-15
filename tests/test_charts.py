@@ -42,7 +42,7 @@ async def test_the_world_chart_carries_two_hundred_ranked_entries() -> None:
 @pytest.mark.asyncio
 async def test_a_city_chart_resolves_its_country_and_city_slugs() -> None:
     tracks = await Shazam().top_city_tracks(
-        "RU",
+        country_code="RU",
         city_name="Moscow",
         limit=5,
     )
@@ -52,6 +52,9 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs() -> None:
 
 @pytest.mark.asyncio
 async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries() -> None:
-    tracks = await Shazam().top_world_genre_tracks(GenreMusic.ROCK, limit=5)
+    tracks = await Shazam().top_world_genre_tracks(
+        genre=GenreMusic.ROCK,
+        limit=5,
+    )
 
     assert [track.rank for track in tracks] == [1, 2, 3, 4, 5]

@@ -6,7 +6,7 @@ from shazamio import GenreMusic, Shazam
 async def main() -> None:
     shazam = Shazam()
     tracks = await shazam.top_country_genre_tracks(
-        "ES",
+        country_code="ES",
         genre=GenreMusic.HIP_HOP_RAP,
         limit=4,
     )

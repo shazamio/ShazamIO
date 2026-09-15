@@ -6,7 +6,7 @@ from shazamio import Shazam
 async def main() -> None:
     shazam = Shazam()
     tracks = await shazam.top_city_tracks(
-        "RU",
+        country_code="RU",
         city_name="Moscow",
         limit=10,
     )
