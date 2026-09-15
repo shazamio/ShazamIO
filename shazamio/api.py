@@ -306,7 +306,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.random().value,
+                device=Device.IPHONE.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),
@@ -358,7 +358,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.random().value,
+                device=Device.IPHONE.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),

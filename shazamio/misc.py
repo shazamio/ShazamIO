@@ -14,12 +14,16 @@ class ShazamUrl:
     # `discovery/v5` answers on `amp.` and `cdn.` only. On `www.` it returns the
     #  1.7MB single-page-app shell as `text/html`, which surfaces as
     #  `FailedDecodeJson` and reads like a parsing bug.
+    #  The device segment is `iphone` because the `web` profile omits
+    #  `hub.providers`, the Spotify and Deezer links, from every track it
+    #  answers with, while `android` returns `apple_music_url` as an
+    #  `intent://` deep link no browser opens.
     ABOUT_TRACK: Final[str] = (
-        "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
+        "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/iphone/-/track"
         "/{track_id}?shazamapiversion=v3&video=v3"
     )
     RELATED_SONGS: Final[str] = (
-        "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
+        "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/iphone/-/tracks"
         "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
     )
     LOCATIONS: Final[str] = "https://www.shazam.com/services/charts/locations"
@@ -64,8 +68,3 @@ class Device(str, Enum):
     IPHONE = "iphone"
     ANDROID = "android"
     WEB = "web"
-
-    @classmethod
-    def random(cls) -> "Device":
-        # Picking a device profile is not cryptographic.
-        return choice([cls.IPHONE, cls.ANDROID, cls.WEB])  # noqa: S311
