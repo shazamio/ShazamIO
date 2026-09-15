@@ -50,10 +50,18 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs() -> None:
     assert [track.rank for track in tracks] == [1, 2, 3, 4, 5]
 
 
+# Parametrized rather than sampled: a genre Shazam renames stops having a chart
+#  and answers `404`, which is how `regional-mexicano` left the enum.
 @pytest.mark.asyncio
-async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries() -> None:
+@pytest.mark.parametrize(
+    "genre",
+    [pytest.param(genre, id=genre.value) for genre in GenreMusic],
+)
+async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
+    genre: GenreMusic,
+) -> None:
     tracks = await Shazam().top_world_genre_tracks(
-        genre=GenreMusic.ROCK,
+        genre=genre,
         limit=5,
     )
 
