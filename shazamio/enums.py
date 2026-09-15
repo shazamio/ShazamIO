@@ -19,7 +19,9 @@ class GenreMusic(Enum):
     K_POP = "k-pop"
     FRENCH_POP = "french-pop"
     SINGER_SONGWRITER = "singer-songwriter"
-    REGIONAL_MEXICANO = "regional-mexicano"
+    # `regional-mexicano` was renamed to `m%C3%BAsica-mexicana` and is the one
+    #  genre `services/charts/locations` lists that has no chart: every chart
+    #  path built from either spelling answers `404` with an empty body.
 
 
 class SampleRate(IntEnum):

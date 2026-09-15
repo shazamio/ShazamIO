@@ -1,11 +1,12 @@
 from enum import Enum
 from random import choice
+from typing import Final
 
 from shazamio.user_agent import USER_AGENTS
 
 
 class ShazamUrl:
-    SEARCH_FROM_FILE = (
+    SEARCH_FROM_FILE: Final[str] = (
         "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/{device}/-/tag"
         "/{uuid_1}/{uuid_2}?sync=true&webv3=true&sampling=true"
         "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
@@ -13,40 +14,35 @@ class ShazamUrl:
     # `discovery/v5` answers on `amp.` and `cdn.` only. On `www.` it returns the
     #  1.7MB single-page-app shell as `text/html`, which surfaces as
     #  `FailedDecodeJson` and reads like a parsing bug.
-    ABOUT_TRACK = (
-        "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/web/-/track"
+    #  The device segment is `iphone` because the `web` profile omits
+    #  `hub.providers`, the Spotify and Deezer links, from every track it
+    #  answers with, while `android` returns `apple_music_url` as an
+    #  `intent://` deep link no browser opens.
+    ABOUT_TRACK: Final[str] = (
+        "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/iphone/-/track"
         "/{track_id}?shazamapiversion=v3&video=v3"
     )
-    TOP_TRACKS_PLAYLIST = (
-        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
-        "/playlists/{playlist_id}/tracks?limit={limit}&offset={offset}&"
-        "l={language}&relate[songs]=artists,music-videos"
-    )
-    LOCATIONS = "https://www.shazam.com/services/charts/locations"
-    RELATED_SONGS = (
-        "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/web/-/tracks"
+    RELATED_SONGS: Final[str] = (
+        "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/iphone/-/tracks"
         "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
     )
-    SEARCH_ARTIST = (
-        "https://www.shazam.com/services/search/v4/{language}/{endpoint_country}/web"
-        "/search?term={query}&limit={limit}&offset={offset}&types=artists"
+    LOCATIONS: Final[str] = "https://www.shazam.com/services/charts/locations"
+    # Charts are CSV and only CSV: the JSON chart resources are dead or
+    #  frozen. On `cdn.` (the only host still routing them)
+    #  `shazam/v3/.../tracks/ip-*-chart` answers `204`, and
+    #  `tracks/genre-*-chart-<id>` a chart last updated in 2024, while the CSV
+    #  below is dated the current week. Columns are `Rank,Artist,Title` and
+    #  query parameters are ignored, so paging is a client-side slice.
+    TOP_WORLD_TRACKS: Final[str] = "https://www.shazam.com/services/charts/csv/top-200/world/"
+    TOP_WORLD_GENRE_TRACKS: Final[str] = (
+        "https://www.shazam.com/services/charts/csv/genre/world/{genre}/"
     )
-    SEARCH_MUSIC = (
-        "https://www.shazam.com/services/search/v3/{language}/{endpoint_country}/web"
-        "/search?query={query}&numResults={limit}&offset={offset}&types=songs"
+    TOP_COUNTRY_TRACKS: Final[str] = "https://www.shazam.com/services/charts/csv/top-200/{country}/"
+    TOP_COUNTRY_GENRE_TRACKS: Final[str] = (
+        "https://www.shazam.com/services/charts/csv/genre/{country}/{genre}/"
     )
-    LISTENING_COUNTER = "https://www.shazam.com/services/count/v2/web/track/{}"
-    LISTENING_COUNTER_MANY = "https://www.shazam.com/services/count/v2/web/track"
-
-    SEARCH_ARTIST_V2 = (
-        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}/artists/{artist_id}"
-    )
-    ARTIST_ALBUMS = (
-        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}"
-        "/artists/{artist_id}/albums?limit={limit}&offset={offset}"
-    )
-    ARTIST_ALBUM_INFO = (
-        "https://www.shazam.com/services/amapi/v1/catalog/{endpoint_country}/albums/{album_id}"
+    TOP_CITY_TRACKS: Final[str] = (
+        "https://www.shazam.com/services/charts/csv/top-50/{country}/{city}/"
     )
 
 
@@ -72,8 +68,3 @@ class Device(str, Enum):
     IPHONE = "iphone"
     ANDROID = "android"
     WEB = "web"
-
-    @classmethod
-    def random(cls) -> "Device":
-        # Picking a device profile is not cryptographic.
-        return choice([cls.IPHONE, cls.ANDROID, cls.WEB])  # noqa: S311

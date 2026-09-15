@@ -10,13 +10,17 @@ class BadCountryName(Exception):
     pass
 
 
-class BadRegionName(Exception):
-    pass
-
-
 class BadMethod(Exception):
     pass
 
 
 class BadParseData(Exception):
+    pass
+
+
+class BadResponseStatus(Exception):
+    pass
+
+
+class BadContentType(Exception):
     pass

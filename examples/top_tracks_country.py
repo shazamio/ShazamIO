@@ -1,18 +1,17 @@
 import asyncio
 
-from shazamio import Serialize, Shazam
+from shazamio import Shazam
 
 
 async def main() -> None:
     shazam = Shazam()
-    top_five_track_from_amsterdam = await shazam.top_country_tracks("NL", 100)
-    tracks = Serialize.playlists(top_five_track_from_amsterdam)
-    print(tracks)
+    tracks = await shazam.top_country_tracks(
+        country_code="NL",
+        limit=5,
+    )
 
-    for track in top_five_track_from_amsterdam["data"]:
-        serialized = Serialize.playlist(data=track)
-        print(serialized)
+    for track in tracks:
+        print(f"{track.rank}. {track.artist} - {track.title}")
 
 
-loop = asyncio.get_event_loop_policy().get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

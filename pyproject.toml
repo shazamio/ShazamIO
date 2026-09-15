@@ -162,9 +162,6 @@ runtime-evaluated-base-classes = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"shazamio/user_agent.py" = [
-    "E501",    # A data file: one user-agent string per line, many past 100 chars
-]
 "shazamio/algorithm.py" = [
     "PLR2004", # DSP thresholds (frequency bands, FFT sizes) are readable inline
     "S101",    # An invariant of the reverse-engineered algorithm, same story as

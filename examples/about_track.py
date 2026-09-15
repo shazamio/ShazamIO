@@ -13,5 +13,4 @@ async def main() -> None:
     print(serialized)  # pydantic model
 
 
-loop = asyncio.get_event_loop_policy().get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

@@ -7,16 +7,18 @@ from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
 from shazamio_core import Recognizer, SearchParams, Signature
 
+from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
-from .converter import Converter, GeoService
+from .converter import Converter
 from .deprecated.decorator import deprecated
 from .enums import GenreMusic
+from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .misc import Device, Request, ShazamUrl
-from .schemas.artists import ArtistQuery
+from .schemas.charts import ChartTrack
 from .signature import DecodedMessage
 from .typehints import CountryCode
-from .utils import ArtistQueryGenerator, get_song
+from .utils import get_song
 
 
 class Shazam(Request):
@@ -46,68 +48,168 @@ class Shazam(Request):
                 statuses={500, 502, 503, 504, 429},
             ),
         )
-        self.geo_service = GeoService(self.http_client)
+        self.geo_service = GeoService(self.http_client, request=self)
 
     async def top_world_tracks(
         self,
-        limit: int = 200,
+        *,
+        limit: int | None = None,
         offset: int = 0,
         proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Search top world tracks.
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks worldwide, 200 of them.
 
-        :param limit: Determines how many songs the maximum can be in the request.
-            Example: If 5 is specified, the query will return no more than 5 songs.
-        :param offset: A parameter that determines with which song to display the request.
-            The default is 0. If you want to skip the first few songs, set this parameter to
-            your own.
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
         :param proxy: Proxy server
-        :return: dict tracks
+        :return: chart entries, highest ranked first
         """
-        top_playlist_id = await self.geo_service.get_top()
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
-                playlist_id=top_playlist_id,
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-            ),
-            headers=self.headers(),
+        return await self._chart(
+            ShazamUrl.TOP_WORLD_TRACKS,
+            limit=limit,
+            offset=offset,
             proxy=proxy,
         )
 
-    async def artist_about(
+    async def top_country_tracks(
         self,
-        artist_id: int,
-        query: ArtistQuery | None = None,
+        country_code: str,
+        *,
+        limit: int | None = None,
+        offset: int = 0,
         proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Retrieving information from an artist profile.
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a country, 200 of them.
 
-        :param artist_id: Artist number. Example (203347991)
-        :param query: Foo
-        https://www.shazam.com/artist/203347991/
+        :param country_code: ISO 3166-3 alpha-2 code. Example: RU, NL, UA
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
         :param proxy: Proxy server
-        :return: dict about artist
+        :return: chart entries, highest ranked first
         """
-        if query:
-            pg = ArtistQueryGenerator(source=query)
-            params_dict = pg.params()
-        else:
-            params_dict = {}
+        country = await self.geo_service.country_url_name(
+            CountryCode(country_code),
+            proxy=proxy,
+        )
 
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.SEARCH_ARTIST_V2.format(
-                endpoint_country=self.endpoint_country,
-                artist_id=artist_id,
+        return await self._chart(
+            ShazamUrl.TOP_COUNTRY_TRACKS.format(country=country),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_city_tracks(
+        self,
+        country_code: str,
+        *,
+        city_name: str,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a city, 50 of them.
+
+        :param country_code: ISO 3166-3 alpha-2 code. Example: RU, NL, UA
+        :param city_name: City name as `services/charts/locations` spells it. Example: Moscow
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        country = CountryCode(country_code)
+        city = await self.geo_service.city_url_name(
+            country,
+            city=city_name,
+            proxy=proxy,
+        )
+
+        return await self._chart(
+            ShazamUrl.TOP_CITY_TRACKS.format(
+                country=await self.geo_service.country_url_name(country, proxy=proxy),
+                city=city,
             ),
-            params=params_dict,
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_world_genre_tracks(
+        self,
+        genre: GenreMusic | str,
+        *,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks worldwide in one genre, 50 to 200 of them.
+
+        :param genre: Genre, as a `GenreMusic` member or its value. Example: rock
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        return await self._chart(
+            ShazamUrl.TOP_WORLD_GENRE_TRACKS.format(genre=GenreMusic(genre).value),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def top_country_genre_tracks(
+        self,
+        country_code: str,
+        *,
+        genre: GenreMusic | str,
+        limit: int | None = None,
+        offset: int = 0,
+        proxy: str | None = None,
+    ) -> list[ChartTrack]:
+        """The most shazamed tracks in a country in one genre, 100 of them.
+
+        Shazam offers only a handful of genres per country, and asking for one it
+        does not offer answers `404`.
+
+        :param country_code: ISO 3166-3 alpha-2 code. Example: ES, RU, NL
+        :param genre: Genre, as a `GenreMusic` member or its value. Example: hip-hop-rap
+        :param limit: How many entries to return. The default returns the whole chart.
+        :param offset: How many entries to skip.
+        :param proxy: Proxy server
+        :return: chart entries, highest ranked first
+        """
+        country = await self.geo_service.country_url_name(
+            CountryCode(country_code),
+            proxy=proxy,
+        )
+
+        return await self._chart(
+            ShazamUrl.TOP_COUNTRY_GENRE_TRACKS.format(
+                country=country,
+                genre=GenreMusic(genre).value,
+            ),
+            limit=limit,
+            offset=offset,
+            proxy=proxy,
+        )
+
+    async def _chart(
+        self,
+        url: str,
+        *,
+        limit: int | None,
+        offset: int,
+        proxy: str | None,
+    ) -> list[ChartTrack]:
+        payload = await self.http_client.request_text(
+            url,
+            content_type=CHART_CONTENT_TYPE,
             headers=self.headers(),
             proxy=proxy,
         )
+        tracks = parse_chart_csv(payload)
+
+        return tracks[offset : None if limit is None else offset + limit]
 
     async def track_about(
         self,
@@ -127,169 +229,6 @@ class Shazam(Request):
                 language=self.language,
                 endpoint_country=self.endpoint_country,
                 track_id=track_id,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def top_country_tracks(
-        self,
-        country_code: str,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Get the best tracks by country code
-        https://www.shazam.com/charts/discovery/netherlands.
-
-            :param country_code: ISO 3166-3 alpha-2 code. Example: RU,NL,UA
-            :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs.
-            :param offset: A parameter that determines with which song to display the request.
-                The default is 0. If you want to skip the first few songs, set this parameter to
-                your own.
-            :param proxy: Proxy server
-            :return: dict songs
-        """
-        country_playlist_id = await self.geo_service.get_country_playlist(
-            country=CountryCode(country_code),
-        )
-
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
-                playlist_id=country_playlist_id,
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                country_code=country_code,
-                limit=limit,
-                offset=offset,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def top_city_tracks(
-        self,
-        country_code: str,
-        city_name: str,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Retrieving information from an artist profile
-        https://www.shazam.com/charts/top-50/russia/moscow.
-
-            :param country_code: ISO 3166-3 alpha-2 code. Example: RU,NL,UA
-            :param city_name: City name from https://github.com/dotX12/dotX12/blob/main/city.json
-                Example: Budapest, Moscow
-            :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs.
-            :param offset: A parameter that determines with which song to display the request.
-                The default is 0. If you want to skip the first few songs, set this parameter to
-                your own.
-            :param proxy: Proxy server
-
-            :return: dict songs
-        """
-        city_playlist_id = await self.geo_service.get_city_playlist(
-            country=CountryCode(country_code),
-            city=city_name,
-        )
-
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
-                playlist_id=city_playlist_id,
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                country_code=country_code,
-                limit=limit,
-                offset=offset,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def top_world_genre_tracks(
-        self,
-        genre: GenreMusic | str,
-        limit: int = 100,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Get world tracks by certain genre
-        https://www.shazam.com/charts/genre/world/rock.
-
-            :param genre: Genre urlName from https://www.shazam.com/services/charts/locations
-            :param limit: Determines how many songs the maximum can be in the request.
-                    Example: If 5 is specified, the query will return no more than 5 songs.
-            :param offset: A parameter that determines with which song to display the request.
-                    The default is 0. If you want to skip the first few songs, set this parameter
-                    to your own.
-            :param proxy: Proxy server
-            :return: dict songs
-        """
-        if isinstance(genre, str):
-            genre = GenreMusic(genre)
-
-        genre_playlist_id = await self.geo_service.get_genre(genre=genre)
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
-                playlist_id=genre_playlist_id,
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def top_country_genre_tracks(
-        self,
-        country_code: str,
-        genre: GenreMusic | str,
-        limit: int = 200,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """The best tracks by a genre in the country
-        https://www.shazam.com/charts/genre/spain/hip-hop-rap
-            :param country_code: ISO 3166-3 alpha-2 code. Example: RU,NL,UA
-            :param genre: Genre name or ID:
-                POP = 1, HIP_HOP_RAP = 2, DANCE = 3, ELECTRONIC = 4, RNB_SOUL = 5, ALTERNATIVE =
-                6, ROCK = 7
-                LATIN = 8, FILM_TV_STAGE = 9, COUNTRY = 10, AFRO_BEATS = 11, WORLDWIDE = 12,
-                REGGAE_DANCE_HALL = 13
-                HOUSE = 14, K_POP = 15, FRENCH_POP = 16, SINGER_SONGWRITER = 17,
-                REGIONAL_MEXICANO = 18
-            :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs
-            :param offset: A parameter that determines with which song to display the request.
-                The default is 0. If you want to skip the first few songs, set this parameter to
-                your own.
-            :param proxy: Proxy server
-            :return: dict songs.
-        """
-        if isinstance(genre, str):
-            genre = GenreMusic(genre)
-
-        genre_playlist_id = await self.geo_service.get_genre_from_country(
-            country=CountryCode(country_code),
-            genre=genre,
-        )
-
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.TOP_TRACKS_PLAYLIST.format(
-                playlist_id=genre_playlist_id,
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                country_code=country_code,
-                limit=limit,
-                offset=offset,
             ),
             headers=self.headers(),
             proxy=proxy,
@@ -323,169 +262,6 @@ class Shazam(Request):
                 offset=offset,
                 track_id=track_id,
             ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def search_artist(
-        self,
-        query: str,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Search all artists by prefix or fullname
-        :param query: Artist name or search prefix
-        :param limit: Determines how many artists the maximum can be in the request.
-            Example: If 5 is specified, the query will return no more than 5 artists.
-        :param offset: A parameter that determines with which song to display the request.
-            The default is 0. If you want to skip the first few songs, set this parameter to
-            your own.
-        :param proxy: Proxy server
-        :return: dict artists.
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.SEARCH_ARTIST.format(
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-                query=query,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def search_track(
-        self,
-        query: str,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Search all tracks by prefix
-        :param query: Track full title or prefix title
-        :param limit: Determines how many songs the maximum can be in the request.
-            Example: If 5 is specified, the query will return no more than 5 songs.
-        :param offset: A parameter that determines with which song to display the request.
-            The default is 0. If you want to skip the first few songs, set this parameter to
-            your own.
-        :param proxy: Proxy server
-        :return: dict songs.
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.SEARCH_MUSIC.format(
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-                query=query,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def listening_counter(
-        self,
-        track_id: int,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Returns the total track listener counter.
-        :param track_id: Track number. Example: (559284007)
-        https://www.shazam.com/track/559284007/rampampam
-        :param proxy: Proxy server
-        :return: The data dictionary that contains the listen counter.
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.LISTENING_COUNTER.format(
-                track_id,
-                language=self.language,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def listening_counter_many(
-        self,
-        track_ids: list[int],
-        proxy: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """Returns the total track listener counter.
-        :param track_ids: Track numbers (list). Example: ([559284007])
-        https://www.shazam.com/track/559284007/rampampam
-        :param proxy: Proxy server
-        :return: The data dictionary that contains the listen counter.
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.LISTENING_COUNTER_MANY,
-            params={"id": track_ids},
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def artist_albums(
-        self,
-        artist_id: int,
-        limit: int = 10,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Get all albums of a specific artist.
-
-        :param artist_id: Artist number. Example (203347991)
-        :param limit: Determines how many songs the maximum can be in the request.
-            Example: If 5 is specified, the query will return no more than 5 songs.
-        :param offset: A parameter that determines with which song to display the request.
-            The default is 0. If you want to skip the first few songs, set this parameter to
-            your own.
-        :param proxy: Proxy server
-        :return: dict albums
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.ARTIST_ALBUMS.format(
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-                artist_id=artist_id,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def search_album(
-        self,
-        album_id: int,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Get album info by id.
-
-        :param album_id: Album number. Example (203347991)
-        :param proxy: Proxy server
-        :return: dict albums
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.ARTIST_ALBUM_INFO.format(
-                endpoint_country=self.endpoint_country,
-                album_id=album_id,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
-    async def get_youtube_data(
-        self,
-        link: str,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        return await self.http_client.request(
-            "GET",
-            link,
             headers=self.headers(),
             proxy=proxy,
         )
@@ -530,7 +306,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.random().value,
+                device=Device.IPHONE.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),
@@ -582,7 +358,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.random().value,
+                device=Device.IPHONE.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),

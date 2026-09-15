@@ -1,7 +1,6 @@
 from typing import Any, Final
 
 from shazamio import Serialize
-from shazamio.schemas.artists import ArtistInfo, ArtistV2
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path
@@ -18,9 +17,8 @@ _TRACK_WITHOUT_SPOTIFY_PROVIDER: Final[dict[str, Any]] = {
 def test_track_missing_paths_fall_back_to_defaults() -> None:
     track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER)
 
-    # The dump also pins two long-standing quirks on purpose: `shazam_url` is
-    #  built from the artist id, and a payload without `hub.options` yields
-    #  `apple_music_url = b""`.
+    # The dump also pins a long-standing quirk on purpose: `shazam_url` is built
+    #  from the artist id.
     assert track.model_dump() == {
         "key": 47440537,
         "title": "Arrival To Earth",
@@ -29,9 +27,9 @@ def test_track_missing_paths_fall_back_to_defaults() -> None:
         "shazam_url": "https://www.shazam.com/track/None",
         "photo_url": "https://images.example/cover.jpg",
         "spotify_uri_query": None,
-        "apple_music_url": b"",
+        "apple_music_url": None,
         "ringtone": "ringtone://example",
-        "spotify_url": None,
+        "providers": [],
         "spotify_uri": None,
         "youtube_link": None,
         "sections": [],
@@ -68,31 +66,79 @@ def test_sections_resolve_by_type_discriminator() -> None:
     assert section_types == ["SongSection", "VideoSection", "ArtistSection", "RelatedSection"]
 
 
-def test_artist_union_resolves_flat_and_wrapped_payloads() -> None:
-    flat: dict[str, Any] = {
-        "name": "Steve Jablonsky",
-        "verified": False,
-        "adamid": "21402948",
-        "genres": {"secondaries": ["Soundtrack"], "primary": "Soundtrack"},
-        "weburl": "https://www.shazam.com/artist/10194644",
+# The shape the `iphone` profile returns: one action per provider, so a mapping
+#  onto `actions[1]` reads nothing and leaves the Spotify fields `None`.
+_TRACK_WITH_PROVIDERS: Final[dict[str, Any]] = {
+    "key": "47440537",
+    "title": "Arrival To Earth",
+    "subtitle": "Steve Jablonsky",
+    "hub": {
+        "providers": [
+            {
+                "caption": "Open in Spotify",
+                "type": "SPOTIFY",
+                "actions": [
+                    {
+                        "name": "hub:spotify:searchdeeplink",
+                        "type": "uri",
+                        "uri": "spotify:search:Arrival%20To%20Earth%20Steve%20Jablonsky",
+                    },
+                ],
+            },
+            {
+                "caption": "Open in Deezer",
+                "type": "DEEZER",
+                "actions": [
+                    {
+                        "name": "hub:deezer:searchdeeplink",
+                        "type": "uri",
+                        "uri": "deezer-query://www.deezer.com/play?query=x",
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+
+def test_the_spotify_fields_read_the_spotify_provider() -> None:
+    track = Serialize.track(_TRACK_WITH_PROVIDERS)
+
+    assert track.model_dump() == {
+        "key": 47440537,
+        "title": "Arrival To Earth",
+        "subtitle": "Steve Jablonsky",
+        "artist_id": None,
+        "shazam_url": "https://www.shazam.com/track/None",
+        "photo_url": None,
+        "spotify_uri_query": "Arrival%20To%20Earth%20Steve%20Jablonsky",
+        "apple_music_url": None,
+        "ringtone": None,
+        "providers": [
+            {
+                "caption": "Open in Spotify",
+                "type": "SPOTIFY",
+                "actions": [
+                    {
+                        "name": "hub:spotify:searchdeeplink",
+                        "type": "uri",
+                        "uri": "spotify:search:Arrival%20To%20Earth%20Steve%20Jablonsky",
+                    },
+                ],
+            },
+            {
+                "caption": "Open in Deezer",
+                "type": "DEEZER",
+                "actions": [
+                    {
+                        "name": "hub:deezer:searchdeeplink",
+                        "type": "uri",
+                        "uri": "deezer-query://www.deezer.com/play?query=x",
+                    },
+                ],
+            },
+        ],
+        "spotify_uri": "spotify:search:Arrival%20To%20Earth%20Steve%20Jablonsky",
+        "youtube_link": None,
+        "sections": [],
     }
-    expected_artist: dict[str, Any] = {
-        "name": "Steve Jablonsky",
-        "verified": False,
-        "genres": ["Soundtrack"],
-        "alias": None,
-        "genres_primary": "Soundtrack",
-        "avatar": None,
-        "adam_id": 21402948,
-        "url": "https://www.shazam.com/artist/10194644",
-    }
-
-    artist = Serialize.artist(flat)
-
-    assert isinstance(artist, ArtistInfo)
-    assert artist.model_dump() == expected_artist
-
-    wrapped = Serialize.artist({"artist": flat})
-
-    assert isinstance(wrapped, ArtistV2)
-    assert wrapped.artist.model_dump() == expected_artist
