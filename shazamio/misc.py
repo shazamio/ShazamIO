@@ -27,6 +27,14 @@ class ShazamUrl:
         "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
     )
     LOCATIONS: Final[str] = "https://www.shazam.com/services/charts/locations"
+    # `country` comes first and `locale` second: the other order answers
+    #  `200 {"error":{"msg":"Could not fetch ids"}}`, which reads like a dead
+    #  endpoint. The order is the one the website itself sends, from
+    #  `_next/static/chunks/1683-*.js`:
+    #  `fetch("/services/sd/s/a2st/".concat(t, "/").concat(n, "/").concat(e))`.
+    APPLE_IDS_TO_TRACK_KEYS: Final[str] = (
+        "https://www.shazam.com/services/sd/s/a2st/{country}/{language}/{apple_ids}"
+    )
     # Charts are CSV and only CSV: the JSON chart resources are dead or
     #  frozen. On `cdn.` (the only host still routing them)
     #  `shazam/v3/.../tracks/ip-*-chart` answers `204`, and

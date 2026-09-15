@@ -97,6 +97,33 @@ Similar songs based on a song id<br>
 
 <details>
 <summary>
+<i>🍎🔑 Apple Music ids to Shazam track keys</i>
+</summary>
+
+Resolve Apple Music track ids to the Shazam track keys `track_about` takes, in
+one request. The map comes back keyed by the ids Shazam stores rather than the
+ones you sent, so read its values: an id can come back under a different one,
+ids of the same recording collapse into one entry, and an id Shazam has no
+track for is absent.<br>
+
+  ```python3
+  import asyncio
+  from shazamio import Shazam
+
+
+  async def main():
+      shazam = Shazam()
+      keys = await shazam.track_keys_from_apple_ids([1125281672, 1440650711])
+
+      print(keys)  # {'1125281672': '325127876', '6781023657': '56670613'}
+
+
+  asyncio.run(main())
+  ```
+</details>
+
+<details>
+<summary>
 <i>🔝🎶🌏 Top tracks in world</i>
 </summary>
 
