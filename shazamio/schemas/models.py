@@ -91,7 +91,7 @@ class HubProviderAction(BaseModel):
 class HubProvider(BaseModel):
     caption: str
     type: str
-    actions: list[HubProviderAction] = Field(default_factory=list)
+    actions: list[HubProviderAction]
 
 
 class RelatedSection(BaseModel):
