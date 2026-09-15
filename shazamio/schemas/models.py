@@ -1,8 +1,11 @@
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Annotated, Any, Final, Literal, TypeAlias
 from urllib.parse import urlencode, urlparse, urlunparse
 from uuid import UUID
 
 from pydantic import AliasPath, BaseModel, Field
+
+_SPOTIFY: Final[str] = "SPOTIFY"
+_SPOTIFY_SEARCH: Final[str] = "spotify:search:"
 
 
 class ShareModel(BaseModel):
@@ -79,6 +82,18 @@ class VideoSection(BaseModel):
     type: Literal["VIDEO"] = "VIDEO"
 
 
+class HubProviderAction(BaseModel):
+    name: str
+    type: str
+    uri: str
+
+
+class HubProvider(BaseModel):
+    caption: str
+    type: str
+    actions: list[HubProviderAction] = Field(default_factory=list)
+
+
 class RelatedSection(BaseModel):
     type: Literal["RELATED"]
     url: str
@@ -122,20 +137,18 @@ class TrackInfo(BaseModel):
         default=None,
         validation_alias=AliasPath("hub", "actions", 1, "uri"),
     )
-    spotify_url: str | None = Field(
-        default=None,
-        validation_alias=AliasPath("hub", "providers", 0, "actions", 0, "uri"),
+    providers: list[HubProvider] = Field(
+        default_factory=list,
+        validation_alias=AliasPath("hub", "providers"),
     )
-    spotify_uri: str | None = Field(
-        default=None,
-        validation_alias=AliasPath("hub", "providers", 0, "actions", 1, "uri"),
-    )
+    spotify_uri: str | None = None
     youtube_link: str | None = None
     sections: list[TrackSectionType] | None = Field(default_factory=list)
 
     def model_post_init(self, _context: Any, /) -> None:
         self.shazam_url = f"https://www.shazam.com/track/{self.artist_id}"
         self.apple_music_url = self.__apple_music_url()
+        self.spotify_uri = self.__spotify_uri()
         self.spotify_uri_query = self.__short_uri()
         self.youtube_link = self.__youtube_link()
 
@@ -146,9 +159,18 @@ class TrackInfo(BaseModel):
         url_parse_list[4] = urlencode({}, doseq=True)
         return urlunparse(url_parse_list)
 
+    # Each provider carries one action, so the old path to `actions[1]` resolved
+    #  to nothing and left every Spotify field `None`.
+    def __spotify_uri(self) -> str | None:
+        for provider in self.providers:
+            if provider.type == _SPOTIFY and provider.actions:
+                return provider.actions[0].uri
+
+        return None
+
     def __short_uri(self) -> str | None:
         if self.spotify_uri:
-            return self.spotify_uri.split("spotify:search:")[1]
+            return self.spotify_uri.split(_SPOTIFY_SEARCH)[1]
 
         return None
 
