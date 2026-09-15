@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
-from aiohttp_retry import RetryClient, RetryOptionsBase
+from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
 
 from shazamio.exceptions import BadMethod
 from shazamio.interfaces.client import HTTPClientInterface
@@ -12,7 +12,11 @@ from shazamio.utils import validate_json
 
 class HTTPClient(HTTPClientInterface):
     def __init__(self, retry_options: RetryOptionsBase | None = None) -> None:
-        self.retry_options = retry_options
+        # `HTTPClient()` used to die in the tracer below, which reads `.attempts`:
+        #  `AttributeError: 'NoneType' object has no attribute 'attempts'`.
+        #  `RetryClient` falls back to this very default, so no request changes:
+        #  https://github.com/inyutin/aiohttp_retry/blob/39b23915023dde0e0298b822de3d23960a5024e6/aiohttp_retry/client.py#L210
+        self.retry_options: RetryOptionsBase = retry_options or ExponentialRetry()
         self.trace_config = TraceConfig()
         self.trace_config.on_request_start.append(self.on_request_start)
 
