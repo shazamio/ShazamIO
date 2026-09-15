@@ -152,9 +152,14 @@ class TrackInfo(BaseModel):
         self.spotify_uri_query = self.__short_uri()
         self.youtube_link = self.__youtube_link()
 
-    # `urlparse(None)` takes the bytes path, so a payload without `hub.options`
-    #  ends with `apple_music_url = b""`.
-    def __apple_music_url(self) -> str | bytes:
+    def __apple_music_url(self) -> str | None:
+        # `urlparse` switches to its bytes path on anything that is not a `str`,
+        #  so a payload without `hub.options` used to end with `b""` in a field
+        #  declared `str | None`.
+        #  https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlparse
+        if self.apple_music_url is None:
+            return None
+
         url_parse_list = list(urlparse(self.apple_music_url))
         url_parse_list[4] = urlencode({}, doseq=True)
         return urlunparse(url_parse_list)

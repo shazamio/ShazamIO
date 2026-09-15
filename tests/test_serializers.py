@@ -17,9 +17,8 @@ _TRACK_WITHOUT_SPOTIFY_PROVIDER: Final[dict[str, Any]] = {
 def test_track_missing_paths_fall_back_to_defaults() -> None:
     track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER)
 
-    # The dump also pins two long-standing quirks on purpose: `shazam_url` is
-    #  built from the artist id, and a payload without `hub.options` yields
-    #  `apple_music_url = b""`.
+    # The dump also pins a long-standing quirk on purpose: `shazam_url` is built
+    #  from the artist id.
     assert track.model_dump() == {
         "key": 47440537,
         "title": "Arrival To Earth",
@@ -28,7 +27,7 @@ def test_track_missing_paths_fall_back_to_defaults() -> None:
         "shazam_url": "https://www.shazam.com/track/None",
         "photo_url": "https://images.example/cover.jpg",
         "spotify_uri_query": None,
-        "apple_music_url": b"",
+        "apple_music_url": None,
         "ringtone": "ringtone://example",
         "providers": [],
         "spotify_uri": None,
@@ -113,7 +112,7 @@ def test_the_spotify_fields_read_the_spotify_provider() -> None:
         "shazam_url": "https://www.shazam.com/track/None",
         "photo_url": None,
         "spotify_uri_query": "Arrival%20To%20Earth%20Steve%20Jablonsky",
-        "apple_music_url": b"",
+        "apple_music_url": None,
         "ringtone": None,
         "providers": [
             {
