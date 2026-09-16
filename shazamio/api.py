@@ -277,14 +277,17 @@ class Shazam(Request):
     ) -> dict[str, str]:
         """Map Apple Music track ids to Shazam track keys, in one request.
 
-        The map is keyed by the Apple id Shazam stores, not by the one asked for: an
-        id sent can come back under a different one, ids of the same recording
-        collapse into a single entry, and an id Shazam has no track for is absent.
-        So a caller reads the values and cannot index the result by what it sent.
+        A call with several ids keys every entry by the Apple id Shazam stores, which
+        can be one that was never sent: `[6781027645, 6781024437]` answers
+        `{"6781023657": "56670613"}`. A call with a single id keys it by that id.
+        Either way an id Shazam has no track for is absent, so the map can be shorter
+        than the sequence asked for, and `{}` when nothing resolved.
 
         :param apple_ids: Apple Music track ids. Example: (1125281672, 1440650711)
         :param proxy: Proxy server
         :return: Apple id to Shazam track key, as the service serves it
+        :raises BadAppleIds: no ids were given, or the service refused the whole
+            request: a malformed id, or a storefront it does not serve
         """
         # An empty sequence asks for `.../{language}/`, which answers
         #  `404 text/html Not supported` and reads as a dead endpoint.

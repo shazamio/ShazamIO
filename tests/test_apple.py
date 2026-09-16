@@ -58,6 +58,17 @@ async def test_the_map_is_keyed_by_the_ids_shazam_stores() -> None:
     assert str(_CANONICALIZED_APPLE_ID) not in keys
 
 
+# Each of these resolves on its own to `56670613`, keyed by itself; together they
+#  answer one entry, keyed by `6781023657`, which is neither of them.
+@pytest.mark.asyncio
+async def test_ids_sharing_one_track_collapse_into_a_single_entry() -> None:
+    keys = await Shazam().track_keys_from_apple_ids([6781027645, 6781024437])
+
+    assert len(keys) == 1
+    assert "6781027645" not in keys
+    assert "6781024437" not in keys
+
+
 @pytest.mark.asyncio
 async def test_an_id_the_service_cannot_resolve_at_all_is_reported() -> None:
     with pytest.raises(BadAppleIds, match="Could not fetch ids"):

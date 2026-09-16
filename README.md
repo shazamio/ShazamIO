@@ -101,10 +101,11 @@ Similar songs based on a song id<br>
 </summary>
 
 Resolve Apple Music track ids to the Shazam track keys `track_about` takes, in
-one request. The map comes back keyed by the ids Shazam stores rather than the
-ones you sent, so read its values: an id can come back under a different one,
-ids of the same recording collapse into one entry, and an id Shazam has no
-track for is absent.<br>
+one request. A call with several ids keys every entry by the id Shazam stores,
+which can be one you never sent, so read the values instead of indexing by what
+you asked for. A call with a single id keys it by that id. Either way an id
+Shazam has no track for is absent, so the map can be shorter than the list you
+passed.<br>
 
   ```python3
   import asyncio
