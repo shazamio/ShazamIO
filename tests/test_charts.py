@@ -32,16 +32,16 @@ def test_a_body_without_the_header_is_rejected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_the_world_chart_carries_two_hundred_ranked_entries() -> None:
-    tracks = await Shazam().top_world_tracks()
+async def test_the_world_chart_carries_two_hundred_ranked_entries(shazam: Shazam) -> None:
+    tracks = await shazam.top_world_tracks()
 
     assert len(tracks) == 200
     assert [track.rank for track in tracks[:3]] == [1, 2, 3]
 
 
 @pytest.mark.asyncio
-async def test_a_city_chart_resolves_its_country_and_city_slugs() -> None:
-    tracks = await Shazam().top_city_tracks(
+async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) -> None:
+    tracks = await shazam.top_city_tracks(
         country_code="RU",
         city_name="Moscow",
         limit=5,
@@ -59,8 +59,9 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs() -> None:
 )
 async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
     genre: GenreMusic,
+    shazam: Shazam,
 ) -> None:
-    tracks = await Shazam().top_world_genre_tracks(
+    tracks = await shazam.top_world_genre_tracks(
         genre=genre,
         limit=5,
     )

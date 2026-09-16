@@ -2,6 +2,7 @@ import pathlib
 import time
 import uuid
 from collections.abc import Sequence
+from types import TracebackType
 from typing import Any
 
 from aiohttp_retry import ExponentialRetry
@@ -44,14 +45,40 @@ class Shazam(Request):
         self.language = language
         self.endpoint_country = endpoint_country
 
-        self.http_client = http_client or HTTPClient(
-            retry_options=ExponentialRetry(
-                attempts=20,
-                max_timeout=60,
-                statuses={500, 502, 503, 504, 429},
-            ),
-        )
+        # Only a client we built is ours to close: an injected one keeps its own
+        #  lifetime, the way `aiohttp` leaves a connector it did not create alone.
+        self._owned_http_client: HTTPClient | None = None
+
+        if http_client is None:
+            http_client = HTTPClient(
+                retry_options=ExponentialRetry(
+                    attempts=20,
+                    max_timeout=60,
+                    statuses={500, 502, 503, 504, 429},
+                ),
+            )
+            self._owned_http_client = http_client
+
+        self.http_client = http_client
         self.geo_service = GeoService(self.http_client, request=self)
+
+    # `typing.Self` arrived in 3.11 and the floor is 3.10, so the class names
+    #  itself here.
+    async def __aenter__(self) -> "Shazam":  # noqa: PYI034
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        await self.close()
+
+    async def close(self) -> None:
+        """Close the pooled connections. A call after this raises `RuntimeError`."""
+        if self._owned_http_client is not None:
+            await self._owned_http_client.close()
 
     async def top_world_tracks(
         self,

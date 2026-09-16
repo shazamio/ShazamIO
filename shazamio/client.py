@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from types import SimpleNamespace
+from types import SimpleNamespace, TracebackType
 from typing import Any
 
 from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
@@ -20,6 +20,39 @@ class HTTPClient(HTTPClientInterface):
         self.retry_options: RetryOptionsBase = retry_options or ExponentialRetry()
         self.trace_config = TraceConfig()
         self.trace_config.on_request_start.append(self.on_request_start)
+        self._retry_client: RetryClient | None = None
+
+    # `typing.Self` arrived in 3.11 and the floor is 3.10, so the class names
+    #  itself here.
+    async def __aenter__(self) -> "HTTPClient":  # noqa: PYI034
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        await self.close()
+
+    async def close(self) -> None:
+        """Close the pooled connections. A request after this raises `RuntimeError`."""
+        if self._retry_client is not None:
+            await self._retry_client.close()
+
+    def _ensure_client(self) -> RetryClient:
+        # Built on the first request rather than in `__init__`: a `ClientSession`
+        #  binds to whichever loop is running when it is constructed, and the
+        #  documented usage builds a `Shazam` outside `asyncio.run` and awaits it
+        #  inside. One client means one session, which is what pools connections.
+        if self._retry_client is None:
+            self._retry_client = RetryClient(
+                retry_options=self.retry_options,
+                raise_for_status=False,
+                trace_configs=[self.trace_config],
+            )
+
+        return self._retry_client
 
     async def on_request_start(
         self,
@@ -45,21 +78,18 @@ class HTTPClient(HTTPClientInterface):
         url: str,
         **kwargs: Any,
     ) -> list[Any] | dict[str, Any]:
-        async with RetryClient(
-            retry_options=self.retry_options,
-            raise_for_status=False,
-            trace_configs=[self.trace_config],
-        ) as client:
-            if method.upper() == "GET":
-                async with client.get(url, **kwargs) as response:
-                    return await validate_json(response)
+        client = self._ensure_client()
 
-            if method.upper() == "POST":
-                async with client.post(url, **kwargs) as response:
-                    return await validate_json(response)
+        if method.upper() == "GET":
+            async with client.get(url, **kwargs) as response:
+                return await validate_json(response)
 
-            msg: str = "Accept only GET/POST"
-            raise BadMethod(msg)
+        if method.upper() == "POST":
+            async with client.post(url, **kwargs) as response:
+                return await validate_json(response)
+
+        msg: str = "Accept only GET/POST"
+        raise BadMethod(msg)
 
     async def request_text(
         self,
@@ -69,14 +99,9 @@ class HTTPClient(HTTPClientInterface):
         **kwargs: Any,
     ) -> str:
         """Fetch a body no JSON decoder should see, such as the chart CSV."""
-        async with (
-            RetryClient(
-                retry_options=self.retry_options,
-                raise_for_status=False,
-                trace_configs=[self.trace_config],
-            ) as client,
-            client.get(url, **kwargs) as response,
-        ):
+        client = self._ensure_client()
+
+        async with client.get(url, **kwargs) as response:
             if response.status != HTTPStatus.OK:
                 msg = f"{url} answered {response.status}"
                 raise BadResponseStatus(msg)
