@@ -6,6 +6,7 @@ import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestServer
 
+from shazamio import Shazam
 from shazamio.charts import CHART_CONTENT_TYPE
 from shazamio.client import HTTPClient
 from shazamio.exceptions import (
@@ -18,6 +19,7 @@ from shazamio.exceptions import (
 _NOT_PUBLISHED: Final[str] = "/not-published"
 _WEBSITE: Final[str] = "/website"
 _THROTTLED: Final[str] = "/throttled"
+_PEER: Final[str] = "/peer"
 
 
 # Both guards are checked against a local server rather than against
@@ -42,10 +44,19 @@ async def server() -> AsyncIterator[TestServer]:
             content_type="text/html",
         )
 
+    async def peer(request: web.Request) -> web.Response:
+        # The source port names the TCP connection the request arrived on, which
+        #  is how the reuse test below sees whether anything was pooled.
+        transport = request.transport
+        assert transport is not None
+
+        return web.json_response({"source_port": transport.get_extra_info("peername")[1]})
+
     app = web.Application()
     app.router.add_get(_NOT_PUBLISHED, not_published)
     app.router.add_get(_WEBSITE, the_website)
     app.router.add_get(_THROTTLED, throttled)
+    app.router.add_get(_PEER, peer)
 
     test_server = TestServer(app)
     await test_server.start_server()
@@ -55,28 +66,38 @@ async def server() -> AsyncIterator[TestServer]:
     await test_server.close()
 
 
+async def _source_port(client: HTTPClient, *, url: str) -> int:
+    answer = await client.request("GET", url)
+    assert isinstance(answer, dict)
+
+    return int(answer["source_port"])
+
+
 @pytest.mark.asyncio
 async def test_a_chart_that_is_not_published_names_its_status(server: TestServer) -> None:
-    with pytest.raises(BadResponseStatus, match="404"):
-        await HTTPClient().request_text(
-            str(server.make_url(_NOT_PUBLISHED)),
-            content_type=CHART_CONTENT_TYPE,
-        )
+    async with HTTPClient() as client:
+        with pytest.raises(BadResponseStatus, match="404"):
+            await client.request_text(
+                str(server.make_url(_NOT_PUBLISHED)),
+                content_type=CHART_CONTENT_TYPE,
+            )
 
 
 @pytest.mark.asyncio
 async def test_a_path_answered_by_the_website_names_the_content_type(server: TestServer) -> None:
-    with pytest.raises(BadContentType, match="text/html"):
-        await HTTPClient().request_text(
-            str(server.make_url(_WEBSITE)),
-            content_type=CHART_CONTENT_TYPE,
-        )
+    async with HTTPClient() as client:
+        with pytest.raises(BadContentType, match="text/html"):
+            await client.request_text(
+                str(server.make_url(_WEBSITE)),
+                content_type=CHART_CONTENT_TYPE,
+            )
 
 
 @pytest.mark.asyncio
 async def test_a_throttled_request_names_the_rate_limit(server: TestServer) -> None:
-    with pytest.raises(RateLimited, match="rate limited"):
-        await HTTPClient().request("GET", str(server.make_url(_THROTTLED)))
+    async with HTTPClient() as client:
+        with pytest.raises(RateLimited, match="rate limited"):
+            await client.request("GET", str(server.make_url(_THROTTLED)))
 
 
 # The control for the test above: both answers are `text/html`, and only the
@@ -86,5 +107,60 @@ async def test_a_throttled_request_names_the_rate_limit(server: TestServer) -> N
 async def test_an_undecodable_body_that_is_not_throttling_still_names_the_decoder(
     server: TestServer,
 ) -> None:
-    with pytest.raises(FailedDecodeJson, match="status=200"):
-        await HTTPClient().request("GET", str(server.make_url(_WEBSITE)))
+    async with HTTPClient() as client:
+        with pytest.raises(FailedDecodeJson, match="status=200"):
+            await client.request("GET", str(server.make_url(_WEBSITE)))
+
+
+@pytest.mark.asyncio
+async def test_sequential_requests_share_one_connection(server: TestServer) -> None:
+    url = str(server.make_url(_PEER))
+
+    async with HTTPClient() as client:
+        source_ports = {await _source_port(client, url=url) for _ in range(3)}
+
+    assert len(source_ports) == 1
+
+
+@pytest.mark.asyncio
+async def test_a_request_after_a_close_names_the_closed_session(server: TestServer) -> None:
+    url = str(server.make_url(_PEER))
+
+    client = HTTPClient()
+    await _source_port(client, url=url)
+    await client.close()
+
+    with pytest.raises(RuntimeError, match="Session is closed"):
+        await client.request("GET", url)
+
+
+@pytest.mark.asyncio
+async def test_closing_a_client_that_never_made_a_request_is_not_an_error() -> None:
+    # Nothing to assert past not raising: the session is built on the first
+    #  request, so a client that made none has nothing to close.
+    await HTTPClient().close()
+
+
+@pytest.mark.asyncio
+async def test_shazam_closes_the_client_it_built(server: TestServer) -> None:
+    url = str(server.make_url(_PEER))
+    shazam = Shazam()
+
+    async with shazam:
+        await shazam.http_client.request("GET", url)
+
+    with pytest.raises(RuntimeError, match="Session is closed"):
+        await shazam.http_client.request("GET", url)
+
+
+@pytest.mark.asyncio
+async def test_shazam_leaves_a_client_it_was_given_open(server: TestServer) -> None:
+    url = str(server.make_url(_PEER))
+    given = HTTPClient()
+
+    async with Shazam(http_client=given):
+        pass
+
+    # Still usable afterwards: its lifetime belongs to whoever built it.
+    await _source_port(given, url=url)
+    await given.close()

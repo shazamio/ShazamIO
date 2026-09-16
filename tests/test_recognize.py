@@ -16,23 +16,21 @@ async def song_bytes() -> AsyncIterator[bytes]:
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_file() -> None:
-    shazam = Shazam()
+async def test_recognize_song_file(shazam: Shazam) -> None:
     out = await shazam.recognize(data="examples/data/Gloria.ogg")
     assert out.get("matches") != []
     assert out["track"]["key"] == "53982678"
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_bytes(song_bytes: bytes) -> None:
-    shazam = Shazam()
+async def test_recognize_song_bytes(song_bytes: bytes, shazam: Shazam) -> None:
     out = await shazam.recognize(data=song_bytes)
     assert out.get("matches") != []
     assert out["track"]["key"] == "53982678"
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_too_short() -> None:
+async def test_recognize_song_too_short(shazam: Shazam) -> None:
     short_audio_segment = AudioSegment.from_file(
         file=BytesIO(b"0" * 126),
         format="pcm",
@@ -41,7 +39,6 @@ async def test_recognize_song_too_short() -> None:
         channels=1,
     )
 
-    shazam = Shazam()
     out = await shazam.recognize_song(data=short_audio_segment)
 
     assert out.get("matches") == []
