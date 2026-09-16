@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from typing import Any, Final
+from uuid import UUID
 
 import pytest
 from aiohttp import ClientSession
@@ -18,6 +19,17 @@ _TRACK_WITHOUT_SPOTIFY_PROVIDER: Final[dict[str, Any]] = {
     # Both artist ids, as Shazam serves them: `id` is the literal `42` on every
     #  payload, `adamid` is the one that identifies the artist.
     "artists": [{"id": "42", "adamid": "21402948"}],
+}
+
+
+# What a recognition that matched nothing answers. Measured live on
+#  `examples/data/dora.ogg`, whose whole payload is these three keys: `retryms`
+#  is Shazam saying how long to record before asking again, and it is the only
+#  thing that separates a clip absent from the index from one that was too short.
+_NO_MATCH: Final[dict[str, Any]] = {
+    "tagid": "11111111-1111-7111-8111-111111111111",
+    "retryms": 7000,
+    "matches": [],
 }
 
 
@@ -188,3 +200,17 @@ async def test_the_built_url_resolves_and_a_dead_key_does_not() -> None:
     # Matched, not anchored: what the claim needs is the song route, whatever the
     #  site puts in front of it.
     assert _SONG_ROUTE in target, f"dead key: {dead_status}, live key: {target!r}"
+
+
+def test_a_result_that_matched_nothing_carries_the_retry_hint() -> None:
+    answer = Serialize.full_track(_NO_MATCH)
+
+    assert answer.model_dump() == {
+        "tag_id": UUID("11111111-1111-7111-8111-111111111111"),
+        "retry_ms": 7000,
+        "location": None,
+        "matches": [],
+        "timestamp": None,
+        "timezone": None,
+        "track": None,
+    }

@@ -8,10 +8,16 @@ from aiohttp.test_utils import TestServer
 
 from shazamio.charts import CHART_CONTENT_TYPE
 from shazamio.client import HTTPClient
-from shazamio.exceptions import BadContentType, BadResponseStatus
+from shazamio.exceptions import (
+    BadContentType,
+    BadResponseStatus,
+    FailedDecodeJson,
+    RateLimited,
+)
 
 _NOT_PUBLISHED: Final[str] = "/not-published"
 _WEBSITE: Final[str] = "/website"
+_THROTTLED: Final[str] = "/throttled"
 
 
 # Both guards are checked against a local server rather than against
@@ -29,9 +35,17 @@ async def server() -> AsyncIterator[TestServer]:
             content_type="text/html",
         )
 
+    async def throttled(_request: web.Request) -> web.Response:
+        return web.Response(
+            status=HTTPStatus.TOO_MANY_REQUESTS,
+            text="<html></html>",
+            content_type="text/html",
+        )
+
     app = web.Application()
     app.router.add_get(_NOT_PUBLISHED, not_published)
     app.router.add_get(_WEBSITE, the_website)
+    app.router.add_get(_THROTTLED, throttled)
 
     test_server = TestServer(app)
     await test_server.start_server()
@@ -57,3 +71,20 @@ async def test_a_path_answered_by_the_website_names_the_content_type(server: Tes
             str(server.make_url(_WEBSITE)),
             content_type=CHART_CONTENT_TYPE,
         )
+
+
+@pytest.mark.asyncio
+async def test_a_throttled_request_names_the_rate_limit(server: TestServer) -> None:
+    with pytest.raises(RateLimited, match="rate limited"):
+        await HTTPClient().request("GET", str(server.make_url(_THROTTLED)))
+
+
+# The control for the test above: both answers are `text/html`, and only the
+#  throttled one is a rate limit. Without it a guard firing on every undecodable
+#  body would pass.
+@pytest.mark.asyncio
+async def test_an_undecodable_body_that_is_not_throttling_still_names_the_decoder(
+    server: TestServer,
+) -> None:
+    with pytest.raises(FailedDecodeJson, match="status=200"):
+        await HTTPClient().request("GET", str(server.make_url(_WEBSITE)))

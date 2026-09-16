@@ -15,6 +15,7 @@ _EXPORTS: Final[tuple[str, ...]] = (
     "GenreMusic",
     "GeoService",
     "HTTPClient",
+    "RateLimited",
     "SearchParams",
     "Serialize",
     "Shazam",
