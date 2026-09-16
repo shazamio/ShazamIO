@@ -36,11 +36,11 @@ sample below ships with the repository, in `examples/data/`<br>
 
 
   async def main():
-      shazam = Shazam()
-      out = await shazam.recognize("Gloria.ogg")
+      async with Shazam() as shazam:
+          out = await shazam.recognize("Gloria.ogg")
 
-      print(out)  # dict
-      print(Serialize.full_track(out).track.title)  # I Will Survive
+          print(out)  # dict
+          print(Serialize.full_track(out).track.title)  # I Will Survive
 
 
   asyncio.run(main())
@@ -61,11 +61,11 @@ Get track information<br>
 
 
   async def main():
-      shazam = Shazam()
-      about_track = await shazam.track_about(track_id=552406075)
+      async with Shazam() as shazam:
+          about_track = await shazam.track_about(track_id=552406075)
 
-      print(about_track)  # dict
-      print(Serialize.track(data=about_track))  # pydantic model
+          print(about_track)  # dict
+          print(Serialize.track(data=about_track))  # pydantic model
 
 
   asyncio.run(main())
@@ -86,9 +86,9 @@ Similar songs based on a song id<br>
 
 
   async def main():
-      shazam = Shazam()
-      related = await shazam.related_tracks(track_id=546891609, limit=5, offset=2)
-      print(related)
+      async with Shazam() as shazam:
+          related = await shazam.related_tracks(track_id=546891609, limit=5, offset=2)
+          print(related)
 
 
   asyncio.run(main())
@@ -113,10 +113,10 @@ passed.<br>
 
 
   async def main():
-      shazam = Shazam()
-      keys = await shazam.track_keys_from_apple_ids([1125281672, 1440650711])
+      async with Shazam() as shazam:
+          keys = await shazam.track_keys_from_apple_ids([1125281672, 1440650711])
 
-      print(keys)  # {'1125281672': '325127876', '6781023657': '56670613'}
+          print(keys)  # {'1125281672': '325127876', '6781023657': '56670613'}
 
 
   asyncio.run(main())
@@ -137,11 +137,11 @@ The 200 most shazamed tracks worldwide<br>
 
 
   async def main():
-      shazam = Shazam()
-      tracks = await shazam.top_world_tracks(limit=10)
+      async with Shazam() as shazam:
+          tracks = await shazam.top_world_tracks(limit=10)
 
-      for track in tracks:
-          print(f"{track.rank}. {track.artist} - {track.title}")
+          for track in tracks:
+              print(f"{track.rank}. {track.artist} - {track.title}")
 
 
   asyncio.run(main())
@@ -162,14 +162,14 @@ The 200 most shazamed tracks in a country<br>
 
 
   async def main():
-      shazam = Shazam()
-      tracks = await shazam.top_country_tracks(
-          country_code="NL",
-          limit=5,
-      )
+      async with Shazam() as shazam:
+          tracks = await shazam.top_country_tracks(
+              country_code="NL",
+              limit=5,
+          )
 
-      for track in tracks:
-          print(f"{track.rank}. {track.artist} - {track.title}")
+          for track in tracks:
+              print(f"{track.rank}. {track.artist} - {track.title}")
 
 
   asyncio.run(main())
@@ -191,15 +191,15 @@ The 50 most shazamed tracks in a city. The city name is the one
 
 
   async def main():
-      shazam = Shazam()
-      tracks = await shazam.top_city_tracks(
-          country_code="RU",
-          city_name="Moscow",
-          limit=10,
-      )
+      async with Shazam() as shazam:
+          tracks = await shazam.top_city_tracks(
+              country_code="RU",
+              city_name="Moscow",
+              limit=10,
+          )
 
-      for track in tracks:
-          print(f"{track.rank}. {track.artist} - {track.title}")
+          for track in tracks:
+              print(f"{track.rank}. {track.artist} - {track.title}")
 
 
   asyncio.run(main())
@@ -220,14 +220,14 @@ The most shazamed tracks worldwide in one genre<br>
 
 
   async def main():
-      shazam = Shazam()
-      tracks = await shazam.top_world_genre_tracks(
-          genre=GenreMusic.ROCK,
-          limit=10,
-      )
+      async with Shazam() as shazam:
+          tracks = await shazam.top_world_genre_tracks(
+              genre=GenreMusic.ROCK,
+              limit=10,
+          )
 
-      for track in tracks:
-          print(f"{track.rank}. {track.artist} - {track.title}")
+          for track in tracks:
+              print(f"{track.rank}. {track.artist} - {track.title}")
 
 
   asyncio.run(main())
@@ -250,20 +250,39 @@ handful of genres per country, and asking for one it does not offer answers
 
 
   async def main():
-      shazam = Shazam()
-      tracks = await shazam.top_country_genre_tracks(
-          country_code="ES",
-          genre=GenreMusic.HIP_HOP_RAP,
-          limit=4,
-      )
+      async with Shazam() as shazam:
+          tracks = await shazam.top_country_genre_tracks(
+              country_code="ES",
+              genre=GenreMusic.HIP_HOP_RAP,
+              limit=4,
+          )
 
-      for track in tracks:
-          print(f"{track.rank}. {track.artist} - {track.title}")
+          for track in tracks:
+              print(f"{track.rank}. {track.artist} - {track.title}")
 
 
   asyncio.run(main())
   ```
 </details>
+
+## 🔌 Closing what you open
+
+A `Shazam` opens one connection pool on its first request and reuses it for
+every later one, so ten calls no longer cost ten connections. The pool lives
+until you close it, which `async with` does for you:
+
+  ```python3
+  async with Shazam() as shazam:
+      ...
+  ```
+
+Without a close the pool stays open and `aiohttp` reports it when the object is
+collected: `Unclosed client session`. `await shazam.close()` does the same job
+where a block does not fit, and a request after either one raises
+`RuntimeError: Session is closed`.
+
+An `HTTPClient` you build yourself is yours to close: `Shazam` closes only the
+client it builds for itself. `examples/recognize_song.py` shows both blocks.
 
 ## 📊 What the chart methods return
 

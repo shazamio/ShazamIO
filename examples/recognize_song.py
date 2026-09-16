@@ -15,31 +15,35 @@ logging.basicConfig(
 
 
 async def main() -> None:
-    shazam = Shazam(
-        http_client=HTTPClient(
-            retry_options=ExponentialRetry(
-                attempts=12,
-                max_timeout=204.8,
-                statuses={500, 502, 503, 504, 429},
-            ),
+    # A client you build is a client you close: `Shazam` closes only the one it
+    #  builds itself, so this one gets its own block.
+    async with HTTPClient(
+        retry_options=ExponentialRetry(
+            attempts=12,
+            max_timeout=204.8,
+            statuses={500, 502, 503, 504, 429},
         ),
-        segment_duration_seconds=10,
-    )
+    ) as http_client:
+        shazam = Shazam(
+            http_client=http_client,
+            segment_duration_seconds=10,
+        )
 
-    # pass path
-    new_version_path = await shazam.recognize(
-        "data/Gloria.ogg",
-        options=SearchParams(segment_duration_seconds=5),
-    )
-    serialized_new_path = Serialize.full_track(new_version_path)
-    print(serialized_new_path)
+        # pass path
+        new_version_path = await shazam.recognize(
+            "data/Gloria.ogg",
+            options=SearchParams(segment_duration_seconds=5),
+        )
+        serialized_new_path = Serialize.full_track(new_version_path)
+        print(serialized_new_path)
 
-    # pass bytes
-    async with aiofiles.open("data/Gloria.ogg", mode="rb") as file:
-        song_bytes = await file.read()
-    new_version_path = await shazam.recognize(song_bytes)
-    serialized_new_path = Serialize.full_track(new_version_path)
-    print(serialized_new_path)
+        # pass bytes
+        async with aiofiles.open("data/Gloria.ogg", mode="rb") as file:
+            song_bytes = await file.read()
+
+        new_version_path = await shazam.recognize(song_bytes)
+        serialized_new_path = Serialize.full_track(new_version_path)
+        print(serialized_new_path)
 
 
 asyncio.run(main())
