@@ -1,17 +1,20 @@
 import pathlib
 import time
 import uuid
+from collections.abc import Sequence
 from typing import Any
 
 from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
 from shazamio_core import Recognizer, SearchParams, Signature
 
+from .apple import APPLE_TO_SHAZAM_CONTENT_TYPE, parse_apple_to_shazam_keys
 from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
 from .deprecated.decorator import deprecated
 from .enums import GenreMusic
+from .exceptions import BadAppleIds
 from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .misc import Device, Request, ShazamUrl
@@ -265,6 +268,45 @@ class Shazam(Request):
             headers=self.headers(),
             proxy=proxy,
         )
+
+    async def track_keys_from_apple_ids(
+        self,
+        apple_ids: Sequence[int | str],
+        *,
+        proxy: str | None = None,
+    ) -> dict[str, str]:
+        """Map Apple Music track ids to Shazam track keys, in one request.
+
+        A call with several ids keys every entry by the Apple id Shazam stores, which
+        can be one that was never sent: `[6781027645, 6781024437]` answers
+        `{"6781023657": "56670613"}`. A call with a single id keys it by that id.
+        Either way an id Shazam has no track for is absent, so the map can be shorter
+        than the sequence asked for, and `{}` when nothing resolved.
+
+        :param apple_ids: Apple Music track ids. Example: (1125281672, 1440650711)
+        :param proxy: Proxy server
+        :return: Apple id to Shazam track key, as the service serves it
+        :raises BadAppleIds: no ids were given, or the service refused the whole
+            request: a malformed id, or a storefront it does not serve
+        """
+        # An empty sequence asks for `.../{language}/`, which answers
+        #  `404 text/html Not supported` and reads as a dead endpoint.
+        if not apple_ids:
+            msg: str = "No Apple ids given"
+            raise BadAppleIds(msg)
+
+        payload = await self.http_client.request_text(
+            ShazamUrl.APPLE_IDS_TO_TRACK_KEYS.format(
+                country=self.endpoint_country,
+                language=self.language,
+                apple_ids=",".join(str(apple_id) for apple_id in apple_ids),
+            ),
+            content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
+            headers=self.headers(),
+            proxy=proxy,
+        )
+
+        return parse_apple_to_shazam_keys(payload)
 
     @deprecated("Use recognize method instead of recognize_song")
     async def recognize_song(

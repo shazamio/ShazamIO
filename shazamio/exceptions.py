@@ -24,3 +24,7 @@ class BadResponseStatus(Exception):
 
 class BadContentType(Exception):
     pass
+
+
+class BadAppleIds(Exception):
+    pass
