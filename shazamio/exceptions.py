@@ -28,3 +28,7 @@ class BadContentType(Exception):
 
 class BadAppleIds(Exception):
     pass
+
+
+class RateLimited(BadResponseStatus):
+    pass

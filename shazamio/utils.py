@@ -1,4 +1,5 @@
 import pathlib
+from http import HTTPStatus
 from io import BytesIO
 from typing import Any, TypeAlias
 
@@ -7,13 +8,21 @@ import aiohttp
 from aiohttp import ContentTypeError
 from pydub import AudioSegment
 
-from shazamio.exceptions import FailedDecodeJson
+from shazamio.exceptions import FailedDecodeJson, RateLimited
 
 SongT: TypeAlias = str | pathlib.Path | bytes | bytearray
 FileT: TypeAlias = str | pathlib.Path
 
 
 async def validate_json(response: aiohttp.ClientResponse) -> Any:
+    # A throttled request carries no payload to decode, so without this it
+    #  surfaces as `FailedDecodeJson` below: a message naming the parser for
+    #  something the rate limiter did. `SongRec` reports the status by name too:
+    #  https://github.com/marin-m/SongRec/blob/b94ee61d51f40e8b3051da8f5c6a9e9c437b3633/src/core/fingerprinting/communication.rs#L120
+    if response.status == HTTPStatus.TOO_MANY_REQUESTS:
+        msg = f"{response.url} rate limited the request"
+        raise RateLimited(msg)
+
     try:
         return await response.json()
     except ContentTypeError as er:

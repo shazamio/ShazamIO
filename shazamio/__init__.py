@@ -13,6 +13,7 @@ from .exceptions import (
     BadCountryName,
     BadParseData,
     FailedDecodeJson,
+    RateLimited,
 )
 from .geo import GeoService
 from .schemas.charts import ChartTrack
@@ -28,6 +29,7 @@ __all__ = (
     "GenreMusic",
     "GeoService",
     "HTTPClient",
+    "RateLimited",
     "SearchParams",
     "Serialize",
     "Shazam",
