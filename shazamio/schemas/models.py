@@ -122,7 +122,12 @@ class TrackInfo(BaseModel):
     key: int
     title: str
     subtitle: str
-    artist_id: str | None = Field(default=None, validation_alias=AliasPath("artists", 0, "id"))
+    # `artists[0].id` is the literal `42` on every payload Shazam serves, so the
+    #  Apple id beside it is the only one that identifies the artist.
+    artist_id: str | None = Field(
+        default=None,
+        validation_alias=AliasPath("artists", 0, "adamid"),
+    )
     shazam_url: str | None = None
     photo_url: str | None = Field(
         default=None,
@@ -146,7 +151,10 @@ class TrackInfo(BaseModel):
     sections: list[TrackSectionType] | None = Field(default_factory=list)
 
     def model_post_init(self, _context: Any, /) -> None:
-        self.shazam_url = f"https://www.shazam.com/track/{self.artist_id}"
+        # Behind the Shazam headers `/track/{key}` answers `307` to
+        #  `/song/{appleId}/{slug}`, and `404` for a key with no track, so the key
+        #  is what makes this resolve. It used to be built from `artist_id`.
+        self.shazam_url = f"https://www.shazam.com/track/{self.key}"
         self.apple_music_url = self.__apple_music_url()
         self.spotify_uri = self.__spotify_uri()
         self.spotify_uri_query = self.__short_uri()
