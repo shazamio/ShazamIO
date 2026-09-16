@@ -1,6 +1,10 @@
+from http import HTTPStatus
 from typing import Any, Final
 
-from shazamio import Serialize
+import pytest
+from aiohttp import ClientSession
+
+from shazamio import Serialize, Shazam
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path
@@ -11,20 +15,21 @@ _TRACK_WITHOUT_SPOTIFY_PROVIDER: Final[dict[str, Any]] = {
     "subtitle": "Steve Jablonsky",
     "images": {"coverarthq": "https://images.example/cover.jpg"},
     "hub": {"actions": [{"uri": "a"}, {"uri": "ringtone://example"}]},
+    # Both artist ids, as Shazam serves them: `id` is the literal `42` on every
+    #  payload, `adamid` is the one that identifies the artist.
+    "artists": [{"id": "42", "adamid": "21402948"}],
 }
 
 
 def test_track_missing_paths_fall_back_to_defaults() -> None:
     track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER)
 
-    # The dump also pins a long-standing quirk on purpose: `shazam_url` is built
-    #  from the artist id.
     assert track.model_dump() == {
         "key": 47440537,
         "title": "Arrival To Earth",
         "subtitle": "Steve Jablonsky",
-        "artist_id": None,
-        "shazam_url": "https://www.shazam.com/track/None",
+        "artist_id": "21402948",
+        "shazam_url": "https://www.shazam.com/track/47440537",
         "photo_url": "https://images.example/cover.jpg",
         "spotify_uri_query": None,
         "apple_music_url": None,
@@ -109,7 +114,7 @@ def test_the_spotify_fields_read_the_spotify_provider() -> None:
         "title": "Arrival To Earth",
         "subtitle": "Steve Jablonsky",
         "artist_id": None,
-        "shazam_url": "https://www.shazam.com/track/None",
+        "shazam_url": "https://www.shazam.com/track/47440537",
         "photo_url": None,
         "spotify_uri_query": "Arrival%20To%20Earth%20Steve%20Jablonsky",
         "apple_music_url": None,
@@ -142,3 +147,44 @@ def test_the_spotify_fields_read_the_spotify_provider() -> None:
         "youtube_link": None,
         "sections": [],
     }
+
+
+_LIVE_TRACK_ID: Final[int] = 53982678
+# The id the field used to be built from, and a key Shazam has no track for.
+_URL_OF_A_DEAD_KEY: Final[str] = "https://www.shazam.com/track/42"
+_SONG_ROUTE: Final[str] = "/song/"
+
+
+async def _status(session: ClientSession, *, url: str) -> int:
+    async with session.get(url, allow_redirects=False) as response:
+        return response.status
+
+
+async def _redirect_target(session: ClientSession, *, url: str) -> str:
+    async with session.get(url, allow_redirects=False) as response:
+        return response.headers.get("Location", "")
+
+
+# The redirect is gated on the Shazam headers: with a browser `User-Agent` the
+#  site answers `200` and its 1.7MB shell for every `/track/` path, dead keys
+#  included, so a probe without them cannot tell a live page from a missing one.
+#  It is gated on the address too, so the dead key is the probe for whether the
+#  route is served here at all, and not only the control for the live half.
+@pytest.mark.asyncio
+async def test_the_built_url_resolves_and_a_dead_key_does_not() -> None:
+    shazam = Shazam()
+    track = Serialize.track(await shazam.track_about(track_id=_LIVE_TRACK_ID))
+
+    assert track.shazam_url == f"https://www.shazam.com/track/{_LIVE_TRACK_ID}"
+
+    async with ClientSession(headers=shazam.headers()) as session:
+        dead_status = await _status(session, url=_URL_OF_A_DEAD_KEY)
+        target = await _redirect_target(session, url=track.shazam_url)
+
+    if dead_status != HTTPStatus.NOT_FOUND:
+        reason: str = f"`/track/` is not served to this address: a dead key answers {dead_status}"
+        pytest.skip(reason)
+
+    # Matched, not anchored: what the claim needs is the song route, whatever the
+    #  site puts in front of it.
+    assert _SONG_ROUTE in target, f"dead key: {dead_status}, live key: {target!r}"
