@@ -1,3 +1,4 @@
+import asyncio
 from http import HTTPStatus
 from types import SimpleNamespace, TracebackType
 from typing import Any
@@ -21,6 +22,8 @@ class HTTPClient(HTTPClientInterface):
         self.trace_config = TraceConfig()
         self.trace_config.on_request_start.append(self.on_request_start)
         self._retry_client: RetryClient | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._closed: bool = False
 
     # `typing.Self` arrived in 3.11 and the floor is 3.10, so the class names
     #  itself here.
@@ -38,19 +41,25 @@ class HTTPClient(HTTPClientInterface):
     async def close(self) -> None:
         """Close the pooled connections. A request after this raises `RuntimeError`."""
         if self._retry_client is not None:
+            self._closed = True
             await self._retry_client.close()
 
     def _ensure_client(self) -> RetryClient:
-        # Built on the first request rather than in `__init__`: a `ClientSession`
-        #  binds to whichever loop is running when it is constructed, and the
-        #  documented usage builds a `Shazam` outside `asyncio.run` and awaits it
-        #  inside. One client means one session, which is what pools connections.
-        if self._retry_client is None:
+        # Built on the first request and rebuilt when the loop changes: a
+        #  `ClientSession` binds to the loop it is built on, so a client reused
+        #  across two `asyncio.run` calls raised `RuntimeError: Event loop is
+        #  closed`. The spent session is abandoned: closing it from the new loop
+        #  marks it closed and still leaves its socket open. A closed client is
+        #  never rebuilt, so a request after `close()` raises in any loop.
+        #  https://github.com/aio-libs/aiohttp/blob/5e392ce0456f5235a4ee6ad46f0e806df2f15873/aiohttp/client.py#L353
+        loop = asyncio.get_running_loop()
+        if self._retry_client is None or (self._loop is not loop and not self._closed):
             self._retry_client = RetryClient(
                 retry_options=self.retry_options,
                 raise_for_status=False,
                 trace_configs=[self.trace_config],
             )
+            self._loop = loop
 
         return self._retry_client
 

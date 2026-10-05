@@ -1,4 +1,5 @@
-from collections.abc import AsyncIterator
+import asyncio
+from collections.abc import AsyncGenerator
 from http import HTTPStatus
 from typing import Final
 
@@ -22,12 +23,7 @@ _THROTTLED: Final[str] = "/throttled"
 _PEER: Final[str] = "/peer"
 
 
-# Both guards are checked against a local server rather than against
-#  `www.shazam.com`, which answers a GitHub runner's address with `403` where it
-#  answers a workstation with `200 text/html`, so the live version of the
-#  content-type test failed in CI alone.
-@pytest.fixture
-async def server() -> AsyncIterator[TestServer]:
+def _application() -> web.Application:
     async def not_published(_request: web.Request) -> web.Response:
         return web.Response(status=HTTPStatus.NOT_FOUND)
 
@@ -58,7 +54,16 @@ async def server() -> AsyncIterator[TestServer]:
     app.router.add_get(_THROTTLED, throttled)
     app.router.add_get(_PEER, peer)
 
-    test_server = TestServer(app)
+    return app
+
+
+# Both guards are checked against a local server rather than against
+#  `www.shazam.com`, which answers a GitHub runner's address with `403` where it
+#  answers a workstation with `200 text/html`, so the live version of the
+#  content-type test failed in CI alone.
+@pytest.fixture
+async def server() -> AsyncGenerator[TestServer]:
+    test_server = TestServer(_application())
     await test_server.start_server()
 
     yield test_server
@@ -164,3 +169,37 @@ async def test_shazam_leaves_a_client_it_was_given_open(server: TestServer) -> N
     # Still usable afterwards: its lifetime belongs to whoever built it.
     await _source_port(given, url=url)
     await given.close()
+
+
+async def _one_request_on_its_own_server(client: HTTPClient) -> int:
+    test_server = TestServer(_application())
+    await test_server.start_server()
+
+    try:
+        return await _source_port(client, url=str(test_server.make_url(_PEER)))
+    finally:
+        await test_server.close()
+
+
+# Synchronous on purpose: the test owns both loops, the way a caller keeping one
+#  `Shazam` at module scope and calling `asyncio.run` per song does. The second
+#  call used to raise `RuntimeError: Event loop is closed`.
+def test_one_client_answers_across_two_event_loops() -> None:
+    client = HTTPClient()
+
+    asyncio.run(_one_request_on_its_own_server(client))
+    asyncio.run(_one_request_on_its_own_server(client))
+    asyncio.run(client.close())
+
+
+def test_a_closed_client_stays_closed_in_a_new_event_loop() -> None:
+    client = HTTPClient()
+
+    async def request_then_close() -> None:
+        await _one_request_on_its_own_server(client)
+        await client.close()
+
+    asyncio.run(request_then_close())
+
+    with pytest.raises(RuntimeError, match="Session is closed"):
+        asyncio.run(_one_request_on_its_own_server(client))

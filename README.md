@@ -281,6 +281,11 @@ collected: `Unclosed client session`. `await shazam.close()` does the same job
 where a block does not fit, and a request after either one raises
 `RuntimeError: Session is closed`.
 
+A pool belongs to the event loop it was opened on. A `Shazam` kept across
+several `asyncio.run` calls opens a new pool on each new loop and abandons the
+old one, which `aiohttp` reports the same way. A closed `Shazam` stays closed
+in every loop. Prefer one `asyncio.run` around all the calls.
+
 An `HTTPClient` you build yourself is yours to close: `Shazam` closes only the
 client it builds for itself. `examples/recognize_song.py` shows both blocks.
 
