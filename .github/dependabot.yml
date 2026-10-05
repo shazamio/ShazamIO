@@ -15,6 +15,14 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
+   # `codeql-action` refuses steps on mixed versions, so a bump of one sub-action
+   #  alone fails with `Loaded a configuration file for version '4.37.9', but
+   #  running version '4.38.2'`. One group moves all three together.
+   #  https://github.com/github/codeql-action/blob/2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2/src/config-utils.ts#L1428
+   groups:
+     codeql-action:
+       patterns:
+         - "github/codeql-action*"
 
  - package-ecosystem: "uv"
    directory: "/"
