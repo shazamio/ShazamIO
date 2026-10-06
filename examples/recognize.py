@@ -1,7 +1,7 @@
 import asyncio
 import logging
+from pathlib import Path
 
-import aiofiles
 from aiohttp_retry import ExponentialRetry
 
 from shazamio import HTTPClient, Serialize, Shazam
@@ -32,9 +32,7 @@ async def main() -> None:
         print(serialized_new_path)
 
         # pass bytes
-        async with aiofiles.open("data/Gloria.ogg", mode="rb") as file:
-            song_bytes = await file.read()
-
+        song_bytes = await asyncio.to_thread(Path("data/Gloria.ogg").read_bytes)
         new_version_path = await shazam.recognize(song_bytes)
         serialized_new_path = Serialize.full_track(new_version_path)
         print(serialized_new_path)

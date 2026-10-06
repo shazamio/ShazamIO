@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import Enum
 
 
 class GenreMusic(Enum):
@@ -22,22 +22,3 @@ class GenreMusic(Enum):
     # `regional-mexicano` was renamed to `m%C3%BAsica-mexicana` and is the one
     #  genre `services/charts/locations` lists that has no chart: every chart
     #  path built from either spelling answers `404` with an empty body.
-
-
-class SampleRate(IntEnum):
-    # Enum keys are sample rates in Hz
-    _8000 = 1
-    _11025 = 2
-    _16000 = 3
-    _32000 = 4
-    _44100 = 5
-    _48000 = 6
-
-
-class FrequencyBand(IntEnum):
-    # Enum keys are frequency ranges in Hz
-    hz_0_250 = -1  # Nothing above 250 Hz is actually stored
-    hz_250_520 = 0
-    hz_520_1450 = 1
-    hz_1450_3500 = 2
-    hz_3500_5500 = 3  # This one (3.5 KHz - 5.5 KHz) should not be used in legacy mode
