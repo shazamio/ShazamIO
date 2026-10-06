@@ -35,6 +35,9 @@ class ShazamUrl:
     APPLE_IDS_TO_TRACK_KEYS: Final[str] = (
         "https://www.shazam.com/services/sd/s/a2st/{country}/{language}/{apple_ids}"
     )
+    # Apple's index, not Shazam's: Shazam's own search answers `404 Not supported`,
+    #  `curl -A Dalvik/2.1.0 'https://www.shazam.com/services/search/v4/en-US/GB/web/search?term=adele'`.
+    ITUNES_SEARCH: Final[str] = "https://itunes.apple.com/search"
     # Charts are CSV and only CSV: the JSON chart resources are dead or
     #  frozen. On `cdn.` (the only host still routing them)
     #  `shazam/v3/.../tracks/ip-*-chart` answers `204`, and
