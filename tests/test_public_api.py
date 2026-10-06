@@ -8,8 +8,10 @@ import shazamio
 _EXPORTS: Final[tuple[str, ...]] = (
     "BadAppleIds",
     "BadCityName",
+    "BadContentType",
     "BadCountryName",
     "BadParseData",
+    "BadResponseStatus",
     "ChartTrack",
     "FailedDecodeJson",
     "GenreMusic",
@@ -19,6 +21,7 @@ _EXPORTS: Final[tuple[str, ...]] = (
     "SearchParams",
     "Serialize",
     "Shazam",
+    "SignatureError",
 )
 
 
