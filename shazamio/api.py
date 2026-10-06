@@ -1,9 +1,10 @@
 import pathlib
 import time
 import uuid
+import warnings
 from collections.abc import Sequence
 from types import TracebackType
-from typing import Any
+from typing import Any, Final
 
 from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
@@ -24,6 +25,31 @@ from .signature import DecodedMessage
 from .typehints import CountryCode
 from .utils import get_song
 
+# The window SongRec sends and `recognize_song()` cuts, 12 s:
+#  https://github.com/marin-m/SongRec/blob/b94ee61d51f40e8b3051da8f5c6a9e9c437b3633/src/core/fingerprinting/algorithm.rs#L77-L99
+WINDOW_SECONDS: Final[int] = 12
+# Shazam answers `matches: []` from 15 s up, for any track:
+#  https://github.com/shazamio/ShazamIO/issues/150
+_NO_MATCH_WINDOW_SECONDS: Final[int] = 15
+
+
+def _warn_on_window(seconds: int) -> None:
+    if seconds >= _NO_MATCH_WINDOW_SECONDS:
+        msg = (
+            f"segment_duration_seconds={seconds}: Shazam returns no matches for a window of "
+            f"{_NO_MATCH_WINDOW_SECONDS} s or more, use {WINDOW_SECONDS}"
+        )
+    elif seconds != WINDOW_SECONDS:
+        msg = (
+            f"segment_duration_seconds={seconds}: Shazam clients send a {WINDOW_SECONDS} s window, "
+            "keep it unless you measured another"
+        )
+    else:
+        return
+
+    # Points at the caller of `Shazam()` or `recognize()`, not at this helper.
+    warnings.warn(msg, UserWarning, stacklevel=3)
+
 
 class Shazam(Request):
     """Is asynchronous framework for reverse engineered Shazam API written in Python 3.10+ with
@@ -35,9 +61,11 @@ class Shazam(Request):
         language: str = "en-US",
         endpoint_country: str = "GB",
         http_client: HTTPClientInterface | None = None,
-        segment_duration_seconds: int = 10,
+        segment_duration_seconds: int = WINDOW_SECONDS,
     ) -> None:
         super().__init__(language=language)
+
+        _warn_on_window(segment_duration_seconds)
 
         self.core_recognizer = Recognizer(
             segment_duration_seconds=segment_duration_seconds,
@@ -400,6 +428,9 @@ class Shazam(Request):
             :param options: Search parameters
             :return: Dictionary with information about the found song
         """
+        if options is not None:
+            _warn_on_window(options.segment_duration_seconds)
+
         if isinstance(data, (str, pathlib.Path)):
             signature = await self.core_recognizer.recognize_path(value=data, options=options)
         elif isinstance(data, (bytes, bytearray)):
