@@ -394,7 +394,8 @@ class Shazam(Request):
         Apple's. A song Shazam has no track for is left out, and songs sharing one
         Shazam track appear once, so the list can be shorter than `limit`. A call
         costs one search, one id mapping per song and one `track_about` per track:
-        at most `2 * limit + 1` requests.
+        at most `2 * limit + 1` requests. Apple caps that search at about 20 calls a
+        minute: https://performance-partners.apple.com/search-api
 
         :param query: Free text, as typed into a search box. Example: ("daft punk one more time")
         :param limit: How many Apple songs to resolve, from 1 to 200
