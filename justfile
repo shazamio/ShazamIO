@@ -63,5 +63,9 @@ test-floor:
     uv sync --python {{ python_floor }} --upgrade --resolution lowest-direct
     uv run --no-sync --python {{ python_floor }} pytest
 
+[doc("Ask every Shazam URL the library calls what it answers; live, never part of `ci`")]
+probe:
+    uv run python scripts/probe_endpoints.py
+
 [doc("Run everything CI runs")]
 ci: lint test
