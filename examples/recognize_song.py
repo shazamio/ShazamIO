@@ -4,7 +4,7 @@ import logging
 import aiofiles
 from aiohttp_retry import ExponentialRetry
 
-from shazamio import HTTPClient, SearchParams, Serialize, Shazam
+from shazamio import HTTPClient, Serialize, Shazam
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -24,16 +24,10 @@ async def main() -> None:
             statuses={500, 502, 503, 504, 429},
         ),
     ) as http_client:
-        shazam = Shazam(
-            http_client=http_client,
-            segment_duration_seconds=10,
-        )
+        shazam = Shazam(http_client=http_client)
 
         # pass path
-        new_version_path = await shazam.recognize(
-            "data/Gloria.ogg",
-            options=SearchParams(segment_duration_seconds=5),
-        )
+        new_version_path = await shazam.recognize("data/Gloria.ogg")
         serialized_new_path = Serialize.full_track(new_version_path)
         print(serialized_new_path)
 

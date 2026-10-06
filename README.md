@@ -28,7 +28,10 @@
 </summary>
 
 Recognize a track from a file, a `pathlib.Path`, or the bytes of one. The
-sample below ships with the repository, in `examples/data/`<br>
+sample below ships with the repository, in `examples/data/`. The signature
+covers 12 s of the audio, the window Shazam clients send;
+`segment_duration_seconds` still takes another one and warns, and from 15 s up
+Shazam finds nothing at all<br>
 
   ```python3
   import asyncio
