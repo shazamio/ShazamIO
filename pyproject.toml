@@ -182,6 +182,10 @@ runtime-evaluated-base-classes = [
     "INP001",  # Standalone scripts, not a package
     "E501",    # Long Shazam URLs in comments
 ]
+"scripts/*" = [
+    "T20",     # `print` is how a diagnostic script reports
+    "INP001",  # Standalone scripts, not a package
+]
 "tests/*" = [
     "S101",    # `assert` is how pytest works
     "PLR2004", # Expected values are literal in asserts
