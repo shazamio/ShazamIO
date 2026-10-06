@@ -1,10 +1,11 @@
+import asyncio
 import pathlib
 import time
 import uuid
 import warnings
-from collections.abc import Sequence
+from collections.abc import Coroutine, Iterable, Sequence
 from types import TracebackType
-from typing import Any, Final
+from typing import Any, Final, TypeVar
 
 from aiohttp_retry import ExponentialRetry
 from pydub import AudioSegment
@@ -19,6 +20,7 @@ from .enums import GenreMusic
 from .exceptions import BadAppleIds
 from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
+from .itunes import ITUNES_SEARCH_CONTENT_TYPE, ITUNES_SEARCH_MAX_LIMIT, parse_itunes_track_ids
 from .misc import Device, Request, ShazamUrl
 from .schemas.charts import ChartTrack
 from .signature import DecodedMessage
@@ -31,6 +33,8 @@ WINDOW_SECONDS: Final[int] = 12
 # Shazam answers `matches: []` from 15 s up, for any track:
 #  https://github.com/shazamio/ShazamIO/issues/150
 _NO_MATCH_WINDOW_SECONDS: Final[int] = 15
+
+_Result = TypeVar("_Result")
 
 
 def _warn_on_window(seconds: int) -> None:
@@ -49,6 +53,20 @@ def _warn_on_window(seconds: int) -> None:
 
     # Points at the caller of `Shazam()` or `recognize()`, not at this helper.
     warnings.warn(msg, UserWarning, stacklevel=3)
+
+
+# `asyncio.gather` leaves the other calls running when one raises, so a failed
+#  search kept sending requests after it had raised:
+#  https://docs.python.org/3.10/library/asyncio-task.html#asyncio.gather
+#  `asyncio.TaskGroup` cancels them, but it needs Python 3.11.
+async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> list[_Result]:
+    tasks = [asyncio.ensure_future(call) for call in calls]
+    try:
+        return await asyncio.gather(*tasks)
+    finally:
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
 
 
 class Shazam(Request):
@@ -362,6 +380,59 @@ class Shazam(Request):
         )
 
         return parse_apple_to_shazam_keys(payload)
+
+    async def search_tracks_via_itunes(
+        self,
+        query: str,
+        *,
+        limit: int = 5,
+        proxy: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Search Apple's iTunes index, then fetch the Shazam track of every song found.
+
+        Shazam no longer has a text search, so relevance, order and coverage are
+        Apple's. A song Shazam has no track for is left out, and songs sharing one
+        Shazam track appear once, so the list can be shorter than `limit`. A call
+        costs one search, one id mapping per song and one `track_about` per track:
+        at most `2 * limit + 1` requests.
+
+        :param query: Free text, as typed into a search box. Example: ("daft punk one more time")
+        :param limit: How many Apple songs to resolve, from 1 to 200
+        :param proxy: Proxy server
+        :return: `track_about` answers, in Apple's order
+        :raises ValueError: `limit` is outside 1 to 200
+        """
+        if not 1 <= limit <= ITUNES_SEARCH_MAX_LIMIT:
+            msg = f"`limit` must be from 1 to {ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
+            raise ValueError(msg)
+
+        payload = await self.http_client.request_text(
+            ShazamUrl.ITUNES_SEARCH,
+            content_type=ITUNES_SEARCH_CONTENT_TYPE,
+            params={
+                "term": query,
+                "entity": "song",
+                "limit": limit,
+                "country": self.endpoint_country,
+            },
+            proxy=proxy,
+        )
+        apple_ids = parse_itunes_track_ids(payload)
+
+        # One id per call: a batch keys its entries by the id Shazam stores, which
+        #  can be one never sent, so its tracks could not be put in Apple's order.
+        mappings = await _gather_or_cancel(
+            self.track_keys_from_apple_ids([apple_id], proxy=proxy) for apple_id in apple_ids
+        )
+        track_keys = dict.fromkeys(
+            mapping[str(apple_id)]
+            for apple_id, mapping in zip(apple_ids, mappings, strict=True)
+            if str(apple_id) in mapping
+        )
+
+        return await _gather_or_cancel(
+            self.track_about(int(track_key), proxy=proxy) for track_key in track_keys
+        )
 
     @deprecated("Use recognize method instead of recognize_song")
     async def recognize_song(

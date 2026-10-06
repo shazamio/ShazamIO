@@ -128,6 +128,34 @@ passed.<br>
 
 <details>
 <summary>
+<i>🔎🎶 Search tracks by text, through Apple's index</i>
+</summary>
+
+Shazam no longer answers text search, so this searches Apple's iTunes index and
+fetches the Shazam track of every song found. Relevance and order are Apple's.
+Songs Shazam has no track for are left out and versions sharing one Shazam track
+come back once, so you can get fewer tracks than `limit`. Each song costs two
+requests, which is why `limit` defaults to 5.<br>
+
+  ```python3
+  import asyncio
+  from shazamio import Shazam
+
+
+  async def main():
+      async with Shazam() as shazam:
+          tracks = await shazam.search_tracks_via_itunes("daft punk one more time")
+
+          print([track["title"] for track in tracks])
+          # ['One More Time', 'One More Time (12 Mix)', "One More Time (Romanthony's Unplugged)"]
+
+
+  asyncio.run(main())
+  ```
+</details>
+
+<details>
+<summary>
 <i>🔝🎶🌏 Top tracks in world</i>
 </summary>
 
