@@ -1,8 +1,9 @@
 import warnings
 from pathlib import Path
+from typing import Any, Final
 
 import pytest
-from shazamio_core import SignatureError
+from shazamio_core import Signature, SignatureError
 
 from shazamio import SearchParams, Shazam
 
@@ -61,3 +62,89 @@ async def test_a_window_in_options_warns_at_the_caller(shazam: Shazam) -> None:
         )
 
     assert record[0].filename == __file__
+
+
+def _answer(*, timeskew: float, frequencyskew: float) -> dict[str, Any]:
+    return {
+        "matches": [{"id": "53982678", "timeskew": timeskew, "frequencyskew": frequencyskew}],
+        "track": {"key": "53982678"},
+        "tagid": "TAG",
+    }
+
+
+_NO_MATCH: Final[dict[str, Any]] = {"matches": [], "tagid": "TAG"}
+_WITHIN: Final[dict[str, Any]] = _answer(
+    timeskew=-5e-4,
+    frequencyskew=5e-4,
+)
+_AT_THE_LIMIT: Final[dict[str, Any]] = _answer(
+    timeskew=1e-3,
+    frequencyskew=0.0,
+)
+_TIME_BEYOND: Final[dict[str, Any]] = _answer(
+    timeskew=-2e-3,
+    frequencyskew=0.0,
+)
+_FREQUENCY_BEYOND: Final[dict[str, Any]] = _answer(
+    timeskew=0.0,
+    frequencyskew=2e-3,
+)
+_TEMPO_SHIFTED: Final[dict[str, Any]] = _answer(
+    timeskew=2e-2,
+    frequencyskew=0.0,
+)
+
+
+def _answer_with(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    shazam: Shazam,
+    answer: dict[str, Any],
+) -> None:
+    async def send(sig: Signature, *, proxy: str | None = None) -> dict[str, Any]:
+        del sig, proxy  # The answer is fixed; the signature is never sent.
+        return answer
+
+    monkeypatch.setattr(shazam, "send_recognize_request_v2", send)
+
+
+@pytest.mark.parametrize(
+    ("answer", "max_skew", "expected"),
+    [
+        pytest.param(_WITHIN, 1e-3, _WITHIN, id="within"),
+        pytest.param(_AT_THE_LIMIT, 1e-3, _AT_THE_LIMIT, id="at-the-limit"),
+        pytest.param(_TIME_BEYOND, 1e-3, _NO_MATCH, id="time-beyond"),
+        pytest.param(_FREQUENCY_BEYOND, 1e-3, _NO_MATCH, id="frequency-beyond"),
+        pytest.param(_TEMPO_SHIFTED, None, _TEMPO_SHIFTED, id="off-by-default"),
+        pytest.param(_NO_MATCH, 1e-3, _NO_MATCH, id="no-match"),
+    ],
+)
+async def test_max_skew_rejects_a_skewed_first_match(
+    monkeypatch: pytest.MonkeyPatch,
+    shazam: Shazam,
+    answer: dict[str, Any],
+    max_skew: float | None,
+    expected: dict[str, Any],
+) -> None:
+    _answer_with(
+        monkeypatch,
+        shazam=shazam,
+        answer=answer,
+    )
+
+    out = await shazam.recognize("examples/data/Gloria.ogg", max_skew=max_skew)
+
+    assert out == expected
+
+
+@pytest.mark.parametrize(
+    "max_skew",
+    [
+        pytest.param(0.0, id="zero"),
+        pytest.param(-1e-3, id="negative"),
+        pytest.param(float("nan"), id="nan"),
+    ],
+)
+async def test_max_skew_must_be_positive(shazam: Shazam, max_skew: float) -> None:
+    with pytest.raises(ValueError, match="must be above 0"):
+        await shazam.recognize("examples/data/Gloria.ogg", max_skew=max_skew)
