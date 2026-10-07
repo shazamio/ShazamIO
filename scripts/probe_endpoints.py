@@ -95,17 +95,6 @@ def probes() -> list[Probe]:
             content_type=_JSON_CONTENT_TYPE,
         ),
         Probe(
-            url_name="RELATED_SONGS",
-            url=ShazamUrl.RELATED_SONGS.format(
-                language=_LANGUAGE,
-                endpoint_country=_ENDPOINT_COUNTRY,
-                track_id=_TRACK_ID,
-                offset=0,
-                limit=5,
-            ),
-            content_type=_JSON_CONTENT_TYPE,
-        ),
-        Probe(
             url_name="LOCATIONS",
             url=ShazamUrl.LOCATIONS,
             content_type=_JSON_CONTENT_TYPE,

@@ -22,10 +22,6 @@ class ShazamUrl:
         "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/iphone/-/track"
         "/{track_id}?shazamapiversion=v3&video=v3"
     )
-    RELATED_SONGS: Final[str] = (
-        "https://cdn.shazam.com/shazam/v3/{language}/{endpoint_country}/iphone/-/tracks"
-        "/track-similarities-id-{track_id}?startFrom={offset}&pageSize={limit}&connected=&channel="
-    )
     LOCATIONS: Final[str] = "https://www.shazam.com/services/charts/locations"
     # `country` comes first and `locale` second: the other order answers
     #  `200 {"error":{"msg":"Could not fetch ids"}}`, which reads like a dead

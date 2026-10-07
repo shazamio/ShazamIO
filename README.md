@@ -9,7 +9,7 @@
 <br><br>
 
   <img width="1000" src="https://user-images.githubusercontent.com/64792903/109359596-ca561a00-7896-11eb-9c93-9cf1f283b1a5.png">
-  🎵 Is a FREE asynchronous library from reverse engineered Shazam API written in Python 3.10+ with asyncio and aiohttp. Recognizes a song from a file or from bytes, reads a track and the tracks related to it, and returns every chart Shazam publishes.
+  🎵 Is a FREE asynchronous library from reverse engineered Shazam API written in Python 3.10+ with asyncio and aiohttp. Recognizes a song from a file or from bytes, reads a track, and returns every chart Shazam publishes.
 
 -----
 </p>
@@ -69,29 +69,6 @@ Get track information<br>
 
           print(about_track)  # dict
           print(Serialize.track(data=about_track))  # pydantic model
-
-
-  asyncio.run(main())
-  ```
-</details>
-
-<details>
-<summary>
-<i>🎶💬 Similar songs</i>
-</summary>
-
-Similar songs based on a song id<br>
-<a href="https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix">https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix</a>
-
-  ```python3
-  import asyncio
-  from shazamio import Shazam
-
-
-  async def main():
-      async with Shazam() as shazam:
-          related = await shazam.related_tracks(track_id=546891609, limit=5, offset=2)
-          print(related)
 
 
   asyncio.run(main())
