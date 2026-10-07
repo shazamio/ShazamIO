@@ -24,24 +24,8 @@ classifiers = [
 #  library's upper caps conflict with everything else in a consumer's
 #  environment, so a cap needs a reason.
 dependencies = [
-    # Oldest release with CPython 3.10 wheels on every platform; 1.21.2 shipped
-    #  them for Linux only.
-    "numpy>=1.21.3",
     # Oldest release with CPython 3.10 wheels; 3.7.4.post0 ships none at all.
     "aiohttp>=3.8.0",
-    # `AudioSegment.get_array_of_samples`, which the converter feeds to the
-    #  signature generator, first appeared in 0.16.0: 0.15.0 fails the suite
-    #  with `AttributeError`.
-    "pydub>=0.16.0",
-    # `audioop` left the standard library in 3.13, and `pydub` imports it at module
-    #  scope: `import pydub` raises `ModuleNotFoundError: No module named 'pyaudioop'`.
-    #  `pydub` has not released since 2021, so the shim is ours to declare. Every
-    #  release passes the suite; 0.2.2 is the only one shipping CPython 3.14 wheels.
-    #  https://docs.python.org/3.13/whatsnew/3.13.html#pep-594-remove-dead-batteries-from-the-standard-library
-    "audioop-lts>=0.2.2; python_version >= '3.13'",
-    # `async with aiofiles.open(...)` needs the async context manager added in
-    #  0.3.0: 0.2.1 fails the suite with `AttributeError: __aenter__`.
-    "aiofiles>=0.3.0",
     # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
     "aiohttp-retry>=2.3",
     # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
@@ -129,16 +113,15 @@ ignore = [
     #  `LICENSE` covers everything.
     "CPY001",
 
-    # The tree predates any docstring convention and there are 250 undocumented
+    # The tree predates any docstring convention and there are 168 undocumented
     #  public names; writing them is its own effort, and turning this on now
     #  would bury real findings under legacy ones.
     "D1",      # Undocumented public module/class/method/function
     "D205",    # Legacy docstrings have no summary-line structure to enforce
     "D401",    # Same: rewording legacy docstrings is not lint's job
 
-    # `Any` is the honest annotation in all 11 places this fires: the generic
-    #  `RingBuffer`, the `**kwargs` both HTTP clients forward to `aiohttp`, the
-    #  argument-forwarding deprecation decorator, pydantic's own
+    # `Any` is the honest annotation in all 6 places this fires: the `**kwargs`
+    #  both HTTP clients forward to `aiohttp`, pydantic's own
     #  `model_post_init(self, _context: Any)` hook, and `validate_json`, which
     #  returns whatever the endpoint sent. The rest of `ANN` is enforced.
     "ANN401",  # `Any` in an argument or return annotation
@@ -166,17 +149,6 @@ runtime-evaluated-base-classes = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"shazamio/algorithm.py" = [
-    "PLR2004", # DSP thresholds (frequency bands, FFT sizes) are readable inline
-    "S101",    # An invariant of the reverse-engineered algorithm, same story as
-               #  the `signature.py` checksum guards below.
-]
-"shazamio/signature.py" = [
-    "PLR2004", # Same: binary-format offsets and magic numbers of the signature
-    "S101",    # The checksum guards predate the lint; replacing `assert` with
-               #  raises changes what a corrupted stream throws, a behavior
-               #  change owned by the exception-surface work, not by lint.
-]
 "examples/*" = [
     "T20",     # `print`/`pprint` is what an example is for
     "INP001",  # Standalone scripts, not a package

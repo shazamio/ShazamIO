@@ -295,7 +295,7 @@ old one, which `aiohttp` reports the same way. A closed `Shazam` stays closed
 in every loop. Prefer one `asyncio.run` around all the calls.
 
 An `HTTPClient` you build yourself is yours to close: `Shazam` closes only the
-client it builds for itself. `examples/recognize_song.py` shows both blocks.
+client it builds for itself. `examples/recognize.py` shows both blocks.
 
 ## 📊 What the chart methods return
 

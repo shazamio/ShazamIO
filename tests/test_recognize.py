@@ -1,50 +1,29 @@
 import warnings
-from collections.abc import AsyncIterator
-from io import BytesIO
+from pathlib import Path
 
 import pytest
-import pytest_asyncio
-from pydub import AudioSegment
 from shazamio_core import SignatureError
 
 from shazamio import SearchParams, Shazam
-from shazamio.utils import get_file_bytes
 
 
-@pytest_asyncio.fixture(scope="session")
-async def song_bytes() -> AsyncIterator[bytes]:
-    bytes_data = await get_file_bytes(file="examples/data/Gloria.ogg")
-    yield bytes_data
+@pytest.fixture(scope="session")
+def song_bytes() -> bytes:
+    return Path("examples/data/Gloria.ogg").read_bytes()
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_file(shazam: Shazam) -> None:
+async def test_recognize_file(shazam: Shazam) -> None:
     out = await shazam.recognize(data="examples/data/Gloria.ogg")
     assert out.get("matches") != []
     assert out["track"]["key"] == "53982678"
 
 
 @pytest.mark.asyncio
-async def test_recognize_song_bytes(song_bytes: bytes, shazam: Shazam) -> None:
+async def test_recognize_bytes(song_bytes: bytes, shazam: Shazam) -> None:
     out = await shazam.recognize(data=song_bytes)
     assert out.get("matches") != []
     assert out["track"]["key"] == "53982678"
-
-
-@pytest.mark.asyncio
-async def test_recognize_song_too_short(shazam: Shazam) -> None:
-    short_audio_segment = AudioSegment.from_file(
-        file=BytesIO(b"0" * 126),
-        format="pcm",
-        sample_width=2,
-        frame_rate=16000,
-        channels=1,
-    )
-
-    out = await shazam.recognize_song(data=short_audio_segment)
-
-    assert out.get("matches") == []
-    assert "track" not in out
 
 
 @pytest.mark.parametrize(

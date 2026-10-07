@@ -1,6 +1,5 @@
 import asyncio
 import pathlib
-import time
 import uuid
 import warnings
 from collections.abc import Coroutine, Iterable, Sequence
@@ -8,14 +7,12 @@ from types import TracebackType
 from typing import Any, Final, TypeVar
 
 from aiohttp_retry import ExponentialRetry
-from pydub import AudioSegment
 from shazamio_core import Recognizer, SearchParams, Signature
 
 from .apple import APPLE_TO_SHAZAM_CONTENT_TYPE, parse_apple_to_shazam_keys
 from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
-from .deprecated.decorator import deprecated
 from .enums import GenreMusic
 from .exceptions import BadAppleIds
 from .geo import GeoService
@@ -23,11 +20,9 @@ from .interfaces.client import HTTPClientInterface
 from .itunes import ITUNES_SEARCH_CONTENT_TYPE, ITUNES_SEARCH_MAX_LIMIT, parse_itunes_track_ids
 from .misc import Device, Request, ShazamUrl
 from .schemas.charts import ChartTrack
-from .signature import DecodedMessage
 from .typehints import CountryCode
-from .utils import get_song
 
-# The window SongRec sends and `recognize_song()` cuts, 12 s:
+# The window SongRec sends, 12 s:
 #  https://github.com/marin-m/SongRec/blob/b94ee61d51f40e8b3051da8f5c6a9e9c437b3633/src/core/fingerprinting/algorithm.rs#L77-L99
 WINDOW_SECONDS: Final[int] = 12
 # Shazam answers `matches: []` from 15 s up, for any track:
@@ -403,70 +398,18 @@ class Shazam(Request):
             self.track_about(int(track_key), proxy=proxy) for track_key in track_keys
         )
 
-    @deprecated("Use recognize method instead of recognize_song")
-    async def recognize_song(
-        self,
-        data: str | pathlib.Path | bytes | bytearray | AudioSegment,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Creating a song signature based on a file and searching for this signature in the shazam
-        database.
-            :param data: Path to song file or bytes
-            :param proxy: Proxy server
-            :return: Dictionary with information about the found song.
-        """
-        song = await get_song(data=data)
-        audio = Converter.normalize_audio_data(song)
-        signature_generator = Converter.create_signature_generator(audio)
-        signature = signature_generator.get_next_signature()
-
-        if signature is None:
-            return {"matches": []}
-
-        return await self.send_recognize_request(
-            signature,
-            proxy=proxy,
-        )
-
-    async def send_recognize_request(
-        self,
-        sig: DecodedMessage,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        data = Converter.data_search(
-            Request.TIME_ZONE,
-            sig.encode_to_uri(),
-            int(sig.number_samples / sig.sample_rate_hz * 1000),
-            int(time.time() * 1000),
-        )
-        return await self.http_client.request(
-            "POST",
-            ShazamUrl.SEARCH_FROM_FILE.format(
-                language=self.language,
-                device=Device.IPHONE.value,
-                endpoint_country=self.endpoint_country,
-                uuid_1=str(uuid.uuid4()).upper(),
-                uuid_2=str(uuid.uuid4()).upper(),
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-            json=data,
-        )
-
     async def recognize(
         self,
         data: str | pathlib.Path | bytes | bytearray,
         proxy: str | None = None,
         options: SearchParams | None = None,
     ) -> dict[str, Any]:
-        """All logic and mathematics are transferred to RUST lang.
+        """Search the Shazam database for the signature of a song file or its bytes.
 
-        Creating a song signature based on a file and searching for this signature in the shazam
-        database.
-            :param data: Path to song file or bytes
-            :param proxy: Proxy server
-            :param options: Search parameters
-            :return: Dictionary with information about the found song
+        :param data: Path to song file or bytes
+        :param proxy: Proxy server
+        :param options: Search parameters
+        :return: Dictionary with information about the found song
         """
         if options is not None:
             _warn_on_window(options.segment_duration_seconds)
