@@ -1,6 +1,6 @@
 [project]
 name = "shazamio"
-version = "0.8.1"
+version = "0.9.0"
 description = "An asynchronous framework for the reverse engineered Shazam API, written in Python with asyncio and aiohttp."
 authors = [{ name = "dotX12" }]
 license = "MIT"
