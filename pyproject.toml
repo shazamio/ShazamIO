@@ -94,6 +94,11 @@ module-root = ""
 #  a bare `1 skipped` count, and a live test that skips itself where the
 #  service is unreachable reports nothing about why.
 addopts = ["-ra"]
+# Without it a bare `pytest` walks the whole tree, so a second checkout nested
+#  in an untracked directory brings its own `tests/conftest.py` and collection
+#  fails with `ImportPathMismatchError: ('tests.conftest', ...)`.
+#  https://docs.pytest.org/en/stable/reference/reference.html#confval-testpaths
+testpaths = ["tests"]
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
