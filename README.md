@@ -297,6 +297,15 @@ in every loop. Prefer one `asyncio.run` around all the calls.
 An `HTTPClient` you build yourself is yours to close: `Shazam` closes only the
 client it builds for itself. `examples/recognize.py` shows both blocks.
 
+## 🎯 When a match may be wrong
+
+Shazam sometimes answers with a confident match for the wrong track, and some
+recordings get one at every offset. `recognize(..., max_skew=1e-3)` turns an
+answer whose first match is skewed beyond the limit into a no-match, which
+removes most of those. It is off by default because it also rejects audio
+played faster, slower or pitch-shifted; the `recognize` docstring has the
+measurements.
+
 ## 📊 What the chart methods return
 
 Shazam publishes its charts as CSV with three columns, so a chart entry is a
