@@ -1,6 +1,6 @@
 [project]
 name = "shazamio"
-version = "0.8.1"
+version = "0.9.0"
 description = "An asynchronous framework for the reverse engineered Shazam API, written in Python with asyncio and aiohttp."
 authors = [{ name = "dotX12" }]
 license = "MIT"
@@ -94,6 +94,11 @@ module-root = ""
 #  a bare `1 skipped` count, and a live test that skips itself where the
 #  service is unreachable reports nothing about why.
 addopts = ["-ra"]
+# Without it a bare `pytest` walks the whole tree, so a second checkout nested
+#  in an untracked directory brings its own `tests/conftest.py` and collection
+#  fails with `ImportPathMismatchError: ('tests.conftest', ...)`.
+#  https://docs.pytest.org/en/stable/reference/reference.html#confval-testpaths
+testpaths = ["tests"]
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
