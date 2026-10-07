@@ -26,12 +26,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # `FedericoCarboni/setup-ffmpeg` resolves its download by scraping a
-      #  third-party readme at run time and failed two runs in one day with
-      #  `AssertionError [ERR_ASSERTION]: Failed to read version from readme`.
-      - name: Install ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-
       - name: Install dependencies
         run: just install
 

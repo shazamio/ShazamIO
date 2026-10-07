@@ -3,7 +3,7 @@
 ## Setup
 
 You need [`uv`](https://docs.astral.sh/uv/) and [`just`](https://just.systems/)
-on `PATH`, plus `ffmpeg`: the test suite decodes real audio files.
+on `PATH`.
 
 ```sh
 just install
