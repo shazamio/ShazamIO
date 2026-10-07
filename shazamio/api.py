@@ -310,38 +310,6 @@ class Shazam(Request):
             proxy=proxy,
         )
 
-    async def related_tracks(
-        self,
-        track_id: int,
-        limit: int = 20,
-        offset: int = 0,
-        proxy: str | None = None,
-    ) -> dict[str, Any]:
-        """Similar songs based song id
-        https://www.shazam.com/track/546891609/2-phu%CC%81t-ho%CC%9Bn-kaiz-remix
-            :param track_id: Track number. Example: (549952578)
-            https://www.shazam.com/track/549952578/
-            :param limit: Determines how many songs the maximum can be in the request.
-                Example: If 5 is specified, the query will return no more than 5 songs
-            :param offset: A parameter that determines with which song to display the request.
-                The default is 0. If you want to skip the first few songs, set this parameter to
-                your own.
-            :param proxy: Proxy server
-            :return: dict tracks.
-        """
-        return await self.http_client.request(
-            "GET",
-            ShazamUrl.RELATED_SONGS.format(
-                language=self.language,
-                endpoint_country=self.endpoint_country,
-                limit=limit,
-                offset=offset,
-                track_id=track_id,
-            ),
-            headers=self.headers(),
-            proxy=proxy,
-        )
-
     async def track_keys_from_apple_ids(
         self,
         apple_ids: Sequence[int | str],
