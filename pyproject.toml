@@ -61,6 +61,9 @@ tests = [
     # The session-scoped async fixtures error at teardown on 0.23.2 and hit
     #  `ScopeMismatch` on anything below 0.23.
     "pytest-asyncio>=0.23.3",
+    # The releases the cassettes were recorded with; nothing older was measured.
+    "pytest-recording>=0.13.4",
+    "vcrpy>=8.3.0",
 ]
 lint = [
     "ruff>=0.16.9",
@@ -94,7 +97,10 @@ module-root = ""
 # `-ra` prints the reason beside every non-passing test. Without it a skip is
 #  a bare `1 skipped` count, and a live test that skips itself where the
 #  service is unreachable reports nothing about why.
-addopts = ["-ra"]
+#  `--block-network` refuses any connection outside a recording `vcr` test, so
+#  the suite replays offline; `127.0.0.1` is the local `TestServer`.
+#  https://github.com/kiwicom/pytest-recording/blob/c2d2db70753e8df60a95f063c09479214734b43c/src/pytest_recording/plugin.py#L133
+addopts = ["-ra", "--block-network", "--allowed-hosts=127.0.0.1"]
 # Without it a bare `pytest` walks the whole tree, so a second checkout nested
 #  in an untracked directory brings its own `tests/conftest.py` and collection
 #  fails with `ImportPathMismatchError: ('tests.conftest', ...)`.

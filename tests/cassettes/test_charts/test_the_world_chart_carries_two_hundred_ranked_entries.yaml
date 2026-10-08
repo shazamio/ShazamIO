@@ -1,0 +1,127 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/top-200/world/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Imael
+        Angel\",\"BAD TIMES\"\n2,\"HUGEL, Imael Angel & Ultra Nat\xE9\",\"Movin' To
+        The Sun\"\n3,\"KAROL G, Judeline & rusowsky\",\"BbY WOW\"\n4,\"Dave & Tems\",\"Raindance\"\n5,\"GENER8ION
+        & Yung Lean\",\"STORM II\"\n6,\"HUGEL & SOLTO (FR)\",\"Jamaican (Bam Bam)\"\n7,\"Bronski
+        Beat\",\"Smalltown Boy\"\n8,\"Prince & The Revolution\",\"Purple Rain\"\n9,\"Temper
+        City\",\"Self Aware\"\n10,\"Kimo Sounds\",\"Rise Slow\"\n11,\"Tame Impala\",\"Loser\"\n12,\"\u0443\u0440\u0430\u043B
+        \u0433\u0430\u0439\u0441\u0438\u043D & \u0441\u043D\u044F\u043B\u0446\u0435\u043F\u0438\",\"\u0442\u044B
+        \u0432 \u043C\u043E\u0438\u0445 \u043C\u044B\u0441\u043B\u044F\u0445 \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430\"\n13,\"Imael
+        Angel\",\"BAD TIMES (Long Version)\"\n14,\"Quavo & Takeoff\",\"HOTEL LOBBY
+        (Unc & Phew) [- A COLORS SHOW]\"\n15,\"Akcent\",\"Stay with Me\"\n16,\"Dua
+        Lipa\",\"Training Season (Live from the Royal Albert Hall)\"\n17,\"AD\xC9LA\",\"Nicole
+        Kidman\"\n18,\"Dorian\",\"La Tormenta de Arena\"\n19,\"DJ Goja, Jason Derulo
+        & Melody\",\"Mi Chico (Jason Derulo x Melody Version)\"\n20,\"Fontaines D.C.\",\"Starburster\"\n21,\"sombr\",\"My
+        Body Isn't Ready\"\n22,\"SIENNA SPIRO\",\"Great Expectation\"\n23,\"Wxoda\",\"Vibin\"\n24,\"Taylor
+        Swift\",\"Patient Zero\"\n25,\"Ella Langley\",\"Choosin' Texas\"\n26,\"Tems\",\"Hold
+        On\"\n27,\"PVT\",\"Kangaroo\"\n28,\"Sunvera Scott\",\"PRAY FOR ME\"\n29,\"Kingfishr\",\"Oh
+        Love\"\n30,\"AD\xC9LA\",\"Ain't In LA\"\n31,\"DJ Zinhle, Nayvee Womculo &
+        Young Stunna\",\"Nayvee's Prayer\"\n32,\"Teddy Swims\",\"Mr. Know It All\"\n33,\"Voskresenskii\",\"\u0424\u0440\u0430\u043D\u0441\u0435\"\n34,\"nissi
+        & 25Hzz\",\"Wyw My Sweetie #Jerseyclub (Super Slowed)\"\n35,\"P!nk\",\"Just
+        Give Me a Reason (feat. Nate Ruess)\"\n36,\"AURORA\",\"Runaway\"\n37,\"Miley
+        Cyrus\",\"Bass Persuades\"\n38,\"Bjorn Bonebreaker\",\"Mama, Don't Close Your
+        Eyes\"\n39,\"Stromae\",\"Alors on danse (feat. Erik Hassle)\"\n40,\"Ariana
+        Grande\",\"hate that i made you love me\"\n41,\"Michael Kiwanuka\",\"Hero\"\n42,\"Drake
+        & Don Toliver\",\"Solar Eclipse\"\n43,\"STELLA LEFTY\",\"Boston\"\n44,\"Drake\",\"Quebec\"\n45,\"Olivia
+        Rodrigo\",\"stupid song\"\n46,\"Shakira & Burna Boy\",\"Dai Dai\"\n47,\"ANOTR
+        & 54 Ultra\",\"Talk To You (ft. 54 Ultra)\"\n48,\"KATSEYE\",\"Animal\"\n49,\"Empire
+        Of The Sun\",\"We Are The People\"\n50,\"DA TI\",\"Take Me There\"\n51,\"Faouzia\",\"UNETHICAL\"\n52,\"Olivia
+        Dean\",\"So Easy (To Fall In Love)\"\n53,\"Ravyn Lenae\",\"Love Me Not\"\n54,\"Blaqbonez\",\"IKEBE
+        3000 (feat. Asake)\"\n55,\"ARIA VEGA\",\"COMPA COLETO (uy_como)\"\n56,\"Chief
+        Priest & Evado\",\"Go Hard or Go Home\"\n57,\"Thiago Navarro Music\",\"Bonito,
+        Bonito\"\n58,\"Vacra & La Rvfleuze\",\"Fille a\u0300 Papa\"\n59,\"Tman Xpress
+        & Mellow & Sleazy\",\"Remember\"\n60,\"Harry Styles\",\"Sign of the Times\"\n61,\"LOVIXX
+        & STOSLIV\",\"dont tell your dreams to everybody\"\n62,\"LATIN MAFIA & Fred
+        again..\",\"Te Estoy Correteando\"\n63,\"Hamza Malik & Zain Zohaib\",\"Alfaaz\"\n64,\"The
+        Goo Goo Dolls\",\"Iris\"\n65,\"Gotye\",\"Somebody That I Used to Know (feat.
+        Kimbra)\"\n66,\"DJ.ILHAM & DJ Miro\",\"DIGIDI DIGIDI\"\n67,\"Ariana Grande\",\"bye\"\n68,\"Desireless\",\"Voyage
+        voyage\"\n69,\"LONOWN & riserayss\",\"worry (Instrumental Slowed)\"\n70,\"Mac
+        Miller\",\"Cinderella (feat. Ty Dolla $ign)\"\n71,\"Jhen\xE9 Aiko\",\"So Good
+        (feat. Kendrick Lamar)\"\n72,\"Alex Warren\",\"Ordinary\"\n73,\"George Michael\",\"Careless
+        Whisper\"\n74,\"Ankara Echoes\",\"Beni Al (Ta Ki Seni G\xF6rene Kadar) [Afro
+        House Remix]\"\n75,\"girl in red\",\"we fell in love in october\"\n76,\"Ayra
+        Starr\",\"Heaven Baby (feat. ZAYN)\"\n77,\"Chris Isaak\",\"Wicked Game\"\n78,\"Koss
+        & \u041F\u041B\u0423\u0422\u0422\u041E\",\"\u0417\u0435\u043C\u043B\u044F\u043A\"\n79,\"Benny
+        Benassi\",\"Love Is Gonna Save Us\"\n80,\"Tame Impala\",\"Dracula\"\n81,\"Adele\",\"Lovesong\"\n82,\"Carla
+        Morrison\",\"Disfruto\"\n83,\"Lady Gaga & Bruno Mars\",\"Die With A Smile\"\n84,\"Rema\",\"Oh
+        No\"\n85,\"Coldplay\",\"Hymn for the Weekend\"\n86,\"Stephen Wilson Jr.\",\"Stand
+        By Me (Live at The Print Shop)\"\n87,\"The Chainsmokers\",\"Don't Let Me Down
+        (feat. Daya)\"\n88,\"Ashe\",\"Stop The Wedding!\"\n89,\"Beekay Monalayzzar,
+        METT4LIQ-151, UDUBE & Simah Nation\",\"Ubaba wam\"\n90,\"Ariana Grande\",\"Best
+        Mistake (feat. Big Sean)\"\n91,\"Justin Bieber\",\"Beauty and a Beat (feat.
+        Nicki Minaj)\"\n92,\"Taylor Swift\",\"The Fate of Ophelia\"\n93,\"Vanessa
+        Carlton\",\"A Thousand Miles\"\n94,\"Edward Maya & Vika Jigulina\",\"Stereo
+        Love\"\n95,\"BLOK3\",\"Sebebi Yar\"\n96,\"Mazzy Star\",\"Fade into You\"\n97,\"Natanael
+        Cano, Tito Double P, Victor Mendivil & Ovi\",\"OLIVIA LA FLAKA\"\n98,\"Lord
+        Huron\",\"The Night We Met\"\n99,\"Victony\",\"SLICK\"\n100,\"Lana Del Rey\",\"Cinnamon
+        Girl\"\n101,\"Tame Impala\",\"Dracula (with JENNIE)\"\n102,\"Olivia Dean\",\"Man
+        I Need\"\n103,\"Ronisia\",\"Cuenta (feat. Meryl & Shay)\"\n104,\"BESTie\",\"Love
+        Options\"\n105,\"Dolly Babe\",\"Pink Blush\"\n106,\"Eminem\",\"Without Me\"\n107,\"BIA\",\"WE
+        ON GO\"\n108,\"Max Richter, Louisa Fuller, Natalia Bonner, John Metcalfe,
+        Philip Sheppard & Chris Worsey\",\"On The Nature Of Daylight\"\n109,\"Steve
+        Lacy\",\"oh yeah?\"\n110,\"DJ Kongo\",\"Miss Lolo\"\n111,\"Christina Perri\",\"A
+        Thousand Years\"\n112,\"M83\",\"Outro\"\n113,\"Bruno Mars\",\"Risk It All\"\n114,\"sombr\",\"back
+        to friends\"\n115,\"Billy Idol\",\"Eyes Without A Face\"\n116,\"Indila\",\"Love
+        Story\"\n117,\"Don Miguelo\",\"Y Qu\xE9 Fue?\"\n118,\"Akcent\",\"On And On
+        (When the Lights Go Down)\"\n119,\"Phil Collins\",\"Another Day In Paradise\"\n120,\"Benson
+        Boone\",\"Beautiful Things\"\n121,\"Prospa, Cloonee & Sybil\",\"Free Your
+        Mind\"\n122,\"Nirvana\",\"Smells Like Teen Spirit\"\n123,\"KAROL G & Bruno
+        Mars\",\"Still\"\n124,\"Rockwell\",\"Somebody's Watching Me\"\n125,\"HUNTR/X,
+        EJAE, AUDREY NUNA, REI AMI & KPop Demon Hunters Cast\",\"Golden\"\n126,\"Q8_miix\",\"Miss
+        you - \u0641\u0642\u062F\u062A\u0643\"\n127,\"Belly Gang Kushington & 21 Savage\",\"WTF
+        GOIN\"\n128,\"Tiakola & Theodora\",\"La Nocturne\"\n129,\"SABI & MIA BOYKA\",\"\u0411\u0430\u0437\u043E\u0432\u044B\u0439
+        \u043C\u0438\u043D\u0438\u043C\u0443\u043C (Slow Version)\"\n130,\"El De Las
+        R's\",\"Beretta (De Los Cerros La Escuela)\"\n131,\"The Killers\",\"Mr. Brightside\"\n132,\"Complete
+        Snake\",\"SPEAK TO YOU IN TEN YEARS\"\n133,\"Evanescence\",\"Bring Me To Life\"\n134,\"USHER\",\"Yeah!
+        (feat. Lil Jon & Ludacris)\"\n135,\"Drake\",\"Burning Bridges\"\n136,\"The
+        Neighbourhood\",\"Sweater Weather\"\n137,\"DJ LUANA PRI\",\"PONTO SUAVE (Remix)\"\n138,\"The
+        Second Voice\",\"LET ME BE\"\n139,\"TUFF KING\",\"Waka Waka\"\n140,\"Cutting
+        Crew\",\"(I Just) Died In Your Arms\"\n141,\"DJ Snake\",\"Let Me Love You
+        (feat. Justin Bieber)\"\n142,\"Justin99\",\"Restart\"\n143,\"Olivia Rodrigo\",\"drop
+        dead\"\n144,\"Taylor Swift\",\"I Knew It, I Knew You (From \"Toy Story 5\")\"\n145,\"Zericxxn\",\"Raya
+        (Slowed)\"\n146,\"Mary J. Blige\",\"Family Affair\"\n147,\"kwn\",\"hopeless
+        romantic\"\n148,\"Dominic Fike\",\"Babydoll\"\n149,\"Harold Melvin & The Blue
+        Notes\",\"I Miss You (feat. Teddy Pendergrass)\"\n150,\"Miguel\",\"Sure Thing\"\n151,\"Bonnie
+        Tyler\",\"Total Eclipse of the Heart\"\n152,\"Haddaway\",\"What Is Love (7\"
+        Mix)\"\n153,\"a-ha\",\"Take On Me\"\n154,\"Akon\",\"Lonely\"\n155,\"Miyagi
+        & \u042D\u043D\u0434\u0448\u043F\u0438\u043B\u044C\",\"I Got Love (feat. \u0420\u0435\u043C
+        \u0414\u0438\u0433\u0433\u0430)\"\n156,\"4 Non Blondes\",\"What's Up?\"\n157,\"The
+        Police\",\"Every Breath You Take\"\n158,\"Jeuscutter\",\"Tu Sanwal Ful Kasturi\"\n159,\"JA\u0178-Z\",\"03'
+        Bonnie & Clyde (feat. Beyonc\xE9 Knowles)\"\n160,\"Robin S.\",\"Show Me Love\"\n161,\"Djo\",\"End
+        of Beginning\"\n162,\"Drake, Don Toliver & Yebba\",\"Cold Shoulder\"\n163,\"Videoclub,
+        Ad\xE8le Castillon & Mattyeux\",\"Amour plastique\"\n164,\"Indila\",\"Ainsi
+        Bas La Vida\"\n165,\"Noodah05\",\"Around Me\"\n166,\"Keane\",\"Somewhere Only
+        We Know\"\n167,\"Depeche Mode\",\"Enjoy the Silence\"\n168,\"Fat Papi & prodshushy\",\"FREAKED
+        OUT\"\n169,\"Timur Timbigfamily\",\"\u0422\u0430\u043D\u0446\u0443\u0438\u0306
+        (Club Mix)\"\n170,\"Justin Timberlake\",\"Mirrors\"\n171,\"Patrick S\xE9bastien\",\"Toc
+        toc\"\n172,\"French Montana\",\"Unforgettable (feat. Swae Lee)\"\n173,\"Foreigner\",\"I
+        Want To Know What Love Is (Remastered)\"\n174,\"B-Spanner\",\"Mi Chico.\"\n175,\"Sergio
+        Mendes & Brasil '66\",\"Righteous Life\"\n176,\"Haiti Babii\",\"Distractions\"\n177,\"David
+        Tavar\xE9\",\"Call Me Baby (If You Don\u2019t Know My Name) [feat. Ruth]\"\n178,\"Katy
+        Perry\",\"The One That Got Away\"\n179,\"Xduppy & Angekebabuye mc\",\"Lwetse
+        (feat. DJ Maphorisa & Mluusician)\"\n180,\"Lil Baby\",\"Dead Fresh\"\n181,\"Tom
+        Odell\",\"Another Love\"\n182,\"Hotkid\",\"Baba (feat. Zlatan)\"\n183,\"Journey\",\"Don't
+        Stop Believin'\"\n184,\"R\xDCF\xDCS DU SOL\",\"Innerbloom\"\n185,\"mikeeysmind,
+        Chill77 & Unjaps\",\"Papaoutai (Afro Soul)\"\n186,\"PIXY\",\"LEGACY (slowed
+        down)\"\n187,\"The Bausa\",\"Magnetic\"\n188,\"K\xF8ddy G\",\"Peli De Terror\"\n189,\"Coolio
+        & L.V.\",\"Gangsta's Paradise\"\n190,\"Ark Patrol\",\"Let Go (feat. Veronika
+        Redd)\"\n191,\"Premium Emf\",\"Chairman\"\n192,\"Thekidszn\",\"IMPULSIVE\"\n193,\"Katy
+        Perry\",\"Dark Horse (feat. Juicy J)\"\n194,\"EMIN & JONY\",\"\u041A\u0430\u043C\u0438\u043D\"\n195,\"Cloonee,
+        Prospa & Tristan Henry\",\"Good Girl\"\n196,\"Sia\",\"Cheap Thrills\"\n197,\"Zeddy
+        Will\",\"Bow Bow Bow\"\n198,\"Jakone & Kiliana\",\"\u0411\u044B\u043B\u0430,
+        \u043D\u0435 \u0431\u044B\u043B\u0430\"\n199,\"Lucenzo\",\"Danza Kuduro (feat.
+        Don Omar)\"\n200,\"Gala\",\"Freed From Desire\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

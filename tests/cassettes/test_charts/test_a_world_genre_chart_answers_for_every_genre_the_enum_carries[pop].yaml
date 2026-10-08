@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/pop/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"GENER8ION
+        & Yung Lean\",\"STORM II\"\n2,\"Bronski Beat\",\"Smalltown Boy\"\n3,\"Prince
+        & The Revolution\",\"Purple Rain\"\n4,\"Dua Lipa\",\"Training Season (Live
+        from the Royal Albert Hall)\"\n5,\"AD\xC9LA\",\"Nicole Kidman\"\n6,\"Dorian\",\"La
+        Tormenta de Arena\"\n7,\"sombr\",\"My Body Isn't Ready\"\n8,\"SIENNA SPIRO\",\"Great
+        Expectation\"\n9,\"Taylor Swift\",\"Patient Zero\"\n10,\"AD\xC9LA\",\"Ain't
+        In LA\"\n11,\"Teddy Swims\",\"Mr. Know It All\"\n12,\"P!nk\",\"Just Give Me
+        a Reason (feat. Nate Ruess)\"\n13,\"AURORA\",\"Runaway\"\n14,\"Miley Cyrus\",\"Bass
+        Persuades\"\n15,\"Ariana Grande\",\"hate that i made you love me\"\n16,\"Michael
+        Kiwanuka\",\"Hero\"\n17,\"Olivia Rodrigo\",\"stupid song\"\n18,\"Shakira &
+        Burna Boy\",\"Dai Dai\"\n19,\"KATSEYE\",\"Animal\"\n20,\"DA TI\",\"Take Me
+        There\"\n21,\"Faouzia\",\"UNETHICAL\"\n22,\"Olivia Dean\",\"So Easy (To Fall
+        In Love)\"\n23,\"Harry Styles\",\"Sign of the Times\"\n24,\"Hamza Malik &
+        Zain Zohaib\",\"Alfaaz\"\n25,\"The Goo Goo Dolls\",\"Iris\"\n26,\"Gotye\",\"Somebody
+        That I Used to Know (feat. Kimbra)\"\n27,\"DJ.ILHAM & DJ Miro\",\"DIGIDI DIGIDI\"\n28,\"Ariana
+        Grande\",\"bye\"\n29,\"Desireless\",\"Voyage voyage\"\n30,\"Alex Warren\",\"Ordinary\"\n31,\"George
+        Michael\",\"Careless Whisper\"\n32,\"girl in red\",\"we fell in love in october\"\n33,\"Koss
+        & \u041F\u041B\u0423\u0422\u0422\u041E\",\"\u0417\u0435\u043C\u043B\u044F\u043A\"\n34,\"Adele\",\"Lovesong\"\n35,\"Carla
+        Morrison\",\"Disfruto\"\n36,\"Lady Gaga & Bruno Mars\",\"Die With A Smile\"\n37,\"The
+        Chainsmokers\",\"Don't Let Me Down (feat. Daya)\"\n38,\"Ashe\",\"Stop The
+        Wedding!\"\n39,\"Ariana Grande\",\"Best Mistake (feat. Big Sean)\"\n40,\"Justin
+        Bieber\",\"Beauty and a Beat (feat. Nicki Minaj)\"\n41,\"Taylor Swift\",\"The
+        Fate of Ophelia\"\n42,\"Vanessa Carlton\",\"A Thousand Miles\"\n43,\"Mazzy
+        Star\",\"Fade into You\"\n44,\"Olivia Dean\",\"Man I Need\"\n45,\"Steve Lacy\",\"oh
+        yeah?\"\n46,\"Christina Perri\",\"A Thousand Years\"\n47,\"Bruno Mars\",\"Risk
+        It All\"\n48,\"Billy Idol\",\"Eyes Without A Face\"\n49,\"Akcent\",\"On And
+        On (When the Lights Go Down)\"\n50,\"Phil Collins\",\"Another Day In Paradise\"\n51,\"Benson
+        Boone\",\"Beautiful Things\"\n52,\"KAROL G & Bruno Mars\",\"Still\"\n53,\"SABI
+        & MIA BOYKA\",\"\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043C\u0438\u043D\u0438\u043C\u0443\u043C
+        (Slow Version)\"\n54,\"USHER\",\"Yeah! (feat. Lil Jon & Ludacris)\"\n55,\"The
+        Neighbourhood\",\"Sweater Weather\"\n56,\"Cutting Crew\",\"(I Just) Died In
+        Your Arms\"\n57,\"Olivia Rodrigo\",\"drop dead\"\n58,\"Dominic Fike\",\"Babydoll\"\n59,\"Bonnie
+        Tyler\",\"Total Eclipse of the Heart\"\n60,\"Haddaway\",\"What Is Love (7\"
+        Mix)\"\n61,\"a-ha\",\"Take On Me\"\n62,\"The Police\",\"Every Breath You Take\"\n63,\"Robin
+        S.\",\"Show Me Love\"\n64,\"Djo\",\"End of Beginning\"\n65,\"Keane\",\"Somewhere
+        Only We Know\"\n66,\"Depeche Mode\",\"Enjoy the Silence\"\n67,\"Justin Timberlake\",\"Mirrors\"\n68,\"Katy
+        Perry\",\"The One That Got Away\"\n69,\"Tom Odell\",\"Another Love\"\n70,\"mikeeysmind,
+        Chill77 & Unjaps\",\"Papaoutai (Afro Soul)\"\n71,\"PIXY\",\"LEGACY (slowed
+        down)\"\n72,\"Katy Perry\",\"Dark Horse (feat. Juicy J)\"\n73,\"EMIN & JONY\",\"\u041A\u0430\u043C\u0438\u043D\"\n74,\"Sia\",\"Cheap
+        Thrills\"\n75,\"Lucenzo\",\"Danza Kuduro (feat. Don Omar)\"\n76,\"Rihanna\",\"Don't
+        Stop The Music\"\n77,\"Jamie Miller\",\"Babydoll\"\n78,\"Pitbull\",\"Give
+        Me Everything (feat. Ne-Yo, Afrojack & Nayer)\"\n79,\"Tears for Fears\",\"Everybody
+        Wants To Rule The World\"\n80,\"G-Eazy & Halsey\",\"Him & I\"\n81,\"Oasis\",\"Wonderwall\"\n82,\"Teddy
+        Swims\",\"Lose Control\"\n83,\"Ed Sheeran\",\"Perfect\"\n84,\"SIENNA SPIRO\",\"Die
+        On This Hill\"\n85,\"Slayyyter\",\"DANCE...\"\n86,\"The Stranglers\",\"Golden
+        Brown\"\n87,\"Alex Warren\",\"FEVER DREAM\"\n88,\"Alphaville\",\"Forever Young\"\n89,\"Michael
+        Jackson\",\"They Don't Care About Us\"\n90,\"Jennifer Lopez\",\"On the Floor
+        (feat. Pitbull)\"\n91,\"KITSCHKRIEG, Blumengarten & Shirin David\",\"Gut Genug
+        (mit Blumengarten & Shirin David)\"\n92,\"Macklemore & Ryan Lewis\",\"Can't
+        Hold Us (feat. Ray Dalton)\"\n93,\"Rihanna\",\"Work (feat. Drake)\"\n94,\"LISA\",\"SaWaDiKa\"\n95,\"John
+        Newman\",\"Love Me Again\"\n96,\"The Verve\",\"Bitter Sweet Symphony\"\n97,\"Bee
+        Gees\",\"Stayin' Alive\"\n98,\"Bruno Mars\",\"I Just Might\"\n99,\"Kylie Minogue\",\"Can't
+        Get You Out of My Head\"\n100,\"Damiano David\",\"The First Time\"\n101,\"Zara
+        Larsson\",\"Midnight Sun\"\n102,\"Tatiana Bulanova\",\"\u041B\u0435\u0434\u044F\u043D\u043E\u0435
+        \u0441\u0435\u0440\u0434\u0446\u0435\"\n103,\"Sting\",\"Shape Of My Heart\"\n104,\"Ricchi
+        & Poveri\",\"Sar\xE0 Perch\xE9 Ti Amo\"\n105,\"Timbaland, Keri Hilson & D.O.E.\",\"The
+        Way I Are\"\n106,\"Justin Timberlake\",\"SexyBack (feat. Timbaland)\"\n107,\"Olivia
+        Rodrigo\",\"the cure\"\n108,\"Rihanna & Calvin Harris\",\"We Found Love\"\n109,\"Ellie
+        Goulding\",\"Love Me Like You Do (From \"Fifty Shades of Grey\")\"\n110,\"ARTIK
+        & ASTI\",\"\u041B\u0430\u043C\u043F\u043E\u0447\u043A\u0438\"\n111,\"Panjabi
+        MC\",\"Mundian to Bach Ke\"\n112,\"Chappell Roan\",\"Good Luck, Babe!\"\n113,\"Natalie
+        Merchant\",\"Carnival\"\n114,\"Dua Lipa\",\"Training Season\"\n115,\"Phil
+        Collins\",\"In the Air Tonight\"\n116,\"Timbaland\",\"Apologize (feat. OneRepublic)\"\n117,\"Rihanna\",\"Stay
+        (feat. Mikky Ekko)\"\n118,\"Laura Branigan\",\"Self Control\"\n119,\"Eurythmics\",\"Sweet
+        Dreams (Are Made of This)\"\n120,\"Nelly\",\"Dilemma (feat. Kelly Rowland)\"\n121,\"Aitch\",\"RMB
+        (Ring My Bell)\"\n122,\"Peter, Paul & Mary\",\"500 Miles\"\n123,\"A-Wall\",\"Loverboy\"\n124,\"Aaron
+        Smith\",\"Dancin (feat. Luvli) [Krono Remix]\"\n125,\"Adele\",\"Set Fire to
+        the Rain\"\n126,\"The Cranberries\",\"Dreams\"\n127,\"Maroon 5\",\"Payphone
+        (feat. Wiz Khalifa)\"\n128,\"Ariana Grande\",\"Into You\"\n129,\"SABI & MIA
+        BOYKA\",\"\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043C\u0438\u043D\u0438\u043C\u0443\u043C\"\n130,\"La
+        Bouche\",\"Be My Lover\"\n131,\"Men At Work\",\"Down Under\"\n132,\"ABBA\",\"The
+        Winner Takes It All\"\n133,\"Michael Jackson\",\"Beat It\"\n134,\"Spandau
+        Ballet\",\"True\"\n135,\"RAYE\",\"WHERE IS MY HUSBAND!\"\n136,\"Toto\",\"Africa\"\n137,\"Everything
+        But the Girl & Todd Terry\",\"Missing (Todd Terry Club Mix)\"\n138,\"Passenger\",\"Let
+        Her Go\"\n139,\"The Stranglers\",\"Golden Brown (Slowed Down Version)\"\n140,\"Ed
+        Sheeran\",\"Shape of You\"\n141,\"SIENNA SPIRO\",\"Pure\"\n142,\"Black Eyed
+        Peas\",\"I Gotta Feeling\"\n143,\"The Ronettes\",\"Be My Baby\"\n144,\"ROS\xC9
+        & Bruno Mars\",\"APT.\"\n145,\"Procol Harum\",\"A Whiter Shade of Pale (Original
+        Single Version)\"\n146,\"Nelly Furtado\",\"Say It Right\"\n147,\"Sia\",\"Unstoppable\"\n148,\"Fleetwood
+        Mac\",\"The Chain\"\n149,\"Robyn\",\"Dancing On My Own\"\n150,\"Harry Styles\",\"Coming
+        Up Roses\"\n151,\"Lady A\",\"Need You Now\"\n152,\"Outkast\",\"Hey Ya!\"\n153,\"No
+        Doubt\",\"Don't Speak\"\n154,\"John Legend\",\"All of Me\"\n155,\"Harry Styles\",\"As
+        It Was\"\n156,\"Shaggy\",\"It Wasn't Me (feat. Ricardo Ducent)\"\n157,\"P!nk\",\"Try\"\n158,\"Backstreet
+        Boys\",\"I Want It That Way\"\n159,\"Beyonc\xE9\",\"MORNING DEW (DONK)\"\n160,\"Michael
+        Jackson\",\"Billie Jean\"\n161,\"ESTL\",\"Te rencontrer encore\"\n162,\"Taylor
+        Swift\",\"Opalite\"\n163,\"Alan Walker\",\"Faded\"\n164,\"Zara Larsson\",\"Lush
+        Life\"\n165,\"Bonnie Tyler\",\"Holding Out For a Hero\"\n166,\"Shawn Mendes\",\"Treat
+        You Better\"\n167,\"Juli & Bresh\",\"Serenamente\"\n168,\"Harry Styles\",\"American
+        Girls\"\n169,\"Natasha Bedingfield\",\"Pocketful of Sunshine\"\n170,\"Tayna\",\"Si
+        Ai\"\n171,\"Lady Gaga\",\"Bloody Mary\"\n172,\"Cyndi Lauper\",\"Girls Just
+        Want to Have Fun\"\n173,\"New Radicals\",\"You Get What You Give\"\n174,\"Chris
+        Norman & Suzi Quatro\",\"Stumblin' In\"\n175,\"Selena Gomez & benny blanco\",\"Cowboy\"\n176,\"Sixpence
+        None the Richer\",\"Kiss Me\"\n177,\"Rihanna\",\"Disturbia\"\n178,\"The Animals\",\"House
+        Of The Rising Sun\"\n179,\"Daft Punk, Pharrell Williams & Nile Rodgers\",\"Get
+        Lucky\"\n180,\"Annalisa\",\"Amica (con Madame)\"\n181,\"Europe\",\"The Final
+        Countdown\"\n182,\"Coldplay\",\"Viva La Vida\"\n183,\"Gloria Gaynor\",\"I
+        Will Survive\"\n184,\"Redbone\",\"Come and Get Your Love\"\n185,\"Philip Bailey
+        & Phil Collins\",\"Easy Lover\"\n186,\"Michael Jackson\",\"Don't Stop 'Til
+        You Get Enough\"\n187,\"Bora Duran\",\"D\xF6nd\xFCm\"\n188,\"Dido\",\"Thank
+        You\"\n189,\"Soul II Soul\",\"Back To Life (However Do You Want Me)\"\n190,\"Technotronic\",\"Pump
+        Up the Jam\"\n191,\"Mark Morrison\",\"Return of the Mack\"\n192,\"Rihanna\",\"S&M\"\n193,\"PIXY\",\"LEGACY\"\n194,\"OneRepublic\",\"Counting
+        Stars\"\n195,\"Bruno Mars\",\"Locked Out of Heaven\"\n196,\"t.A.T.u.\",\"All
+        The Things She Said\"\n197,\"Nodey\",\"No Title\"\n198,\"Modern Talking\",\"Cheri
+        Cheri Lady\"\n199,\"Michael Jackson\",\"You Rock My World\"\n200,\"Simple
+        Minds\",\"Don't You (Forget About Me)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

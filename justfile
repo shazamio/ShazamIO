@@ -47,9 +47,19 @@ format:
     uv run ruff format .
 
 [group("test")]
-[doc("Run the test suite")]
-test:
-    uv run pytest
+[doc("Run the test suite offline, replaying the recorded answers in `tests/cassettes/`")]
+test *args:
+    uv run pytest {{ args }}
+
+[group("test")]
+[doc("Record the missing cassettes against the real services, keeping the rest")]
+test-update *args:
+    uv run pytest --record-mode=once {{ args }}
+
+[group("test")]
+[doc("Re-record every cassette against the real services")]
+test-rerecord *args:
+    uv run pytest --record-mode=rewrite {{ args }}
 
 [group("test")]
 [doc("Run the test suite against the oldest dependency versions the floors allow")]

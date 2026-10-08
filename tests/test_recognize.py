@@ -13,6 +13,7 @@ def song_bytes() -> bytes:
     return Path("examples/data/Gloria.ogg").read_bytes()
 
 
+@pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_recognize_file(shazam: Shazam) -> None:
     out = await shazam.recognize(data="examples/data/Gloria.ogg")
@@ -20,6 +21,7 @@ async def test_recognize_file(shazam: Shazam) -> None:
     assert out["track"]["key"] == "53982678"
 
 
+@pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_recognize_bytes(song_bytes: bytes, shazam: Shazam) -> None:
     out = await shazam.recognize(data=song_bytes)

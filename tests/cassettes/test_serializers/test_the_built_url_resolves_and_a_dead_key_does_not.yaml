@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://amp.shazam.com/discovery/v5/en-US/GB/iphone/-/track/53982678?shazamapiversion=v3&video=v3
+  response:
+    body:
+      string: '{"layout":"5","type":"MUSIC","key":"53982678","title":"I Will Survive","subtitle":"Gloria
+        Gaynor","images":{"background":"https://is1-ssl.mzstatic.com/image/thumb/Features125/v4/06/6d/b7/066db7b1-bf0a-e032-61f9-fd607a0b0d76/mzl.jruxuhnc.jpg/800x800cc.jpg","coverart":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0c/72/a1/0c72a174-9208-6c86-e479-79865376e904/19UMGIM66006.rgb.jpg/400x400cc.jpg","coverarthq":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0c/72/a1/0c72a174-9208-6c86-e479-79865376e904/19UMGIM66006.rgb.jpg/400x400cc.jpg","joecolor":"b:842b5ap:f4d2e9s:fac2det:deb1ccq:e3a4c3"},"display":{"actions":[{"name":"display:updateshazam","type":"webview","uri":"https://www.shazam.com/inapp/updatenow/53982678"}]},"share":{"subject":"I
+        Will Survive - Gloria Gaynor","text":"I Will Survive by Gloria Gaynor","href":"https://www.shazam.com/track/53982678/i-will-survive","image":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0c/72/a1/0c72a174-9208-6c86-e479-79865376e904/19UMGIM66006.rgb.jpg/400x400cc.jpg","twitter":"I
+        used @Shazam to discover I Will Survive by Gloria Gaynor.","html":"https://www.shazam.com/snippets/email-share/53982678?lang=en-US&country=GB","avatar":"https://is1-ssl.mzstatic.com/image/thumb/Features125/v4/06/6d/b7/066db7b1-bf0a-e032-61f9-fd607a0b0d76/mzl.jruxuhnc.jpg/800x800cc.jpg","snapchat":"https://www.shazam.com/partner/sc/track/53982678"},"hub":{"type":"APPLEMUSIC","image":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic_{scalefactor}.png","actions":[{"name":"apple","type":"applemusicplay","id":"1475006475"},{"name":"apple","type":"uri","uri":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/55/c0/68/55c068b9-5ede-7d3e-72a7-28a46cb84a18/mzaf_12388805681805224989.plus.aac.ep.m4a"}],"providers":[{"caption":"Open
+        in Spotify","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/spotify-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/spotify_{scalefactor}.png"},"actions":[{"name":"hub:spotify:searchdeeplink","type":"uri","uri":"spotify:search:I%20Will%20Survive%20Gloria%20Gaynor"}],"type":"SPOTIFY"},{"caption":"Open
+        in Deezer","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/deezer-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/deezer_{scalefactor}.png"},"actions":[{"name":"hub:deezer:searchdeeplink","type":"uri","uri":"deezer-query://www.deezer.com/play?query=%7Btrack%3A%27I+Will+Survive%27%20artist%3A%27Gloria+Gaynor%27%7D"}],"type":"DEEZER"}],"explicit":false,"displayname":"APPLE
+        MUSIC","options":[{"caption":"OPEN","actions":[{"name":"hub:applemusic:deeplink","type":"applemusicopen","uri":"https://music.apple.com/gb/album/i-will-survive/1475006468?i=1475006475&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"},{"name":"hub:applemusic:deeplink","type":"uri","uri":"https://music.apple.com/gb/album/i-will-survive/1475006468?i=1475006475&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}],"beacondata":{"type":"open","providername":"applemusic"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/overflow-open-option_{scalefactor}.png","type":"open","listcaption":"Open
+        in Apple Music","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic-overflow_{scalefactor}.png","colouroverflowimage":false,"providername":"applemusic"},{"caption":"BUY","actions":[{"type":"uri","uri":"https://itunes.apple.com/gb/album/i-will-survive/1475006468?i=1475006475&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=itunes&itsct=Shazam_ios"}],"beacondata":{"type":"buy","providername":"itunes"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","type":"buy","listcaption":"Buy
+        on iTunes","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","colouroverflowimage":false,"providername":"itunes"}]},"sections":[{"type":"SONG","metapages":[{"image":"https://is1-ssl.mzstatic.com/image/thumb/Features125/v4/06/6d/b7/066db7b1-bf0a-e032-61f9-fd607a0b0d76/mzl.jruxuhnc.jpg/800x800cc.jpg","caption":"Gloria
+        Gaynor"},{"image":"https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0c/72/a1/0c72a174-9208-6c86-e479-79865376e904/19UMGIM66006.rgb.jpg/400x400cc.jpg","caption":"I
+        Will Survive"}],"tabname":"Song","metadata":[{"title":"Album","text":"Love
+        Tracks"},{"title":"Label","text":"Polydor"},{"title":"Released","text":"1978"}]},{"type":"RELATED","url":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-53982678?startFrom=0&pageSize=20&connected=","tabname":"Related"}],"url":"https://www.shazam.com/track/53982678/i-will-survive","artists":[{"id":"42","adamid":"136869"}],"genres":{"primary":"Pop"},"urlparams":{"{tracktitle}":"I+Will+Survive","{trackartist}":"Gloria+Gaynor"},"myshazam":{"apple":{"actions":[{"name":"myshazam:apple","type":"uri","uri":"https://music.apple.com/gb/album/i-will-survive/1475006468?i=1475006475&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}]}},"highlightsurls":{},"relatedtracksurl":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-53982678?startFrom=0&pageSize=20&connected=","albumadamid":"1475006468","isrc":"USUR10200634"}'
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/track/42
+  response:
+    body:
+      string: ''
+    headers:
+      Content-Type:
+      - text/html; charset=utf-8
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/track/53982678
+  response:
+    body:
+      string: ''
+    headers:
+      Content-Type:
+      - text/html; charset=utf-8
+      Location:
+      - /song/1475006475/i-will-survive
+    status:
+      code: 307
+      message: Temporary Redirect
+version: 1

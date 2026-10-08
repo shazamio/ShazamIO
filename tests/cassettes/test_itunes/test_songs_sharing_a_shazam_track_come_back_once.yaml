@@ -1,0 +1,226 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://itunes.apple.com/search?term=daft+punk+one+more+time&entity=song&limit=5&country=GB
+  response:
+    body:
+      string: "\n\n\n{\n \"resultCount\":5,\n \"results\": [\n{\"wrapperType\":\"track\",
+        \"kind\":\"song\", \"artistId\":5468295, \"collectionId\":697194953, \"trackId\":697195462,
+        \"artistName\":\"Daft Punk\", \"collectionName\":\"Discovery\", \"trackName\":\"One
+        More Time\", \"collectionCensoredName\":\"Discovery\", \"trackCensoredName\":\"One
+        More Time\", \"artistViewUrl\":\"https://music.apple.com/gb/artist/daft-punk/5468295?uo=4\",
+        \"collectionViewUrl\":\"https://music.apple.com/gb/album/one-more-time/697194953?i=697195462&uo=4\",
+        \"trackViewUrl\":\"https://music.apple.com/gb/album/one-more-time/697194953?i=697195462&uo=4\",
+        \n\"previewUrl\":\"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5d/93/d8/5d93d83f-ad1e-da4d-1d79-9937bdff24ec/mzaf_14396932211949300852.plus.aac.p.m4a\",
+        \"artworkUrl30\":\"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/30x30bb.jpg\",
+        \"artworkUrl60\":\"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/60x60bb.jpg\",
+        \"artworkUrl100\":\"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/100x100bb.jpg\",
+        \"collectionPrice\":10.99, \"trackPrice\":0.99, \"releaseDate\":\"2000-11-30T08:00:00Z\",
+        \"collectionExplicitness\":\"notExplicit\", \"trackExplicitness\":\"notExplicit\",
+        \"discCount\":1, \"discNumber\":1, \"trackCount\":14, \"trackNumber\":1, \"trackTimeMillis\":320357,
+        \"country\":\"GBR\", \"currency\":\"GBP\", \"primaryGenreName\":\"Dance\",
+        \"isStreamable\":true}, \n{\"wrapperType\":\"track\", \"kind\":\"song\", \"artistId\":5468295,
+        \"collectionId\":697401639, \"trackId\":697402071, \"artistName\":\"Daft Punk\",
+        \"collectionName\":\"One More Time - Single\", \"trackName\":\"One More Time
+        (12 Mix)\", \"collectionCensoredName\":\"One More Time - Single\", \"trackCensoredName\":\"One
+        More Time (12 Mix)\", \"artistViewUrl\":\"https://music.apple.com/gb/artist/daft-punk/5468295?uo=4\",
+        \"collectionViewUrl\":\"https://music.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&uo=4\",
+        \"trackViewUrl\":\"https://music.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&uo=4\",
+        \n\"previewUrl\":\"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/96/01/87/96018757-c750-974e-b28a-e505cf1f9780/mzaf_11687932133133164777.plus.aac.p.m4a\",
+        \"artworkUrl30\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/30x30bb.jpg\",
+        \"artworkUrl60\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/60x60bb.jpg\",
+        \"artworkUrl100\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/100x100bb.jpg\",
+        \"collectionPrice\":2.49, \"trackPrice\":0.99, \"releaseDate\":\"2000-11-13T08:00:00Z\",
+        \"collectionExplicitness\":\"notExplicit\", \"trackExplicitness\":\"notExplicit\",
+        \"discCount\":1, \"discNumber\":1, \"trackCount\":3, \"trackNumber\":3, \"trackTimeMillis\":480040,
+        \"country\":\"GBR\", \"currency\":\"GBP\", \"primaryGenreName\":\"Dance\",
+        \"isStreamable\":true}, \n{\"wrapperType\":\"track\", \"kind\":\"song\", \"artistId\":5468295,
+        \"collectionId\":703078650, \"trackId\":703078823, \"artistName\":\"Daft Punk\",
+        \"collectionName\":\"Musique, Vol. 1 (1993-2005)\", \"trackName\":\"One More
+        Time (Short Radio Edit)\", \"collectionCensoredName\":\"Musique, Vol. 1 (1993-2005)\",
+        \"trackCensoredName\":\"One More Time (Short Radio Edit)\", \"artistViewUrl\":\"https://music.apple.com/gb/artist/daft-punk/5468295?uo=4\",
+        \"collectionViewUrl\":\"https://music.apple.com/gb/album/one-more-time-short-radio-edit/703078650?i=703078823&uo=4\",
+        \"trackViewUrl\":\"https://music.apple.com/gb/album/one-more-time-short-radio-edit/703078650?i=703078823&uo=4\",
+        \n\"previewUrl\":\"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c5/e6/7a/c5e67ad8-f85f-3247-c111-7ade284d71ac/mzaf_14731660670166125760.plus.aac.p.m4a\",
+        \"artworkUrl30\":\"https://is1-ssl.mzstatic.com/image/thumb/Features114/v4/ba/04/2e/ba042ef2-6682-3ad0-7070-2eaad226477b/dj.frtlfdqh.jpg/30x30bb.jpg\",
+        \"artworkUrl60\":\"https://is1-ssl.mzstatic.com/image/thumb/Features114/v4/ba/04/2e/ba042ef2-6682-3ad0-7070-2eaad226477b/dj.frtlfdqh.jpg/60x60bb.jpg\",
+        \"artworkUrl100\":\"https://is1-ssl.mzstatic.com/image/thumb/Features114/v4/ba/04/2e/ba042ef2-6682-3ad0-7070-2eaad226477b/dj.frtlfdqh.jpg/100x100bb.jpg\",
+        \"collectionPrice\":6.99, \"trackPrice\":0.99, \"releaseDate\":\"2000-11-13T12:00:00Z\",
+        \"collectionExplicitness\":\"notExplicit\", \"trackExplicitness\":\"notExplicit\",
+        \"discCount\":1, \"discNumber\":1, \"trackCount\":15, \"trackNumber\":7, \"trackTimeMillis\":235467,
+        \"country\":\"GBR\", \"currency\":\"GBP\", \"primaryGenreName\":\"Electronica\",
+        \"isStreamable\":true}, \n{\"wrapperType\":\"track\", \"kind\":\"song\", \"artistId\":5468295,
+        \"collectionId\":696669068, \"trackId\":696669993, \"artistName\":\"Daft Punk\",
+        \"collectionName\":\"Daft Club\", \"trackName\":\"One More Time (Romanthony's
+        Unplugged)\", \"collectionCensoredName\":\"Daft Club\", \"trackCensoredName\":\"One
+        More Time (Romanthony's Unplugged)\", \"artistViewUrl\":\"https://music.apple.com/gb/artist/daft-punk/5468295?uo=4\",
+        \"collectionViewUrl\":\"https://music.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&uo=4\",
+        \"trackViewUrl\":\"https://music.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&uo=4\",
+        \n\"previewUrl\":\"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/29/31/73/2931732c-5608-e1ae-1abc-2f297f02036a/mzaf_9993679284405672781.plus.aac.p.m4a\",
+        \"artworkUrl30\":\"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/30x30bb.jpg\",
+        \"artworkUrl60\":\"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/60x60bb.jpg\",
+        \"artworkUrl100\":\"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/100x100bb.jpg\",
+        \"collectionPrice\":4.99, \"trackPrice\":0.99, \"releaseDate\":\"2003-11-27T08:00:00Z\",
+        \"collectionExplicitness\":\"explicit\", \"trackExplicitness\":\"notExplicit\",
+        \"discCount\":1, \"discNumber\":1, \"trackCount\":14, \"trackNumber\":13,
+        \"trackTimeMillis\":220587, \"country\":\"GBR\", \"currency\":\"GBP\", \"primaryGenreName\":\"Dance\",
+        \"isStreamable\":true}, \n{\"wrapperType\":\"track\", \"kind\":\"song\", \"artistId\":5468295,
+        \"collectionId\":697401639, \"trackId\":697402070, \"artistName\":\"Daft Punk\",
+        \"collectionName\":\"One More Time - Single\", \"trackName\":\"One More Time
+        (Radio Edit)\", \"collectionCensoredName\":\"One More Time - Single\", \"trackCensoredName\":\"One
+        More Time (Radio Edit)\", \"artistViewUrl\":\"https://music.apple.com/gb/artist/daft-punk/5468295?uo=4\",
+        \"collectionViewUrl\":\"https://music.apple.com/gb/album/one-more-time-radio-edit/697401639?i=697402070&uo=4\",
+        \"trackViewUrl\":\"https://music.apple.com/gb/album/one-more-time-radio-edit/697401639?i=697402070&uo=4\",
+        \n\"previewUrl\":\"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/20/60/3f/20603f13-a1f4-4fd5-bc43-c1033de28f06/mzaf_9591812528638990877.plus.aac.p.m4a\",
+        \"artworkUrl30\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/30x30bb.jpg\",
+        \"artworkUrl60\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/60x60bb.jpg\",
+        \"artworkUrl100\":\"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/100x100bb.jpg\",
+        \"collectionPrice\":2.49, \"trackPrice\":0.99, \"releaseDate\":\"2000-11-13T08:00:00Z\",
+        \"collectionExplicitness\":\"notExplicit\", \"trackExplicitness\":\"notExplicit\",
+        \"discCount\":1, \"discNumber\":1, \"trackCount\":3, \"trackNumber\":2, \"trackTimeMillis\":320293,
+        \"country\":\"GBR\", \"currency\":\"GBP\", \"primaryGenreName\":\"Pop\", \"isStreamable\":true}]\n}\n\n\n"
+    headers:
+      Content-Type:
+      - text/javascript; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/697402071
+  response:
+    body:
+      string: '{"697402071":"44291415"}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/697402070
+  response:
+    body:
+      string: '{"697402070":"11239978"}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/703078823
+  response:
+    body:
+      string: '{"703078823":"11239978"}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/696669993
+  response:
+    body:
+      string: '{"696669993":"40003457"}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/697195462
+  response:
+    body:
+      string: '{"697195462":"11239978"}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://amp.shazam.com/discovery/v5/en-US/GB/iphone/-/track/40003457?shazamapiversion=v3&video=v3
+  response:
+    body:
+      string: '{"layout":"5","type":"MUSIC","key":"40003457","title":"One More Time
+        (Romanthony''s Unplugged)","subtitle":"Daft Punk","images":{"background":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","coverart":"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/400x400cc.jpg","coverarthq":"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/400x400cc.jpg","joecolor":"b:000000p:9ad930s:95c638t:7bae26q:779e2d"},"display":{"actions":[{"name":"display:updateshazam","type":"webview","uri":"https://www.shazam.com/inapp/updatenow/40003457"}]},"share":{"subject":"One
+        More Time (Romanthony''s Unplugged) - Daft Punk","text":"One More Time (Romanthony''s
+        Unplugged) by Daft Punk","href":"https://www.shazam.com/track/40003457/one-more-time-romanthonys-unplugged","image":"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/400x400cc.jpg","twitter":"I
+        used @Shazam to discover One More Time (Romanthony''s Unplugged) by Daft Punk.","html":"https://www.shazam.com/snippets/email-share/40003457?lang=en-US&country=GB","avatar":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","snapchat":"https://www.shazam.com/partner/sc/track/40003457"},"hub":{"type":"APPLEMUSIC","image":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic_{scalefactor}.png","actions":[{"name":"apple","type":"applemusicplay","id":"696669993"},{"name":"apple","type":"uri","uri":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/29/31/73/2931732c-5608-e1ae-1abc-2f297f02036a/mzaf_11386605203931230683.plus.aac.ep.m4a"}],"providers":[{"caption":"Open
+        in Spotify","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/spotify-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/spotify_{scalefactor}.png"},"actions":[{"name":"hub:spotify:searchdeeplink","type":"uri","uri":"spotify:search:One%20More%20Time%20%28Romanthony%27s%20Unplugged%29%20Daft%20Punk"}],"type":"SPOTIFY"},{"caption":"Open
+        in Deezer","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/deezer-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/deezer_{scalefactor}.png"},"actions":[{"name":"hub:deezer:searchdeeplink","type":"uri","uri":"deezer-query://www.deezer.com/play?query=%7Btrack%3A%27One+More+Time+%28Romanthony%5C%27s+Unplugged%29%27%20artist%3A%27Daft+Punk%27%7D"}],"type":"DEEZER"}],"explicit":false,"displayname":"APPLE
+        MUSIC","options":[{"caption":"OPEN","actions":[{"name":"hub:applemusic:deeplink","type":"applemusicopen","uri":"https://music.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"},{"name":"hub:applemusic:deeplink","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}],"beacondata":{"type":"open","providername":"applemusic"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/overflow-open-option_{scalefactor}.png","type":"open","listcaption":"Open
+        in Apple Music","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic-overflow_{scalefactor}.png","colouroverflowimage":false,"providername":"applemusic"},{"caption":"BUY","actions":[{"type":"uri","uri":"https://itunes.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=itunes&itsct=Shazam_ios"}],"beacondata":{"type":"buy","providername":"itunes"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","type":"buy","listcaption":"Buy
+        on iTunes","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","colouroverflowimage":false,"providername":"itunes"}]},"sections":[{"type":"SONG","metapages":[{"image":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","caption":"Daft
+        Punk"},{"image":"https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/ac/e1/07/ace10786-a064-0ed0-17ff-ba0cebecefe9/dj.mpdjtkyu.jpg/400x400cc.jpg","caption":"One
+        More Time (Romanthony''s Unplugged)"}],"tabname":"Song","metadata":[{"title":"Album","text":"Daft
+        Club"},{"title":"Label","text":"Daft Life Ltd./ADA France"},{"title":"Released","text":"2003"}]}],"url":"https://www.shazam.com/track/40003457/one-more-time-romanthonys-unplugged","artists":[{"id":"42","adamid":"5468295"}],"genres":{"primary":"Dance"},"urlparams":{"{tracktitle}":"One+More+Time+%28Romanthony%27s+Unplugged%29","{trackartist}":"Daft+Punk"},"myshazam":{"apple":{"actions":[{"name":"myshazam:apple","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time-romanthonys-unplugged/696669068?i=696669993&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}]}},"highlightsurls":{},"albumadamid":"696669068","isrc":"GBDUW0300006"}'
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://amp.shazam.com/discovery/v5/en-US/GB/iphone/-/track/44291415?shazamapiversion=v3&video=v3
+  response:
+    body:
+      string: '{"layout":"5","type":"MUSIC","key":"44291415","title":"One More Time
+        (12 Mix)","subtitle":"Daft Punk","images":{"background":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","coverart":"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/400x400cc.jpg","coverarthq":"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/400x400cc.jpg","joecolor":"b:000000p:91d13as:e7801at:74a72eq:b86615"},"display":{"actions":[{"name":"display:updateshazam","type":"webview","uri":"https://www.shazam.com/inapp/updatenow/44291415"}]},"share":{"subject":"One
+        More Time (12 Mix) - Daft Punk","text":"One More Time (12 Mix) by Daft Punk","href":"https://www.shazam.com/track/44291415/one-more-time-12-mix","image":"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/400x400cc.jpg","twitter":"I
+        used @Shazam to discover One More Time (12 Mix) by Daft Punk.","html":"https://www.shazam.com/snippets/email-share/44291415?lang=en-US&country=GB","avatar":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","snapchat":"https://www.shazam.com/partner/sc/track/44291415"},"hub":{"type":"APPLEMUSIC","image":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic_{scalefactor}.png","actions":[{"name":"apple","type":"applemusicplay","id":"697402071"},{"name":"apple","type":"uri","uri":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/96/01/87/96018757-c750-974e-b28a-e505cf1f9780/mzaf_1465354566231649664.plus.aac.ep.m4a"}],"providers":[{"caption":"Open
+        in Spotify","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/spotify-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/spotify_{scalefactor}.png"},"actions":[{"name":"hub:spotify:searchdeeplink","type":"uri","uri":"spotify:search:One%20More%20Time%20%2812%20Mix%29%20Daft%20Punk"}],"type":"SPOTIFY"},{"caption":"Open
+        in Deezer","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/deezer-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/deezer_{scalefactor}.png"},"actions":[{"name":"hub:deezer:searchdeeplink","type":"uri","uri":"deezer-query://www.deezer.com/play?query=%7Btrack%3A%27One+More+Time+%2812+Mix%29%27%20artist%3A%27Daft+Punk%27%7D"}],"type":"DEEZER"}],"explicit":false,"displayname":"APPLE
+        MUSIC","options":[{"caption":"OPEN","actions":[{"name":"hub:applemusic:deeplink","type":"applemusicopen","uri":"https://music.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"},{"name":"hub:applemusic:deeplink","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}],"beacondata":{"type":"open","providername":"applemusic"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/overflow-open-option_{scalefactor}.png","type":"open","listcaption":"Open
+        in Apple Music","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic-overflow_{scalefactor}.png","colouroverflowimage":false,"providername":"applemusic"},{"caption":"BUY","actions":[{"type":"uri","uri":"https://itunes.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=itunes&itsct=Shazam_ios"}],"beacondata":{"type":"buy","providername":"itunes"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","type":"buy","listcaption":"Buy
+        on iTunes","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","colouroverflowimage":false,"providername":"itunes"}]},"sections":[{"type":"SONG","metapages":[{"image":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","caption":"Daft
+        Punk"},{"image":"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5d/7c/8e/5d7c8e84-9e75-0e06-8876-f98c13df1694/dj.mpyxowas.jpg/400x400cc.jpg","caption":"One
+        More Time (12 Mix)"}],"tabname":"Song","metadata":[{"title":"Album","text":"One
+        More Time - Single"},{"title":"Label","text":"Daft Life Ltd./ADA France"},{"title":"Released","text":"2000"}]},{"type":"RELATED","url":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-44291415?startFrom=0&pageSize=20&connected=","tabname":"Related"}],"url":"https://www.shazam.com/track/44291415/one-more-time-12-mix","artists":[{"id":"42","adamid":"5468295"}],"genres":{"primary":"Dance"},"urlparams":{"{tracktitle}":"One+More+Time+%2812+Mix%29","{trackartist}":"Daft+Punk"},"myshazam":{"apple":{"actions":[{"name":"myshazam:apple","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time-12-mix/697401639?i=697402071&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}]}},"highlightsurls":{},"relatedtracksurl":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-44291415?startFrom=0&pageSize=20&connected=","albumadamid":"697401639","isrc":"GBDUW0000051"}'
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://amp.shazam.com/discovery/v5/en-US/GB/iphone/-/track/11239978?shazamapiversion=v3&video=v3
+  response:
+    body:
+      string: '{"layout":"5","type":"MUSIC","key":"11239978","title":"One More Time","subtitle":"Daft
+        Punk","images":{"background":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","coverart":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/400x400cc.jpg","coverarthq":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/400x400cc.jpg","joecolor":"b:000002p:d7d7dds:b9c6cct:acacb1q:949ea3"},"display":{"actions":[{"name":"display:updateshazam","type":"webview","uri":"https://www.shazam.com/inapp/updatenow/11239978"}]},"share":{"subject":"One
+        More Time - Daft Punk","text":"One More Time by Daft Punk","href":"https://www.shazam.com/track/11239978/one-more-time","image":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/400x400cc.jpg","twitter":"I
+        used @Shazam to discover One More Time by Daft Punk.","html":"https://www.shazam.com/snippets/email-share/11239978?lang=en-US&country=GB","avatar":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","snapchat":"https://www.shazam.com/partner/sc/track/11239978"},"hub":{"type":"APPLEMUSIC","image":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic_{scalefactor}.png","actions":[{"name":"apple","type":"applemusicplay","id":"697195462"},{"name":"apple","type":"uri","uri":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5d/93/d8/5d93d83f-ad1e-da4d-1d79-9937bdff24ec/mzaf_12225252324206193092.plus.aac.ep.m4a"}],"providers":[{"caption":"Open
+        in Spotify","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/spotify-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/spotify_{scalefactor}.png"},"actions":[{"name":"hub:spotify:searchdeeplink","type":"uri","uri":"spotify:search:One%20More%20Time%20Daft%20Punk"}],"type":"SPOTIFY"},{"caption":"Open
+        in Deezer","images":{"overflow":"https://images.shazam.com/static/icons/hub/ios/v5/deezer-overflow_{scalefactor}.png","default":"https://images.shazam.com/static/icons/hub/ios/v5/deezer_{scalefactor}.png"},"actions":[{"name":"hub:deezer:searchdeeplink","type":"uri","uri":"deezer-query://www.deezer.com/play?query=%7Btrack%3A%27One+More+Time%27%20artist%3A%27Daft+Punk%27%7D"}],"type":"DEEZER"}],"explicit":false,"displayname":"APPLE
+        MUSIC","options":[{"caption":"OPEN","actions":[{"name":"hub:applemusic:deeplink","type":"applemusicopen","uri":"https://music.apple.com/gb/album/one-more-time/697194953?i=697195462&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"},{"name":"hub:applemusic:deeplink","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time/697194953?i=697195462&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}],"beacondata":{"type":"open","providername":"applemusic"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/overflow-open-option_{scalefactor}.png","type":"open","listcaption":"Open
+        in Apple Music","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/applemusic-overflow_{scalefactor}.png","colouroverflowimage":false,"providername":"applemusic"},{"caption":"BUY","actions":[{"type":"uri","uri":"https://itunes.apple.com/gb/album/one-more-time/697194953?i=697195462&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=itunes&itsct=Shazam_ios"}],"beacondata":{"type":"buy","providername":"itunes"},"image":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","type":"buy","listcaption":"Buy
+        on iTunes","overflowimage":"https://images.shazam.com/static/icons/hub/ios/v5/itunes-overflow-buy_{scalefactor}.png","colouroverflowimage":false,"providername":"itunes"}]},"sections":[{"type":"SONG","metapages":[{"image":"https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/29/9e/38/299e3866-673a-4d36-376f-9274a0e45793/ami-identity-7b9f369855a542ba1bc836cd2766ca01-2025-09-01T10-34-14.349Z_cropped.png/800x800cc.jpg","caption":"Daft
+        Punk"},{"image":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/400x400cc.jpg","caption":"One
+        More Time"}],"tabname":"Song","metadata":[{"title":"Album","text":"Discovery"},{"title":"Label","text":"Daft
+        Life Ltd./ADA France"},{"title":"Released","text":"2000"}]},{"type":"RELATED","url":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-11239978?startFrom=0&pageSize=20&connected=","tabname":"Related"}],"url":"https://www.shazam.com/track/11239978/one-more-time","artists":[{"id":"42","adamid":"5468295"}],"genres":{"primary":"Dance"},"urlparams":{"{tracktitle}":"One+More+Time","{trackartist}":"Daft+Punk"},"myshazam":{"apple":{"actions":[{"name":"myshazam:apple","type":"uri","uri":"https://music.apple.com/gb/album/one-more-time/697194953?i=697195462&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_ios&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_ios"}]}},"highlightsurls":{},"relatedtracksurl":"https://cdn.shazam.com/shazam/v3/en-US/GB/iphone/-/tracks/track-similarities-id-11239978?startFrom=0&pageSize=20&connected=","albumadamid":"697194953","isrc":"GBDUW0000053"}'
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

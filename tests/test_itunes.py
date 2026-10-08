@@ -27,6 +27,7 @@ def test_an_answer_without_results_is_rejected() -> None:
         parse_itunes_track_ids("<!doctype html>\n")
 
 
+@pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_songs_sharing_a_shazam_track_come_back_once(shazam: Shazam) -> None:
     tracks = await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS)

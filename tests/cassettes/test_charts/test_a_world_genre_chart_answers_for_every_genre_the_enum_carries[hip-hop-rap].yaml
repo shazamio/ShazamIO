@@ -1,0 +1,126 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/hip-hop-rap/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Dave
+        & Tems\",\"Raindance\"\n2,\"\u0443\u0440\u0430\u043B \u0433\u0430\u0439\u0441\u0438\u043D
+        & \u0441\u043D\u044F\u043B\u0446\u0435\u043F\u0438\",\"\u0442\u044B \u0432
+        \u043C\u043E\u0438\u0445 \u043C\u044B\u0441\u043B\u044F\u0445 \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430\"\n3,\"Quavo
+        & Takeoff\",\"HOTEL LOBBY (Unc & Phew) [- A COLORS SHOW]\"\n4,\"Wxoda\",\"Vibin\"\n5,\"Voskresenskii\",\"\u0424\u0440\u0430\u043D\u0441\u0435\"\n6,\"Vacra
+        & La Rvfleuze\",\"Fille a\u0300 Papa\"\n7,\"LOVIXX & STOSLIV\",\"dont tell
+        your dreams to everybody\"\n8,\"Mac Miller\",\"Cinderella (feat. Ty Dolla
+        $ign)\"\n9,\"Dolly Babe\",\"Pink Blush\"\n10,\"Eminem\",\"Without Me\"\n11,\"BIA\",\"WE
+        ON GO\"\n12,\"Belly Gang Kushington & 21 Savage\",\"WTF GOIN\"\n13,\"Tiakola
+        & Theodora\",\"La Nocturne\"\n14,\"Drake\",\"Burning Bridges\"\n15,\"Miyagi
+        & \u042D\u043D\u0434\u0448\u043F\u0438\u043B\u044C\",\"I Got Love (feat. \u0420\u0435\u043C
+        \u0414\u0438\u0433\u0433\u0430)\"\n16,\"JA\u0178-Z\",\"03' Bonnie & Clyde
+        (feat. Beyonc\xE9 Knowles)\"\n17,\"Drake, Don Toliver & Yebba\",\"Cold Shoulder\"\n18,\"Noodah05\",\"Around
+        Me\"\n19,\"Fat Papi & prodshushy\",\"FREAKED OUT\"\n20,\"Timur Timbigfamily\",\"\u0422\u0430\u043D\u0446\u0443\u0438\u0306
+        (Club Mix)\"\n21,\"French Montana\",\"Unforgettable (feat. Swae Lee)\"\n22,\"Haiti
+        Babii\",\"Distractions\"\n23,\"Lil Baby\",\"Dead Fresh\"\n24,\"K\xF8ddy G\",\"Peli
+        De Terror\"\n25,\"Coolio & L.V.\",\"Gangsta's Paradise\"\n26,\"Thekidszn\",\"IMPULSIVE\"\n27,\"Zeddy
+        Will\",\"Bow Bow Bow\"\n28,\"Jakone & Kiliana\",\"\u0411\u044B\u043B\u0430,
+        \u043D\u0435 \u0431\u044B\u043B\u0430\"\n29,\"Drake\",\"Janice STFU\"\n30,\"DJ
+        Khaled\",\"POPSTAR (feat. Drake)\"\n31,\"Kolaboy & Evado\",\"Believer\"\n32,\"Wiz
+        Khalifa\",\"See You Again (feat. Charlie Puth)\"\n33,\"YungMeechy & Kanatbek\",\"\u0414\u043E\u0444\u0430\u043C\u0438\u043D
+        x Oohc\"\n34,\"Pucho, Mia & Cristy\",\"NON MI INNAMORER\xD3\"\n35,\"Fredo
+        Bang\",\"Oouuh (Acoustic Bang)\"\n36,\"Eminem\",\"Mockingbird\"\n37,\"Mauvais
+        Djo\",\"Maladie\"\n38,\"Flo Rida\",\"Low (feat. T-Pain)\"\n39,\"Quavo & Takeoff\",\"HOTEL
+        LOBBY (Unc & Phew)\"\n40,\"comehelpglo\",\"onsra\"\n41,\"Sematary\",\"RAGING
+        WOLF\"\n42,\"Dyce\",\"UP DOWN\"\n43,\"Tiakola\",\"M\xE9lo D\xE9cal\xE9\"\n44,\"Tiakola
+        & Jorja Smith\",\"Jet Lag\"\n45,\"The Game\",\"Hate It Or Love It (feat. 50
+        Cent)\"\n46,\"Rae Sremmurd\",\"Black Beatles (feat. Gucci Mane)\"\n47,\"La
+        Rvfleuze\",\"Argent Sale - A COLORS SHOW\"\n48,\"Massive Attack\",\"Angel\"\n49,\"Cinek\",\"Floating
+        (Genom V\xE4rldar [English Version])\"\n50,\"JA\u0178-Z\",\"Empire State Of
+        Mind (feat. Alicia Keys)\"\n51,\"50 Cent\",\"In Da Club\"\n52,\"JA\u0178-Z
+        & Kanye West\",\"No Church in the Wild (feat. Frank Ocean & The-Dream)\"\n53,\"Tiakola\",\"Cam\xE9l\xE9on\"\n54,\"Kanye
+        West\",\"Runaway (feat. Pusha T)\"\n55,\"holottacheese\",\"BFF4L (feat. holottamula)\"\n56,\"Kendrick
+        Lamar, SZA\",\"All The Stars\"\n57,\"Chef Boy & E-40\",\"Gang Gang Gangland
+        (feat. YG & Mozzy)\"\n58,\"50 Cent\",\"Just a Lil Bit\"\n59,\"Sfera Ebbasta\",\"Lontano\"\n60,\"SKAI
+        ISYOURGOD\",\"Stacks from All Sides\"\n61,\"Eminem\",\"Lose Yourself (From
+        \"8 Mile\")\"\n62,\"SyKo\",\"#BrooklynBloodPop!\"\n63,\"Hiva, Haps & PAIX\",\"Roja
+        Nu\"\n64,\"Drake\",\"God's Plan\"\n65,\"Sayf\",\"PARLAR D\u2019AMORE (feat.
+        Bresh)\"\n66,\"Werenoi, SDM & Vacra\",\"Jalouse\"\n67,\"Eminem\",\"Love The
+        Way You Lie (feat. Rihanna)\"\n68,\"BabyChiefDoit\",\"Ghetto Love Story\"\n69,\"Theodora\",\"Habiba\"\n70,\"ASN
+        JAYBOOG\",\"Stanley Earl\"\n71,\"Quavo & Future\",\"BA\"\n72,\"b\xF4a\",\"Duvet\"\n73,\"azelia\",\"My
+        Jealousy (DJ MAX Version)\"\n74,\"Nasty C & T.I.\",\"All In\"\n75,\"Puff Daddy\",\"I'll
+        Be Missing You (feat. Faith Evans & 112)\"\n76,\"Post Malone\",\"Circles\"\n77,\"Post
+        Malone & Swae Lee\",\"Sunflower (Spider-Man: Into the Spider-Verse)\"\n78,\"Cherry
+        Pie\",\"BIR HAKEIM\"\n79,\"Jxggi, Dishant & Sickboi\",\"IYKYK\"\n80,\"VILLIAN
+        & madk1d\",\"\u0414\u0418\u041D\u0410\u0421\u0422\u0418\u042F\"\n81,\"Timal\",\"Sicario\"\n82,\"Drake\",\"One
+        Dance (feat. Wizkid & Kyla)\"\n83,\"Karan Aujla & MXRCI\",\"Ashke\"\n84,\"Black
+        Eyed Peas\",\"Pump It\"\n85,\"Roddy Ricch\",\"The Box\"\n86,\"fakemink\",\"Night
+        , Blooming Jasmine .\"\n87,\"Post Malone\",\"rockstar (feat. 21 Savage)\"\n88,\"Rap
+        Twin\",\"Comin Home\"\n89,\"Drake\",\"Headlines\"\n90,\"Yung Bleu\",\"Ice
+        On My Baby (Remix) [feat. Kevin Gates]\"\n91,\"Jaman T\",\"\u0411\u0443\u0434\u044C
+        \u043C\u043E\u0435\u0439\"\n92,\"Lil Durk\",\"Triflin Hoes\"\n93,\"Kanye West\",\"Can't
+        Tell Me Nothing\"\n94,\"Toxi$ & Dora\",\"\u0417\u041D\u0410\u041A\"\n95,\"Anuel
+        AA\",\"Las mas bonitas son p#tas\"\n96,\"Drake\",\"Hold On, We're Going Home
+        (feat. Majid Jordan)\"\n97,\"Clams Casino & Imogen Heap\",\"I'm God\"\n98,\"EsDeeKid
+        & Rico Ace\",\"Mist\"\n99,\"FreeMan996 & Begish\",\"\u041E\u0448\u043E\u043B
+        \u043A\u04AF\u043D\u04AF\"\n100,\"Cinco Suave\",\"Sey Mami\"\n101,\"2Pac\",\"Hit
+        'Em Up (feat. Outlawz)\"\n102,\"Migos\",\"Walk It Talk It (feat. Drake)\"\n103,\"Mauvais
+        Djo\",\"Wagyu\"\n104,\"Niska, litleboy lsbeats767 & Miimii KDS\",\"Pow Pow
+        / Allo Doudou\"\n105,\"Drake\",\"Slime You Out (feat. SZA)\"\n106,\"Marracash
+        & Gu\xE8\",\"CASINI\"\n107,\"Cardi B\",\"AH HA\"\n108,\"Ernia\",\"DEDICA\"\n109,\"Akon\",\"Ghetto\"\n110,\"Frank
+        Medley\",\"schooling seniors\"\n111,\"Drake\",\"Fancy (feat. T.I. & Swizz
+        Beatz)\"\n112,\"King Von\",\"Took Her To The O (Fine Tuned Version)\"\n113,\"6ix9ine\",\"MALA
+        (feat. Anuel AA)\"\n114,\"Drake\",\"Girls Want Girls (feat. Lil Baby)\"\n115,\"Franglish,
+        KeBlack & Mauvais Djo\",\"Uber\"\n116,\"Eminem\",\"Shake That (feat. Nate
+        Dogg)\"\n117,\"T.I.\",\"Live Your Life (feat. Rihanna)\"\n118,\"RhyRhy\",\"Summer
+        Bummer (Lights On)\"\n119,\"Guf\",\"\u0413\u0443\u0444 \u0443\u043C\u0435\u0440
+        (feat. \u0411\u0430\u0441\u0442\u0430)\"\n120,\"Kendrick Lamar\",\"Not Like
+        Us\"\n121,\"Flo Rida\",\"Right Round (feat. Ke$ha)\"\n122,\"Dr. Dre\",\"Still
+        D.R.E. (feat. Snoop Dogg)\"\n123,\"DJ Khaled\",\"Wild Thoughts (feat. Rihanna
+        & Bryson Tiller)\"\n124,\"Lil Wayne\",\"Love Me (feat. Drake & Future)\"\n125,\"Childish
+        Gambino\",\"Les\"\n126,\"GIMS & Mauvais Djo\",\"VIVE LA MONNAIE\"\n127,\"THIZZY52\",\"BLOCKKIDS\"\n128,\"Lvbel
+        C5 & AKDO\",\"COOOK PARDON\"\n129,\"Travis Scott\",\"SICKO MODE\"\n130,\"Young
+        Thug\",\"Power\"\n131,\"NBSPLV\",\"The Lost Soul Down\"\n132,\"\u0413\u0438\u043E
+        \u041F\u0438\u041A\u0430\",\"\u0411\u0443\u0439\u043D\u043E \u0433\u043E\u043B\u043E\u0432\u0430\"\n133,\"Kanye
+        West\",\"Flashing Lights (feat. Dwele)\"\n134,\"Een!\",\"For The Presidents\"\n135,\"Yung
+        Miami\",\"Spend Dat\"\n136,\"Busta Rhymes & Mariah Carey\",\"I Know What You
+        Want (feat. Flipmode Squad)\"\n137,\"\u041F\u043E\u043B\u043A\u0430 & YASMI\",\"\u041E\u043C\u0443\u0442\"\n138,\"Kendrick
+        Lamar\",\"United In Grief\"\n139,\"Sir Mix-A-Lot\",\"Baby Got Back\"\n140,\"Metro
+        Boomin, The Weeknd & 21 Savage\",\"Creepin'\"\n141,\"Outkast\",\"Ms. Jackson\"\n142,\"Metro
+        Boomin & Future\",\"Too Many Nights (feat. Don Toliver)\"\n143,\"KRS-One\",\"Sound
+        of da Police\"\n144,\"Lil Naay\",\"PERRA\"\n145,\"Nicki Minaj\",\"Starships\"\n146,\"J-VAD\",\"Timberlake\"\n147,\"Ty
+        Dolla $ign\",\"Or Nah (feat. The Weeknd, Wiz Khalifa and DJ Mustard) [Remix]\"\n148,\"Kweku
+        Smoke\",\"Bra\"\n149,\"Iron Jarl\",\"Natty or Not\"\n150,\"Cali Swag District\",\"Teach
+        Me How to Dougie\"\n151,\"Snoop Dogg & Wiz Khalifa\",\"Young, Wild & Free
+        (feat. Bruno Mars)\"\n152,\"Young Madz\",\"I LOVE YOU FUNK\"\n153,\"PNL\",\"J\u2019comprends
+        pas\"\n154,\"50 Cent\",\"Ayo Technology (feat. Justin Timberlake & Timbaland)\"\n155,\"Madvillain\",\"All
+        Caps\"\n156,\"Fat Papi & prodshushy\",\"ON MY MIND (SLOWED)\"\n157,\"JA\u0178-Z\",\"Oceans
+        (feat. Frank Ocean)\"\n158,\"Basta\",\"\u041A\u0438\u043D\u043E\u043B\u0435\u043D\u0442\u0430\"\n159,\"Kweku
+        Smoke & Lasmid\",\"Faith\"\n160,\"BEN plg & MATHILDE\",\"Histoire sans fin\"\n161,\"9
+        Gramm\",\"\u0413\u0430\u0441\u0442\u0440\u043E\u043B\u0435\u0440 (\u041E\u0433\u043E)\"\n162,\"YASMI\",\"\u0414\u0443\u043C\u0430\u0439
+        \u0438 \u0431\u043E\u0433\u0430\u0442\u0435\u0439\"\n163,\"Eminem\",\"Stan
+        (feat. Dido)\"\n164,\"Shayan Yo\",\"Sekte\"\n165,\"Fabri Fibra\",\"Goya (feat.
+        Pinguini Tattici Nucleari)\"\n166,\"Quavo\",\"Hit-A-Lik\"\n167,\"Jeezy\",\"All
+        There (feat. Bankroll Fresh)\"\n168,\"Drake & 21 Savage\",\"B\u2019s On The
+        Table\"\n169,\"Drake\",\"Hotline Bling\"\n170,\"Russ\",\"Come Back To Me\"\n171,\"F3miii\",\"NOBLE\"\n172,\"TRAP
+        MAFIA HOUSE\",\"Mafia Style\"\n173,\"Future\",\"Konnichiwa\"\n174,\"The Notorious
+        B.I.G.\",\"Hypnotize\"\n175,\"Trippie Redd & Diplo\",\"Wish (Audiomack Trap
+        Symphony Version)\"\n176,\"Niska\",\"Chasse \xC0 l'homme\"\n177,\"Mayo & Guy2Bezbar\",\"Champagne
+        (feat. Genezio)\"\n178,\"Travis Scott\",\"FE!N (feat. Playboi Carti)\"\n179,\"Fetty
+        Wap\",\"Trap Queen\"\n180,\"Bouss\",\"Cote \xE0 la hausse\"\n181,\"Marwa Loud\",\"Bad
+        boy\"\n182,\"Vidal Lara\",\"Nadie Pregunt\xF3 Por M\xED\"\n183,\"Luniz\",\"I
+        Got 5 On It (feat. Michael Marshall)\"\n184,\"Moneymyface & Fox BD\",\"Bae
+        Please [Remix]\"\n185,\"Anderson .Paak & Cordae\",\"A Good Day\"\n186,\"POODEE\",\"Nola
+        09\"\n187,\"Lil Durk\",\"All My Life (feat. J. Cole)\"\n188,\"Dopebwoy\",\"Hans
+        Kazan\"\n189,\"Ninho\",\"Mood\"\n190,\"Nelly & City Spud\",\"Ride Wit Me (feat.
+        City Spud)\"\n191,\"Drake\",\"National Treasures\"\n192,\"Kendrick Lamar\",\"luther\"\n193,\"Black
+        Eyed Peas\",\"My Humps\"\n194,\"Pete & Bas\",\"T Pain\"\n195,\"Latto & Doja
+        Cat\",\"Okayyy\"\n196,\"B.o.B\",\"Nothin' On You (feat. Bruno Mars)\"\n197,\"Drake\",\"Plot
+        Twist\"\n198,\"Don Toliver\",\"E85\"\n199,\"French Montana & Max B\",\"Ever
+        Since U Left Me (I Went Deaf)\"\n200,\"Fatt Smaxk\",\"BANKS HOUSE\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

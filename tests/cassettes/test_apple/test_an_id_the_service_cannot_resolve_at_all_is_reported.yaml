@@ -1,0 +1,14 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/sd/s/a2st/GB/en-US/0
+  response:
+    body:
+      string: '{"error":{"msg":"Could not fetch ids"}}'
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

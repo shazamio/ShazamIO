@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/afrobeats/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"DJ
+        Goja, Jason Derulo & Melody\",\"Mi Chico (Jason Derulo x Melody Version)\"\n2,\"Blaqbonez\",\"IKEBE
+        3000 (feat. Asake)\"\n3,\"Ayra Starr\",\"Heaven Baby (feat. ZAYN)\"\n4,\"Rema\",\"Oh
+        No\"\n5,\"Victony\",\"SLICK\"\n6,\"Ronisia\",\"Cuenta (feat. Meryl & Shay)\"\n7,\"DJ
+        Kongo\",\"Miss Lolo\"\n8,\"The Second Voice\",\"LET ME BE\"\n9,\"TUFF KING\",\"Waka
+        Waka\"\n10,\"Xduppy & Angekebabuye mc\",\"Lwetse (feat. DJ Maphorisa & Mluusician)\"\n11,\"Hotkid\",\"Baba
+        (feat. Zlatan)\"\n12,\"Premium Emf\",\"Chairman\"\n13,\"Tems\",\"Me & U\"\n14,\"Sweet
+        Music Entertainment\",\"You're The One\"\n15,\"Issah\",\"BADDIES IN BELGICA\"\n16,\"Runtown\",\"Mad
+        over You\"\n17,\"Chicco\",\"Umbala Ma G-String\"\n18,\"Olamide\",\"Metaverse\"\n19,\"TRIANGLE
+        DES BERMUDES\",\"Qu'on s'attache (feat. MC YOSHI, Mauvais djo & Kokosvoice)\"\n20,\"Davido,
+        FOLA & Mayorkun\",\"B4 B4\"\n21,\"Bukzin Keyz, Benzoo & Tango Supreme\",\"Mopepe\"\n22,\"Asake\",\"Gratitude\"\n23,\"Miracle
+        LRE\",\"Sorry I'm Different\"\n24,\"Rema\",\"Calm Down\"\n25,\"DJ Maphorisa,
+        DJ Tunez, Wizkid & Mavo\",\"MONEY CONSTANT\"\n26,\"Young Stunna\",\"Adiwele
+        (feat. Kabza De Small & Dj Maphorisa)\"\n27,\"Tems\",\"What You Need\"\n28,\"Wizkid\",\"Final
+        (Baba Nla)\"\n29,\"MOLIY, Silent Addy, Skillibeng & Shenseea\",\"Shake It
+        To The Max (FLY) [Remix]\"\n30,\"Mr Eazi & MOLIY\",\"Comfort\"\n31,\"TxC,
+        Davido, Shoday & Scotts Maphuma\",\"Nakupenda (feat. Zlatan & Al Xapo)\"\n32,\"DESMILE\",\"Kucheza
+        Unajuwa\"\n33,\"Kizz Daniel\",\"Owo Oluwa (feat. Young Jonn, Krizbeatz & Wave
+        Choir)\"\n34,\"Famous Pluto\",\"Tap Am\"\n35,\"CONGO WORLDWIDE\",\"BNN (feat.
+        MJ Dollar)\"\n36,\"Djaksparo\",\"Pangor (Swalalala)\"\n37,\"Blaqbonez\",\"BIG
+        PERFORMER\"\n38,\"W4DE & Royal Musiq\",\"TEZE\"\n39,\"Mauvais Djo\",\"4\"\n40,\"LuuDadeejay\",\"Bacardi
+        via sgidongo (feat. Kabza De Small & Mac Breezy)\"\n41,\"Calvin Fallo\",\"Everybody
+        Wanna Be In Love\"\n42,\"Hammerboi\",\"Love Letter (Edamwen)\"\n43,\"DopeNation\",\"Kakalika\"\n44,\"CKay\",\"love
+        nwantiti (feat. Axel & Dj Yo!) [Remix]\"\n45,\"Jiova Jiova\",\"Je t'avais
+        dit (feat. El bat & BRSMUSIC)\"\n46,\"KSG Di Don\",\"Summer Time (feat. KiddoTakeOver)\"\n47,\"Khalil
+        Harrison & Tyler ICU\",\"Jealousy (feat. Leemckrazy & Ceeka RSA)\"\n48,\"Zlatan\",\"Genesis
+        (feat. Flavour)\"\n49,\"Ayra Starr\",\"Rush\"\n50,\"Hammerboi\",\"Love Letter
+        (Acoustic Version)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

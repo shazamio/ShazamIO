@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/singer-songwriter/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"JOHNNYSWIM\",\"Live
+        While We're Young\"\n2,\"Sukhishvili Georgian National Ballet\",\"Zekari\"\n3,\"Yves
+        Nord\",\"Sixi\xE8me Mouvement\"\n4,\"Stephen Sanchez & Em Beihold\",\"Until
+        I Found You (Em Beihold Version)\"\n5,\"Hozier\",\"Take Me to Church\"\n6,\"Maria
+        Chaikovska\",\"\u0412 \u043A\u043E\u043C\u043D\u0430\u0442\u0435 \u0446\u0432\u0435\u0442\u043D\u044B\u0445
+        \u043F\u0435\u043B\u0435\u0440\u0438\u043D\"\n7,\"Ellen McIlwaine\",\"Can't
+        Find My Way Home\"\n8,\"Gregory Alan Isakov\",\"Sweet Heat Lightning\"\n9,\"Tracy
+        Chapman\",\"Fast Car\"\n10,\"Liva Rae\",\"Chalray Chalray Waale\"\n11,\"Zavyre\",\"Don't
+        Let Go\"\n12,\"Sidney Gish\",\"Impostor Syndrome\"\n13,\"Myles Smith\",\"Nice
+        To Meet You\"\n14,\"Alan Waka\",\"Sarkin Kano Aminu Basasa\"\n15,\"Skhanga\",\"Thando
+        lwathola kabi  (feat. KaMaphanga & Yolokazi)\"\n16,\"Richy Mitch & The Coal
+        Miners\",\"Evergreen\"\n17,\"Hozier\",\"Work Song\"\n18,\"Paris Paloma\",\"labour\"\n19,\"Cat
+        Stevens\",\"Wild World (Venom: The Last Dance)\"\n20,\"Dean Lewis\",\"Be Alright\"\n21,\"Myles
+        Smith & Niall Horan\",\"Drive Safe\"\n22,\"David Rawlings\",\"Cumberland Gap\"\n23,\"SherellHodge\",\"Better
+        Without You\"\n24,\"\xC7etin \u0130\xE7ten & Pikapta Raks\",\"Toroslu Yollar\"\n25,\"Real
+        Confidens\",\"Ako\"\n26,\"TriLL\",\"TIRED\"\n27,\"Buzzy Lee\",\"Girls Just
+        Want To Have Fun\"\n28,\"Katie Garfield\",\"I'm Still Here\"\n29,\"Norah Jones\",\"Don't
+        Know Why\"\n30,\"H\xFCseyin Y\u0131ld\u0131r\u0131m Official\",\"\u0639\u0632\u06CC\u0632\u0645
+        \u0645\u0646\u0648 \u062A\u0646\u0647\u0627 \u0646\u0630\u0627\u0631\"\n31,\"Abagar
+        Quartet\",\"\u041F\u0440\u0438\u043F\u0435\u0432\u043A\u0438\"\n32,\"Kelty
+        Greye & KidMotel\",\"The Middle\"\n33,\"Tracy Chapman\",\"Baby Can I Hold
+        You\"\n34,\"wes\",\"BAD HONEY (acoustic cover)\"\n35,\"Dean Lewis\",\"How
+        Do I Say Goodbye\"\n36,\"Myles Smith\",\"Stay (If You Wanna Dance)\"\n37,\"Rulo
+        Soul\",\"Vida Bendita\"\n38,\"Pedro Guerra & Cruz Cafun\xE9\",\"Con Los Dos
+        En La Cabeza\"\n39,\"Mafukua Nathan Jordy\",\"LINDANDA (LIVE)\"\n40,\"SherellHodge\",\"You
+        Ain\u2019t Even Know\"\n41,\"The Sways\",\"Someday We Will Dream About Today\"\n42,\"Freya
+        Ridings\",\"Lost Without You\"\n43,\"\u0130brahim Tatl\u0131ses\",\"Senden
+        Insaf Diler Yar\u0131n\"\n44,\"\u0412\u0430\u0441\u044F \u0432 \u041A\u0435\u0434\u0430\u0445\",\"\u0421\u0443\u0435\u0442\u0430\"\n45,\"Edith
+        Whiskers\",\"Home\"\n46,\"William Maytook\",\"In the Narnia's Forests\"\n47,\"Sobhan
+        Mohammadi\",\"Lanat Beto\"\n48,\"Tekir\",\"Y\u0131kamazlar Beni\"\n49,\"Arvin
+        & STXPNXY FXLK\",\"\u041A\u043E\u0433\u0434\u0430 \u043C\u044B \u0431\u044B\u043B\u0438
+        \u043D\u0430 \u0432\u043E\u0439\u043D\u0435\"\n50,\"Tekir & G\xF6khan Naml\u0131\",\"Vursunlar
+        (Roman Version)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

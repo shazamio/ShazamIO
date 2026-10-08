@@ -1,0 +1,141 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/dance/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Imael
+        Angel\",\"BAD TIMES\"\n2,\"HUGEL, Imael Angel & Ultra Nat\xE9\",\"Movin' To
+        The Sun\"\n3,\"Imael Angel\",\"BAD TIMES (Long Version)\"\n4,\"Akcent\",\"Stay
+        with Me\"\n5,\"Stromae\",\"Alors on danse (feat. Erik Hassle)\"\n6,\"ANOTR
+        & 54 Ultra\",\"Talk To You (ft. 54 Ultra)\"\n7,\"Tman Xpress & Mellow & Sleazy\",\"Remember\"\n8,\"LATIN
+        MAFIA & Fred again..\",\"Te Estoy Correteando\"\n9,\"Ankara Echoes\",\"Beni
+        Al (Ta Ki Seni G\xF6rene Kadar) [Afro House Remix]\"\n10,\"Benny Benassi\",\"Love
+        Is Gonna Save Us\"\n11,\"Beekay Monalayzzar, METT4LIQ-151, UDUBE & Simah Nation\",\"Ubaba
+        wam\"\n12,\"Edward Maya & Vika Jigulina\",\"Stereo Love\"\n13,\"Prospa, Cloonee
+        & Sybil\",\"Free Your Mind\"\n14,\"DJ Snake\",\"Let Me Love You (feat. Justin
+        Bieber)\"\n15,\"David Tavar\xE9\",\"Call Me Baby (If You Don\u2019t Know My
+        Name) [feat. Ruth]\"\n16,\"R\xDCF\xDCS DU SOL\",\"Innerbloom\"\n17,\"The Bausa\",\"Magnetic\"\n18,\"Cloonee,
+        Prospa & Tristan Henry\",\"Good Girl\"\n19,\"Gala\",\"Freed From Desire\"\n20,\"Black
+        Coast\",\"Trndsttr (feat. M. Maggie) [Lucian Remix]\"\n21,\"Beekay Monalayzzar,
+        REEL ZAYO & Jayy D Musiq\",\"Khanyisa (feat. Mntomnandi)\"\n22,\"GLM-RST\",\"still
+        love you (Slowed)\"\n23,\"Bebe Rexha & Faithless\",\"New Religion\"\n24,\"Sick
+        Vibex\",\"Chalreh Chalreh Waal (Acoustic Version)\"\n25,\"Burak Yeter\",\"Tuesday
+        (feat. Danelle Sandoval)\"\n26,\"Swedish House Mafia & Lykke Li\",\"Happiness
+        Is So Sad\"\n27,\"David Guetta, Bebe Rexha & J Balvin\",\"Say My Name\"\n28,\"Terry
+        G\",\"AkpakO Bum Bum\"\n29,\"Clean Bandit\",\"Rather Be (feat. Jess Glynne)\"\n30,\"keelse\",\"\u0422\u0430\u043D\u0446\u0443\u0435\u043C\"\n31,\"Peggy
+        Gou & Ayra Starr\",\"Wo, man (Edit)\"\n32,\"Jakarta\",\"One Desire (Mondotek
+        Radio Edit)\"\n33,\"Steve Edwards, Bob Sinclar & Sly & Robbie\",\"World Hold
+        On\"\n34,\"Darque, Atmos Blaq, Zawadi Yamungu & Tycoon\",\"uMoya 2.0 (feat.
+        Soulful Disciple) [Tycoon Remix]\"\n35,\"Bad Bunny\",\"DtMF\"\n36,\"Alice
+        Deejay\",\"Better Off Alone\"\n37,\"Armin van Buuren\",\"In and Out of Love
+        (feat. Sharon den Adel)\"\n38,\"SK.music\",\"Inside My Soul\"\n39,\"Boris
+        Brejcha\",\"Flying Bird\"\n40,\"Gigi D'Agostino\",\"L'amour Toujours\"\n41,\"Valterix\",\"Kingdom
+        Beat (Tiktok Version)\"\n42,\"Kirk\",\"The Clock\"\n43,\"Robert Miles\",\"Children\"\n44,\"Modjo\",\"Lady
+        (Hear Me Tonight)\"\n45,\"Alok & Alan Walker\",\"Headlights (feat. KIDDO)
+        [Slowed Version]\"\n46,\"Cuntsniffer & Broken Toy Airplanes\",\"Meant To Be\"\n47,\"Topic
+        & Becky G\",\"Sorry Papi\"\n48,\"David Zowie\",\"House Every Weekend (Radio
+        Edit)\"\n49,\"Fake Blood\",\"I Think I Like It\"\n50,\"Snap!\",\"Rhythm Is
+        a Dancer\"\n51,\"\u041A\u0430\u0442\u0440\u0438\u043D \u0428\u0442\u043E\u043B\u044C\",\"\u041F\u044C\u044F\u043D\u044B\u0439\"\n52,\"Groove
+        Armada\",\"Superstylin'\"\n53,\"Kyla & Crazy Cousinz\",\"Do You Mind (Crazy
+        Cousinz Remix) [Mixed]\"\n54,\"pupsies\",\"misery.\"\n55,\"Lilly Wood & The
+        Prick & Robin Schulz\",\"Prayer in C (Nitefreak Remix)\"\n56,\"Dj Njebza RSA\",\"Number
+        One (feat. Dj Skilash & Olivia)\"\n57,\"Basta & Moya Mishel\",\"\u0415\u0441\u043B\u0438
+        \u044F \u0431\u0443\u0434\u0443 \u0442\u0430\u043D\u0446\u0435\u0432\u0430\u0442\u044C\"\n58,\"Avicii\",\"Wake
+        Me Up\"\n59,\"Enur\",\"Calabria 2008 (feat. Natasja)\"\n60,\"Jax Jones\",\"Breathe
+        (feat. Ina Wroldsen)\"\n61,\"sma$her & MC DA$ILVA\",\"BAILA LENTO\"\n62,\"Jerri\",\"The
+        JAWN\"\n63,\"Avicii\",\"Levels\"\n64,\"POLTERGST & R\xD8\xD8TZ\",\"Into The
+        Void (feat. Jordan Lindley)\"\n65,\"Disturbed\",\"The Sound of Silence (CYRIL
+        Remix)\"\n66,\"Avicii\",\"The Nights\"\n67,\"Stardust\",\"Music Sounds Better
+        with You\"\n68,\"SIDEPIECE & 95 South\",\"Can I Ride\"\n69,\"Mau P\",\"Just
+        A Little Bit More\"\n70,\"Alexandra Stan\",\"Mr. Saxobeat (Radio Edit)\"\n71,\"Kimo
+        Sounds\",\"Make It Spectacular\"\n72,\"D'Angello & Francis\",\"Blade\"\n73,\"Clean
+        Bandit\",\"Rockabye (feat. Sean Paul & Anne-Marie)\"\n74,\"Calvin Harris &
+        Clementine Douglas\",\"Blessings\"\n75,\"Morgan Wallen\",\"Been By Now\"\n76,\"Disco
+        Lines & Tinashe\",\"No Broke Boys\"\n77,\"KLAAN\",\"CAF\xE9 CON RON (Afro
+        House Remix)\"\n78,\"Jose Yanque music\",\"Bada Bing bada boom\"\n79,\"Swedish
+        House Mafia & The Weeknd\",\"Moth To A Flame\"\n80,\"Kolter\",\"Trapped (Radio-Edit)\"\n81,\"Darude\",\"Sandstorm\"\n82,\"KATO\",\"Turn
+        the Lights Off (feat. Jon)\"\n83,\"Ian Asher & D a n n y\",\"Take Me (To The
+        Moon)\"\n84,\"Imael Angel\",\"Da Da Dadada Bad Times\"\n85,\"Mike Posner\",\"I
+        Took A Pill In Ibiza (Seeb Remix)\"\n86,\"Swedish House Mafia\",\"Don't You
+        Worry Child (feat. John Martin)\"\n87,\"Jonas Blue & Malive\",\"Edge of Desire\"\n88,\"Milky\",\"Just
+        The Way You Are\"\n89,\"Dxrkaii & Jiandro\",\"New Jeans (Jersey Club)\"\n90,\"Chris
+        Lorenzo & Kah-Lo\",\"In This Bih'\"\n91,\"Neptunica\",\"What If?\"\n92,\"Benny
+        Benassi & The Biz\",\"Satisfaction\"\n93,\"Charly Black\",\"Gyal You a Party
+        Animal\"\n94,\"Pumpky\",\"LA CALABAZA (TINIEBLA Edit)\"\n95,\"Calvin Harris\",\"Feel
+        So Close (Radio Edit)\"\n96,\"Miyagi & Andy Panda\",\"Kosandra\"\n97,\"Peggy
+        Gou\",\"(It Goes Like) Nanana\"\n98,\"Ultra Nat\xE9\",\"Free (Mood II Swing
+        Radio Edit)\"\n99,\"Zedd\",\"Clarity (feat. Foxes)\"\n100,\"ANOTR\",\"Silver
+        Lines (feat. Emily Warren)\"\n101,\"Gigi D'Agostino\",\"Bla Bla Bla\"\n102,\"Coldplay\",\"A
+        Sky Full of Stars\"\n103,\"Ofenbach & Starsailor\",\"Four To The Floor\"\n104,\"Bebe
+        Rexha & David Guetta\",\"Sad Girls\"\n105,\"HUGEL, Topic & Arash\",\"I Adore
+        You (feat. Daecolm)\"\n106,\"Sonny Kane\",\"Never Leave U\"\n107,\"SAINt JHN\",\"Roses
+        (Imanbek Remix)\"\n108,\"Clean Bandit\",\"Solo (feat. Demi Lovato)\"\n109,\"David
+        Guetta & Bebe Rexha\",\"I'm Good (Blue)\"\n110,\"Martin Solveig & Dragonette\",\"Hello\"\n111,\"Ph\xE1o\",\"2
+        Ph\xFAt H\u01A1n (KAIZ Remix)\"\n112,\"Franky Rizardo\",\"Shinjuku\"\n113,\"Jennifer
+        Lopez & David Guetta\",\"Save Me Tonight\"\n114,\"Calvin Harris\",\"I'm Not
+        Alone (Extended Mix)\"\n115,\"Syanide\",\"Can't Hold Us\"\n116,\"GLM-RST\",\"still
+        love you (super slowed + reverb)\"\n117,\"CHRYSTAL & NOTION\",\"The Days (NOTION
+        Remix)\"\n118,\"Chris Lorenzo & Chromeo\",\"Fancy Footwork\"\n119,\"Robin
+        Schulz & Waterm\xE4t\",\"Take It Slow (Bullit)\"\n120,\"Guru Josh Project\",\"Infinity
+        2008 (Klaas Vocal Edit)\"\n121,\"ATB\",\"9 P.M. (Till I Come)\"\n122,\"El
+        Alfa, El Cherry Scom & CJ\",\"La Mam\xE1 de la Mam\xE1\"\n123,\"Master KG\",\"Jerusalema
+        (feat. Nomcebo Zikode)\"\n124,\"Naarly & Major League DJz\",\"WASTED\"\n125,\"CYRIL\",\"Stumblin'
+        In\"\n126,\"Kygo & Max McNown\",\"Take Me Back\"\n127,\"Fly Project\",\"Toca
+        Toca (Radio Edit)\"\n128,\"Njelic\",\"Tsotsi (feat. MalumNator, De Mthuda
+        & Ntokzin)\"\n129,\"Kungs & Cookin' On 3 Burners\",\"This Girl\"\n130,\"Alok,
+        Zeeba & Bruno Martini\",\"Hear Me Now\"\n131,\"Bello B & Dladla Mshunqisi\",\"BETHII
+        BETHII (feat. Anathii Deejay & FROSTIYANO)\"\n132,\"Elley Duh\xE9 & Whethan\",\"MONEY
+        ON THE DASH (SPED UP)\"\n133,\"LUM!X\",\"Self Aware (Remix)\"\n134,\"Argy
+        & Omnya\",\"Aria\"\n135,\"Videoclub\",\"Roi\"\n136,\"Stryv, Camila Cabello
+        & Malachiii\",\"Move (feat. Adam Port, Keinemusik & Orso)\"\n137,\"Dj 9.8
+        SA, Pexi-Tonic SA & Ceekay Musiq\",\"Ngiyamsaba Umashonisa (feat. Brownny)\"\n138,\"Ian
+        Asher\",\"Way Too Self Aware (Remix)\"\n139,\"Armin van Buuren & SACHA\",\"Everlasting\"\n140,\"2hollis\",\"crush\"\n141,\"Ice
+        MC\",\"Think About the Way\"\n142,\"Niko B\",\"Why's this dealer?\"\n143,\"Nightcrawlers\",\"Push
+        the Feeling On (Mk Dub Revisited Edit)\"\n144,\"Makhadzi Entertainment & Memie\",\"Seanamarena
+        (feat. Prince Benza)\"\n145,\"Gordo & Reinier Zonneveld\",\"Loco Loco\"\n146,\"Skillz,
+        Simmy & Zeh McGeba\",\"Phumelela\"\n147,\"BioTeKal\",\"Hymn for the Weekend\"\n148,\"Massive
+        Lust\",\"Never (Main mix)\"\n149,\"Tr\xED Th\u1EE9c Remix\",\"\u843D\u6CEA
+        - \u5EB7\u7199 Hot Trend Tik Tok Douyin\"\n150,\"Silva Bumpa\",\"On 2nite\"\n151,\"The
+        Chainsmokers\",\"Don't Let Me Down (feat. Daya) [W&W Remix]\"\n152,\"Inna\",\"Hot\"\n153,\"Dom
+        Dolla, Solomun & Skepta\",\"DANGER DANGER\"\n154,\"Cartoon, J\xE9ja & Daniel
+        Levi\",\"On & On\"\n155,\"Why Mona\",\"Wannabe\"\n156,\"CamelPhat & Elderbrook\",\"Cola\"\n157,\"Robbie
+        Doherty\",\"Call It What You Like\"\n158,\"Jaden Bojsen & David Guetta\",\"Let's
+        Go\"\n159,\"Kid Cudi\",\"Pursuit of Happiness (feat. MGMT & Ratatat) [Extended
+        Steve Aoki Remix]\"\n160,\"Dimitri Vegas, Sylver & Pat B\",\"Turn The Tide
+        (ft. Sylver)\"\n161,\"FISHER\",\"Losing It\"\n162,\"Marshmello & Bastille\",\"Happier\"\n163,\"2
+        Brothers On the 4th Floor\",\"Dreams (Will Come Alive)\"\n164,\"Calvin Harris\",\"Feels
+        (feat. Pharrell Williams, Katy Perry & Big Sean)\"\n165,\"David Guetta & Hypaton\",\"You
+        And I, Me And You (Extended)\"\n166,\"HUGEL, French Montana, David Guetta
+        & Aidan Martin\",\"Shine\"\n167,\"MarJan & Mxnvra\",\"MONTAGEM DAUNTLESS (Super
+        Slowed)\"\n168,\"Scooter\",\"The Logical Song\"\n169,\"Philip George\",\"Wish
+        You Were Mine\"\n170,\"Bob Sinclar & Cutee B.\",\"Rock This Party (Everybody
+        Dance Now) [feat. Dollarman, Big Ali & Makedah]\"\n171,\"Michael Gray\",\"The
+        Weekend (Radio Edit)\"\n172,\"Zedd, Maren Morris & Grey\",\"The Middle\"\n173,\"Clean
+        Bandit\",\"Symphony (feat. Zara Larsson)\"\n174,\"ALONR\",\"Back to Yours\"\n175,\"John
+        Summit & LAVINIA\",\"SHADOWS\"\n176,\"Robin Schulz\",\"Sugar (feat. Francesco
+        Yates)\"\n177,\"Sonique\",\"It Feels so Good\"\n178,\"Nero's Day At Disneyland\",\"In
+        Aisles\"\n179,\"Calvin Harris\",\"Summer\"\n180,\"Ran-D\",\"Zombie\"\n181,\"DJ
+        NTK, Prince Benza, Makhadzi Entertainment & EeQue\",\"A KA NHLALA (feat. Team
+        Mosha)\"\n182,\"Razolo\",\"Lea Chancer Bafana (feat. KHOSI NAMZA & Dj Tinky)\"\n183,\"Route
+        94\",\"My Love (feat. Jess Glynne)\"\n184,\"HUGEL, LaBritney & Mili\",\"Stay
+        Sexy\"\n185,\"Marshmello\",\"Alone\"\n186,\"Inna\",\"Amazing\"\n187,\"Eric
+        Prydz\",\"Call on Me (Radio Mix)\"\n188,\"Tribby Wadi Bhozza, Bohlale Desta
+        & Mellowrsa\",\"AKENA TABA (feat. Westboy & Aofishehlaga Stellenbosch)\"\n189,\"Cokito
+        Deep\",\"CRECIENDO DIARIAMENTE (Afro House)\"\n190,\"Daft Punk\",\"Veridis
+        Quo\"\n191,\"Zenar & Dario Coiro\",\"Te conoc\xED\"\n192,\"Odetari\",\"NEVER
+        A MEMORY (Slowed & Reverbed)\"\n193,\"Nu\",\"Who Loves the Sun feat. Jo.Ke\"\n194,\"Luchi
+        dj\",\"Ese Beso (Fruta Fresca)\"\n195,\"Sash!\",\"Adelante\"\n196,\"Valterix\",\"Kingdom
+        Beat (Slowed)\"\n197,\"Kevinho\",\"Olha a Explos\xE3o\"\n198,\"Reflekt\",\"Need
+        To Feel Loved (feat. Delline Bass) [Adam K & Soha Vocal Mix]\"\n199,\"2Break4,
+        Self Made Barb & PLXYBOII_017\",\"Sphalaphala (feat. Dolly Ditebogo, Ez Maestro
+        & Criimora b.k.z)\"\n200,\"Qura & pipenpodol\",\"Jane! (Hoodtrap)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1
