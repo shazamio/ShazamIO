@@ -7,15 +7,18 @@ from shazamio_core import Signature, SignatureError
 
 from shazamio import SearchParams, Shazam
 
+# Anchored to this file, so the suite runs from any working directory.
+_GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
+
 
 @pytest.fixture(scope="session")
 def song_bytes() -> bytes:
-    return Path("examples/data/Gloria.ogg").read_bytes()
+    return _GLORIA.read_bytes()
 
 
 @pytest.mark.asyncio
 async def test_recognize_file(shazam: Shazam) -> None:
-    out = await shazam.recognize(data="examples/data/Gloria.ogg")
+    out = await shazam.recognize(data=_GLORIA)
     assert out.get("matches") != []
     assert out["track"]["key"] == "53982678"
 
@@ -132,7 +135,7 @@ async def test_max_skew_rejects_a_skewed_first_match(
         answer=answer,
     )
 
-    out = await shazam.recognize("examples/data/Gloria.ogg", max_skew=max_skew)
+    out = await shazam.recognize(_GLORIA, max_skew=max_skew)
 
     assert out == expected
 
@@ -147,4 +150,4 @@ async def test_max_skew_rejects_a_skewed_first_match(
 )
 async def test_max_skew_must_be_positive(shazam: Shazam, max_skew: float) -> None:
     with pytest.raises(ValueError, match="must be above 0"):
-        await shazam.recognize("examples/data/Gloria.ogg", max_skew=max_skew)
+        await shazam.recognize(_GLORIA, max_skew=max_skew)
