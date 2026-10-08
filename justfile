@@ -47,9 +47,14 @@ format:
     uv run ruff format .
 
 [group("test")]
-[doc("Run the test suite")]
+[doc("Run the test suite, with the network refused; the live tests skip")]
 test:
     uv run pytest
+
+[group("test")]
+[doc("Run only the tests that call the real Shazam and Apple services")]
+test-live:
+    uv run pytest --live -m live
 
 [group("test")]
 [doc("Run the test suite against the oldest dependency versions the floors allow")]
@@ -67,7 +72,10 @@ test-floor:
     #  what makes the strategy apply: without it the resolver keeps the locked
     #  versions, which already satisfy the floors.
     uv sync --python {{ python_floor }} --upgrade --resolution lowest-direct
-    uv run --no-sync --python {{ python_floor }} pytest
+
+    # `--live` too: a floor is the oldest release that still parses what Shazam
+    #  answers today, and only the live tests receive a real answer.
+    uv run --no-sync --python {{ python_floor }} pytest --live
 
 [group("test")]
 [doc("Ask every Shazam URL the library calls what it answers; live, never part of `ci`")]

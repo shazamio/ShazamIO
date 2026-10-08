@@ -31,6 +31,7 @@ def test_a_body_without_the_header_is_rejected() -> None:
         parse_chart_csv("<!doctype html>\n")
 
 
+@pytest.mark.live
 @pytest.mark.asyncio
 async def test_the_world_chart_carries_two_hundred_ranked_entries(shazam: Shazam) -> None:
     tracks = await shazam.top_world_tracks()
@@ -39,6 +40,7 @@ async def test_the_world_chart_carries_two_hundred_ranked_entries(shazam: Shazam
     assert [track.rank for track in tracks[:3]] == [1, 2, 3]
 
 
+@pytest.mark.live
 @pytest.mark.asyncio
 async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) -> None:
     tracks = await shazam.top_city_tracks(
@@ -52,6 +54,7 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) 
 
 # Parametrized rather than sampled: a genre Shazam renames stops having a chart
 #  and answers `404`, which is how `regional-mexicano` left the enum.
+@pytest.mark.live
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "genre",

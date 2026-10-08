@@ -31,3 +31,22 @@ jobs:
 
       - name: Run tests
         run: just test
+
+  # The live tests answer whether Shazam still serves what the library calls,
+  #  which does not depend on the interpreter, so one is enough.
+  test-live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: just install
+
+      - name: Run the live tests
+        run: just test-live

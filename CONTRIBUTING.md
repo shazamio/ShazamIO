@@ -21,8 +21,12 @@ That is what the workflows gate on. `just format` applies what the linter can
 fix by itself.
 
 Committing runs some of the same recipes as git hooks; `.pre-commit-config.yaml`
-lists which, and says why the suite is not among them. Every pull request runs
-the suite instead, on each supported interpreter.
+lists which. Every pull request runs the suite on each supported interpreter.
+
+`just test` refuses every host name lookup, so it never reaches Shazam. A test
+that has to call the real service is marked `@pytest.mark.live`; `just test-live`
+runs only those. It is not a hook, so committing works offline, and every pull
+request runs it once.
 
 ## When a method returns nothing
 
