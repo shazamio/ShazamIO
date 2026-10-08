@@ -59,6 +59,11 @@ says why:
 
 Check a new cassette for anything personal before committing it.
 
+The `cassettes` workflow runs `just test-rerecord` every Monday and commits
+nothing. Green means the library still parses what the services answer today.
+Red means Shazam changed something: re-record locally, fix the library, and
+commit both.
+
 ## When a method returns nothing
 
 Shazam's API is undocumented and moves without notice. `just probe` asks every
