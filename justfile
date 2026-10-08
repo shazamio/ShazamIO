@@ -14,6 +14,7 @@ python_floor := `sed -n 's/^requires-python = ">=\([0-9]*\.[0-9]*\).*/\1/p' pypr
 default:
     @just --list
 
+[group("setup")]
 [doc("Install the dependencies exactly as locked, plus the git hooks")]
 install:
     #!/usr/bin/env bash
@@ -28,24 +29,29 @@ install:
         uv run pre-commit install --install-hooks
     fi
 
+[group("check")]
 [doc("Check that `uv.lock` agrees with `pyproject.toml`")]
 check-lock:
     uv lock --check
 
+[group("check")]
 [doc("Check the formatting and lint")]
 lint:
     uv run ruff format --check .
     uv run ruff check .
 
+[group("check")]
 [doc("Auto-fix lint findings, then reformat")]
 format:
     uv run ruff check --fix-only .
     uv run ruff format .
 
+[group("test")]
 [doc("Run the test suite")]
 test:
     uv run pytest
 
+[group("test")]
 [doc("Run the test suite against the oldest dependency versions the floors allow")]
 test-floor:
     #!/usr/bin/env bash
@@ -63,9 +69,11 @@ test-floor:
     uv sync --python {{ python_floor }} --upgrade --resolution lowest-direct
     uv run --no-sync --python {{ python_floor }} pytest
 
+[group("test")]
 [doc("Ask every Shazam URL the library calls what it answers; live, never part of `ci`")]
 probe:
     uv run python scripts/probe_endpoints.py
 
+[group("check")]
 [doc("Run everything CI runs")]
 ci: lint test
