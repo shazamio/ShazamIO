@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/latin/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"KAROL
+        G, Judeline & rusowsky\",\"BbY WOW\"\n2,\"ARIA VEGA\",\"COMPA COLETO (uy_como)\"\n3,\"Thiago
+        Navarro Music\",\"Bonito, Bonito\"\n4,\"Natanael Cano, Tito Double P, Victor
+        Mendivil & Ovi\",\"OLIVIA LA FLAKA\"\n5,\"Don Miguelo\",\"Y Qu\xE9 Fue?\"\n6,\"DJ
+        LUANA PRI\",\"PONTO SUAVE (Remix)\"\n7,\"Maluma & Shakira\",\"AGUA\"\n8,\"Fito
+        Olivares\",\"Que Te Vas Y Te Vas\"\n9,\"Bad Bunny\",\"NUEVAYoL\"\n10,\"FloyyMenor
+        & Cris MJ\",\"Gata Only\"\n11,\"Los Yes Yes, Los JR's, Sonido Los Jrs Oficial
+        & Bermudas\",\"El Due\xF1o De Tu Amor\"\n12,\"Proyecto Uno\",\"Tiburon\"\n13,\"KAROL
+        G & Drake\",\"Ah\xED\"\n14,\"KAROL G\",\"Si Antes Te Hubiera Conocido\"\n15,\"Julio
+        Iglesias\",\"Con la Misma Piedra (With the Same Stone)\"\n16,\"Farruko, Greeicy
+        & Steve Aoki\",\"YAPAQUE\"\n17,\"Aitana\",\"SUPERESTRELLA\"\n18,\"Myke Towers\",\"CARITA
+        FELIZ\"\n19,\"El Cherry Scom, DJ Chulo NYC & La Gre\xF1a\",\"PANTI Y COLALE\"\n20,\"Feid,
+        El Americano 4KT & Pirlo\",\"PARADIXE\"\n21,\"MC Zudo Bolad\xE3o & Young Madz\",\"Party
+        Funk\"\n22,\"Bad Bunny\",\"EoO\"\n23,\"La Santa Grifa & Chino El Don\",\"Table
+        Dance\"\n24,\"Romeo Santos & Prince Royce\",\"Dardos\"\n25,\"El Alfa, De La
+        Ghetto & Zion\",\"PANTI Y COLALE 2.0 (feat. DJ Chulo NYC, El Cherry Scom,
+        La Gre\xF1a & RONNY GTA)\"\n26,\"El Alfa, Darell & Noriel\",\"4K\"\n27,\"Ricardo
+        Arjona & Grupo Firme\",\"Amor Factura\"\n28,\"Neton Vega\",\"RIKI\"\n29,\"Hades66,
+        Arc\xE1ngel, Myke Towers & Luar La L\",\"YO QUIERO (REMIX)\"\n30,\"J Balvin
+        & Willy William\",\"Mi Gente\"\n31,\"Luis Fonsi & Daddy Yankee\",\"Despacito\"\n32,\"Bad
+        Bunny\",\"BAILE INoLVIDABLE\"\n33,\"Daddy Yankee\",\"Gasolina\"\n34,\"Quevedo
+        & Elvis Crespo\",\"LA GRACIOSA\"\n35,\"Omar Camacho\",\"King of Watches\"\n36,\"El
+        Bogueto, Anuel AA, Fuerza Regida & Yung Beef\",\"Cuando No Era Cantante RMX
+        (Remix)\"\n37,\"Bad Bunny\",\"Tit\xED Me Pregunt\xF3\"\n38,\"Yenddi\",\"Soldado
+        Engan\u0303ado\"\n39,\"Vius, Lauty Gram, Migrantes & Max Carra\",\"ESTOY A
+        UN VASO (REMIX)\"\n40,\"Romeo Santos, Prince Royce & Dalvin La Melodia\",\"Menor\"\n41,\"Farruko\",\"Pepas\"\n42,\"ROA
+        & Anuel AA\",\"VAMO A VEL\"\n43,\"Sevdaliza\",\"Ride Or Die, Pt. 2 (feat.
+        Villano Antillano & Tokischa)\"\n44,\"Bigg Danny, El Americano 4KT & El Goldo\",\"GALACTICOS\"\n45,\"Barbas
+        & Omar Camacho\",\"D\xF3nde est\xE1s\"\n46,\"Jey One\",\"Bo Bo Bo\"\n47,\"Enrique
+        Iglesias\",\"Bailando (Spanish Version) [feat. Descemer Bueno & Gente de Zona]\"\n48,\"Manu
+        Chao\",\"Me Gustas T\xFA\"\n49,\"Kreizy k & July Queen\",\"SA SA SA\"\n50,\"JC
+        TERCO\",\"Quiero Mamarte La Panocha\"\n51,\"Coral das Quebradas, MC KAUAN
+        PV, MC Zignani & Mc DR\",\"Vou Tacar na Peka (feat. Oracioh MC)\"\n52,\"Daddy
+        Yankee\",\"Con Calma (feat. Snow)\"\n53,\"Paulo Londra\",\"hIGhLIGhTS\"\n54,\"Chimbala
+        & Omega\",\"Se Me Nota (Agarrame)\"\n55,\"Bad Bunny\",\"MONACO\"\n56,\"Binomio
+        de Oro de Am\xE9rica\",\"Volvi\xF3 el Dolor\"\n57,\"Don Omar\",\"Bandoleros
+        (feat. Tego Calder\xF3n)\"\n58,\"Anuel AA\",\"Donde Hubo Fuego Cenizas Quedan\"\n59,\"Zion
+        & Lennox\",\"Yo Voy (feat. Daddy Yankee)\"\n60,\"Nio Garc\xEDa, Casper M\xE1gico
+        & Bad Bunny\",\"Te Bot\xE9 (feat. Darell, Ozuna & Nicky Jam) [Remix]\"\n61,\"Celia
+        Cruz\",\"La Vida Es Un Carnaval\"\n62,\"Mishelle Master Boys\",\"La Quemona,
+        Pt. 2\"\n63,\"Jay Wheeler\",\"Fuga\"\n64,\"Arlene MC\",\"Mamazota\"\n65,\"Jo\xE3o
+        Gustavo e Murilo & Grelo\",\"Postinho de Gasolina\"\n66,\"Alleh & Yorghaki\",\"capaz
+        (merengueton)\"\n67,\"KAROL G & Manu Chao\",\"Viajando Por El Mundo\"\n68,\"Omar
+        Courtz\",\"POR SI MA\xD1ANA NO ESTOY\"\n69,\"Tony Dize\",\"Perm\xEDtame (feat.
+        Yandel)\"\n70,\"Jay Wheeler & Omar Courtz\",\"De Lejitos (Remix)\"\n71,\"Pana
+        Vi & Cristy\",\"NON MI INNAMORER\xD3 (Remix) [feat. Pucho & Mia]\"\n72,\"Conep\",\"After\"\n73,\"Kaivor
+        One\",\"Fuiste la mujer del proceso\"\n74,\"Eloy, Zion & Jowell & Randy\",\"Fuera
+        Del Planeta (Remix)\"\n75,\"Zion, Jory Boy & Ken-Y\",\"More\"\n76,\"Don Omar\",\"Angelito\"\n77,\"Dalmata
+        & \xD1ejo\",\"Se\xF1al De Vida\"\n78,\"W Sound, Be\xE9le & Ovy On the Drums\",\"La
+        Plena (W Sound 05)\"\n79,\"Omar Courtz\",\"KOKO\"\n80,\"Junior H & Gael Valenzuela\",\"DEMENCIA\"\n81,\"Koddy
+        G, COLVISION COMPANY, Pty Audio & Frvnz_la_F\",\"Bachateo\"\n82,\"Fronti &
+        Brytiago\",\"SPICY (feat. Myke Towers)\"\n83,\"HUMBE\",\"fantasmas\"\n84,\"La
+        Factoria & Eddy Lover\",\"Perd\xF3name\"\n85,\"Kali Uchis\",\"telepat\xEDa\"\n86,\"Ozuna
+        & Omar Courtz\",\"ZIZI\"\n87,\"DJ WNZL, MC Nito & Conex\xE3o do Funk\",\"Vem
+        de R\xE9 (Slowed)\"\n88,\"Nicky Jam\",\"Hasta el Amanecer\"\n89,\"Pandora\",\"Trust
+        Me\"\n90,\"DJ Villa Sol\",\"Sola Una Vida\"\n91,\"Daddy Yankee\",\"Me Quedo\"\n92,\"Dj
+        Drewther, Ruzzo Doblezz & La Fama\",\"Ronroneame\"\n93,\"Daddy Yankee\",\"Rompe\"\n94,\"Ryan
+        Castro, Kapo & Gangsta\",\"LA VILLA\"\n95,\"ARIA VEGA & Ryan Castro\",\"CH\xC9VERE
+        (premium_remix)\"\n96,\"Enrique Iglesias\",\"No Me Digas Que No (feat. Wisin
+        & Yandel)\"\n97,\"Tote, Benja Torres & Migrantes\",\"Decime c\xF3mo hac\xE9s\"\n98,\"Romeo
+        Santos & Prince Royce\",\"Ay! San Miguel\"\n99,\"Afrosound\",\"Mar de Emociones\"\n100,\"Shakira\",\"Antolog\xEDa\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

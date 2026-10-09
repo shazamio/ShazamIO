@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/french-pop/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Indila\",\"Love
+        Story\"\n2,\"Videoclub, Ad\xE8le Castillon & Mattyeux\",\"Amour plastique\"\n3,\"Indila\",\"Ainsi
+        Bas La Vida\"\n4,\"Patrick S\xE9bastien\",\"Toc toc\"\n5,\"Manon Lisa\",\"Le
+        Petit P\xEAcheur\"\n6,\"Indila\",\"Derni\xE8re Danse\"\n7,\"Ad\xE8le Castillon\",\"\xC9t\xE9
+        avec toi\"\n8,\"Joe Dassin\",\"Et si tu n'existais pas\"\n9,\"Manzala\",\"Voyage
+        voyage - DJ WS\"\n10,\"TeddyBear\",\"Le Plus Beau\"\n11,\"Stromae\",\"Tous
+        les m\xEAmes\"\n12,\"Videoclub\",\"Mai\"\n13,\"Joseph Kamel & Vitaa\",\"Jamais\"\n14,\"Indila\",\"Tourner
+        Dans Le Vide\"\n15,\"Vendredi sur Mer\",\"\xC9coute Ch\xE9rie\"\n16,\"Stromae\",\"Formidable\"\n17,\"Jo\xE9
+        Dw\xE8t Fil\xE9\",\"Rihanna\"\n18,\"Slimane\",\"Premi\xE8re fois\"\n19,\"Stromae\",\"Papaoutai\"\n20,\"Sylvie
+        Vartan\",\"La Maritza\"\n21,\"Mattyeux & Princess Chelsea\",\"Sometimes\"\n22,\"Vianney\",\"D'or
+        et d'\xE9tain\"\n23,\"Eddy de Pretto\",\"sous influence\"\n24,\"Gis\xE8le\",\"Dimanche
+        Midi Pile\"\n25,\"Edith PIAF\",\"Non, Je Ne Regrette Rien\"\n26,\"Indila\",\"Love
+        Story (Version Orchestrale)\"\n27,\"Mattyeux\",\"VHS\"\n28,\"Oria\",\"Bella
+        Vita\"\n29,\"J\xE9r\xE9my Frerot\",\"Frerot\"\n30,\"Charles Aznavour\",\"La
+        boh\xE8me\"\n31,\"Barbara Pravi\",\"Voil\xE0\"\n32,\"France Gall\",\"Ella,
+        Elle L'A\"\n33,\"Zaho de Sagazan\",\"Je r\xEAve (Orchestral)\"\n34,\"Feu!
+        Chatterton\",\"Ce qu\u2019on devient\"\n35,\"Pierre de Maere\",\"Je pense
+        \xE0 vous\"\n36,\"Charles Aznavour\",\"Hier encore\"\n37,\"Feu! Chatterton\",\"Ce
+        qu\u2019on devient (La cl\xE9)\"\n38,\"Julien Clerc\",\"Les S\xE9par\xE9s\"\n39,\"Marc
+        Lavoine\",\"Occup\xE9 (feat. Patrick Fiori)\"\n40,\"Grand Corps Malade & Styleto\",\"Le
+        prochain r\xEAve\"\n41,\"Francis Cabrel\",\"Je t'aimais, je t'aime, je t'aimerai\"\n42,\"Michel
+        Fugain & Le Big Bazar\",\"Une belle histoire\"\n43,\"Jacques Brel\",\"La chanson
+        des vieux amants\"\n44,\"Vernis Rouge\",\"Bande organis\xE9e\"\n45,\"Marine\",\"Tricheur\"\n46,\"Videoclub\",\"En
+        nuit\"\n47,\"Fran\xE7oise Hardy\",\"Le temps de l'amour\"\n48,\"Edith PIAF\",\"La
+        Vie En Rose\"\n49,\"Ronisia\",\"Solide\"\n50,\"Myl\xE8ne Farmer\",\"Des lols
+        et des quoi\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

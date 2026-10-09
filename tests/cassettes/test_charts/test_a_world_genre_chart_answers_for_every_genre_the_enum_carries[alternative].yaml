@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/alternative/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Temper
+        City\",\"Self Aware\"\n2,\"Tame Impala\",\"Loser\"\n3,\"Fontaines D.C.\",\"Starburster\"\n4,\"PVT\",\"Kangaroo\"\n5,\"Kingfishr\",\"Oh
+        Love\"\n6,\"Empire Of The Sun\",\"We Are The People\"\n7,\"Tame Impala\",\"Dracula\"\n8,\"Coldplay\",\"Hymn
+        for the Weekend\"\n9,\"Lord Huron\",\"The Night We Met\"\n10,\"Lana Del Rey\",\"Cinnamon
+        Girl\"\n11,\"Tame Impala\",\"Dracula (with JENNIE)\"\n12,\"M83\",\"Outro\"\n13,\"sombr\",\"back
+        to friends\"\n14,\"Alyssa Grace\",\"bloodstream\"\n15,\"DJ NARODNII\",\"\u0422\u044B
+        \u043C\u043E\u044F...\"\n16,\"Hoobastank\",\"The Reason\"\n17,\"Lola Young\",\"Messy\"\n18,\"Tove
+        Lo\",\"Talking Body\"\n19,\"Gigi Perez\",\"Sailor Song\"\n20,\"Billie Eilish\",\"BIRDS
+        OF A FEATHER\"\n21,\"Plain White T's\",\"Hey There Delilah\"\n22,\"Beach House\",\"Space
+        Song\"\n23,\"R.E.M.\",\"Losing My Religion\"\n24,\"The Irrepressibles\",\"In
+        This Shirt\"\n25,\"Yeah Yeah Yeahs\",\"Heads Will Roll (A-Trak Remix)\"\n26,\"Billie
+        Eilish\",\"WILDFLOWER\"\n27,\"Noah Kahan\",\"Orbiter\"\n28,\"Tame Impala\",\"Let
+        It Happen\"\n29,\"Kai Angel\",\"andy warhol\"\n30,\"Lana Del Rey\",\"Young
+        And Beautiful\"\n31,\"Malcolm Todd\",\"Earrings\"\n32,\"Arctic Monkeys\",\"Do
+        I Wanna Know?\"\n33,\"Fontaines D.C.\",\"Marianne\"\n34,\"Lewis Capaldi\",\"Someone
+        You Loved\"\n35,\"Bob Dominator\",\"In My Soul\"\n36,\"Radiohead\",\"Weird
+        Fishes / Arpeggi\"\n37,\"Cigarettes After Sex\",\"Apocalypse\"\n38,\"The New
+        Basement Tapes\",\"When I Get My Hands On You\"\n39,\"twenty one pilots\",\"Stressed
+        Out\"\n40,\"WILLOW\",\"Wait a Minute!\"\n41,\"The Mar\xEDas\",\"No One Noticed\"\n42,\"Phoebe
+        Bridgers\",\"On Video\"\n43,\"Pixies\",\"Where Is My Mind?\"\n44,\"Sam Fender
+        & Olivia Dean\",\"Rein Me In\"\n45,\"Snow Patrol\",\"Chasing Cars\"\n46,\"Paris
+        Paloma\",\"LABOUR (the cacophony)\"\n47,\"Lorde\",\"Team\"\n48,\"Empire Of
+        The Sun\",\"Walking On A Dream\"\n49,\"The Neighbourhood\",\"Reflections\"\n50,\"New
+        West\",\"Those Eyes\"\n51,\"Malcolm Todd\",\"Obsessica\"\n52,\"Billie Eilish
+        & Khalid\",\"lovely\"\n53,\"LINKIN PARK\",\"In the End\"\n54,\"KALEO\",\"Way
+        Down We Go\"\n55,\"Fun.\",\"We Are Young (feat. Janelle Mon\xE1e)\"\n56,\"Glass
+        Animals\",\"Heat Waves\"\n57,\"LP\",\"Lost on You\"\n58,\"Vance Joy\",\"Riptide\"\n59,\"Radiohead\",\"Let
+        Down\"\n60,\"b\xF4a\",\"Duvet (Acoustic)\"\n61,\"Tove Lo\",\"Habits (Stay
+        High)\"\n62,\"Tom Odell\",\"When I Close My Eyes\"\n63,\"Imagine Dragons\",\"Demons\"\n64,\"Na\xEFka\",\"ONE
+        TRACK MIND\"\n65,\"Capital Cities\",\"Safe and Sound\"\n66,\"Coldplay\",\"Yellow\"\n67,\"Arctic
+        Monkeys\",\"I Wanna Be Yours\"\n68,\"Lana Del Rey\",\"Summertime Sadness\"\n69,\"EMF
+        Reader, dollvirus, Porcelain & :\u0425\",\"Meet Me in The Pale Moonlight\"\n70,\"Imagine
+        Dragons\",\"Believer\"\n71,\"Green Day\",\"Wake Me Up When September Ends\"\n72,\"Memo
+        Boy & Chakra Efendi\",\"Insomniac\"\n73,\"The White Stripes\",\"Seven Nation
+        Army\"\n74,\"Iman\",\"Duvet\"\n75,\"Billie Eilish\",\"when the party's over\"\n76,\"Coldplay\",\"Adventure
+        of a Lifetime\"\n77,\"Taylor Swift\",\"cardigan\"\n78,\"Tones And I\",\"Dance
+        Monkey\"\n79,\"Florence + the Machine\",\"Dog Days Are Over\"\n80,\"Muse\",\"Supermassive
+        Black Hole\"\n81,\"Soap&Skin\",\"Me and the Devil\"\n82,\"New Constellations\",\"Hot
+        Blooded\"\n83,\"Radiohead\",\"Everything In Its Right Place\"\n84,\"Kings
+        of Leon\",\"Sex On Fire\"\n85,\"Cult Member & Mia Martina\",\"U Weren't Here
+        I Really Miss You\"\n86,\"Coldplay\",\"Fix You\"\n87,\"Green Day\",\"Boulevard
+        of Broken Dreams\"\n88,\"She & Him\",\"I Thought I Saw Your Face Today\"\n89,\"Halsey\",\"Without
+        Me\"\n90,\"chrmbchrmb\",\"matrix (bl studio loop)\"\n91,\"Cocteau Twins\",\"Cico
+        Buff\"\n92,\"Suki Waterhouse\",\"Good Looking\"\n93,\"Red Hot Chili Peppers\",\"Under
+        the Bridge\"\n94,\"Cigarettes After Sex\",\"Cry\"\n95,\"Blood Orange\",\"Champagne
+        Coast (feat. Blood Orange)\"\n96,\"Patrick Watson\",\"Je Te Laisserai Des
+        Mots\"\n97,\"Wolf Parade\",\"I'll Believe In Anything\"\n98,\"The Mar\xEDas\",\"Back
+        To Me\"\n99,\"U2\",\"Silencio\"\n100,\"Radiohead\",\"Exit Music (For a Film)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

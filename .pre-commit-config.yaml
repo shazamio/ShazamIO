@@ -31,11 +31,6 @@ repos:
     hooks:
       - id: actionlint
 
-  # `just test` is deliberately not a hook: the suite recognizes real audio
-  #  against the live Shazam API (`tests/test_recognize.py`), so with DNS blocked
-  #  it fails with `ClientConnectorDNSError: Cannot connect to host
-  #  amp.shazam.com:443` and committing offline becomes impossible. The workflows
-  #  run it instead.
   - repo: local
     hooks:
       - id: format
@@ -60,4 +55,14 @@ repos:
         args: [check-lock]
         language: system
         files: ^(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+
+      # Offline: the network tests replay `tests/cassettes/`, so committing
+      #  needs no connection.
+      - id: test
+        name: Test
+        entry: just
+        args: [test]
+        language: system
+        files: ^(shazamio/|tests/|examples/data/|pyproject\.toml$|uv\.lock$)
         pass_filenames: false

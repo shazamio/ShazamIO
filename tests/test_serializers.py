@@ -182,6 +182,7 @@ async def _redirect_target(session: ClientSession, *, url: str) -> str:
 #  included, so a probe without them cannot tell a live page from a missing one.
 #  It is gated on the address too, so the dead key is the probe for whether the
 #  route is served here at all, and not only the control for the live half.
+@pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_the_built_url_resolves_and_a_dead_key_does_not(shazam: Shazam) -> None:
     track = Serialize.track(await shazam.track_about(track_id=_LIVE_TRACK_ID))

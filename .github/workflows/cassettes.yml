@@ -1,0 +1,32 @@
+name: cassettes
+
+# The suite replays recorded answers, so it stays green whatever Shazam changes.
+#  This re-records every cassette against the real services once a week and fails
+#  when a test no longer passes on what they answer today. Nothing is committed:
+#  a failure is the signal to re-record locally and fix the library.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rerecord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # One interpreter is enough: what Shazam answers does not depend on it.
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: just install
+
+      - name: Re-record against the real services
+        run: just test-rerecord

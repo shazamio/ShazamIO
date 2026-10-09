@@ -21,8 +21,48 @@ That is what the workflows gate on. `just format` applies what the linter can
 fix by itself.
 
 Committing runs some of the same recipes as git hooks; `.pre-commit-config.yaml`
-lists which, and says why the suite is not among them. Every pull request runs
-the suite instead, on each supported interpreter.
+lists which. Every pull request runs the suite on each supported interpreter.
+
+## Tests that call Shazam
+
+`just test` never reaches the network. A test that calls Shazam or Apple is
+marked `@pytest.mark.vcr` and replays the answers recorded for it, one cassette
+per test under `tests/cassettes/<module>/<test>.yaml`. Any other test that
+tries to connect fails with `RuntimeError: Network is disabled`; only
+`127.0.0.1` is allowed, for the local test server.
+
+Adding a test that calls a real service:
+
+1. Mark it `@pytest.mark.vcr`.
+2. Run `just test-update`. It records the cassettes that are missing and leaves
+   the existing ones alone; pass a path or `-k` to narrow it down.
+3. Run `just test` offline, then commit the cassette with the test.
+
+`just test-rerecord` replaces every cassette with what the services answer
+today. Use it when an answer changed on purpose, then review the diff.
+
+Assert on the shape of an answer, not on values Shazam is free to change: a
+track key is digits, a chart has entries. A re-recorded cassette then keeps
+passing as long as the library still parses what comes back.
+
+What a cassette keeps is decided in `tests/conftest.py`, and every rule there
+says why:
+
+- Request headers are dropped, so nothing a request carries is committed.
+- Response headers are kept only where the library reads them
+  (`Content-Type`, `Location`). The rest are CDN details that change on every
+  recording, and some name the edge nearest to whoever recorded.
+- HTML bodies are emptied; the library reads only their status and headers.
+- `429` responses are left out, so replay does not sleep through retries.
+- The recognize URL carries two random uuids, so requests match with them
+  masked.
+
+Check a new cassette for anything personal before committing it.
+
+The `cassettes` workflow runs `just test-rerecord` every Monday and commits
+nothing. Green means the library still parses what the services answer today.
+Red means Shazam changed something: re-record locally, fix the library, and
+commit both.
 
 ## When a method returns nothing
 

@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/electronic/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Kimo
+        Sounds\",\"Rise Slow\"\n2,\"LONOWN & riserayss\",\"worry (Instrumental Slowed)\"\n3,\"Zericxxn\",\"Raya
+        (Slowed)\"\n4,\"Ark Patrol\",\"Let Go (feat. Veronika Redd)\"\n5,\"Kiesza\",\"Hideaway\"\n6,\"Santigold\",\"Disparate
+        Youth\"\n7,\"The Chemical Brothers\",\"Go\"\n8,\"David Guetta\",\"Memories
+        (feat. Kid Cudi)\"\n9,\"Chromeo\",\"Fancy Footwork\"\n10,\"Lykke Li\",\"I
+        Follow Rivers (The Magician Remix)\"\n11,\"David Guetta\",\"Titanium (feat.
+        Sia)\"\n12,\"LONOWN & Asenssia\",\"addiction (Slowed)\"\n13,\"tienanh109,
+        HDN & hailong140\",\"X-COOL! (Instrumental - Slowed)\"\n14,\"David Guetta\",\"Sexy
+        Bitch (feat. Akon)\"\n15,\"h6itam, n7san7os & Mc Menor Do Alvorada\",\"MONTAGEM
+        ALQUIMIA\"\n16,\"The Cinematic Orchestra\",\"To Build a Home (feat. Patrick
+        Watson)\"\n17,\"p3b3\",\"The Scooby Snacks\"\n18,\"When In Rome\",\"The Promise\"\n19,\"LONOWN
+        & Asenssia\",\"addiction\"\n20,\"Fred again.., Skepta & PlaqueBoyMax\",\"Victory
+        Lap\"\n21,\"Disclosure\",\"You & Me (feat. Eliza Doolittle) [Flume Remix]\"\n22,\"The
+        Prodigy\",\"Smack My Bitch Up\"\n23,\"Egzod, Maestro Chives & Neoni\",\"Royalty\"\n24,\"DJ
+        Samir, MXXNAVRA & SIXTINAGER\",\"SEM DEMORA (Super Slowed)\"\n25,\"Elderbrook
+        & Bob Moses\",\"Inner Light\"\n26,\"DJ Snake & AlunaGeorge\",\"You Know You
+        Like It\"\n27,\"Vanco & Sharon Umola Amana\",\"Adullam\"\n28,\"Mr Flintstone
+        & Khantrast\",\"She Bugging (Whatchu Gonna Do)\"\n29,\"Daft Punk\",\"One More
+        Time\"\n30,\"Avenxir & SUNJI\",\"MONTAGEM GUERREIRO (Slowed)\"\n31,\"Flume\",\"Never
+        Be Like You (feat. Kai)\"\n32,\"Kavinsky\",\"Nightcall\"\n33,\"Kejoo Beats\",\"Heware
+        (feat. Dil\u015Fah G\xFCc\xFCm & Roni 21)\"\n34,\"dj Samir, Zericxxn & Nulteex\",\"FUNK
+        MANDALA (SUPER SLOWED)\"\n35,\"tienanh109, HDN & MC K3\",\"X-COOL! (Ultra
+        Slowed)\"\n36,\"KMFDM\",\"Megalomaniac\"\n37,\"Disclosure & Sam Smith\",\"Latch\"\n38,\"Alessia
+        Cara\",\"Here (Lucian Remix)\"\n39,\"LCD Soundsystem\",\"oh baby\"\n40,\"Hanem
+        Mary\",\"Call me At Home\"\n41,\"Seekae\",\"Test & Recognise (Flume Re-work)\"\n42,\"St
+        Germain\",\"Rose Rouge\"\n43,\"Fixupboy\",\"tesla (slowed electro mix)\"\n44,\"VXLTAGE\",\"Undress
+        Rehearsal (Hardtekk - Extreme Slowed)\"\n45,\"Moby\",\"When It's Cold I'd
+        Like to Die (feat. Mimi Goese)\"\n46,\"DJ Javi26 & SASORIIXPP\",\"BLUFF (Super
+        Slowed)\"\n47,\"Moby\",\"Porcelain\"\n48,\"Rushex, Avenxir & Montagem\",\"MONTAGEM
+        GLORIA (Ultra Slowed)\"\n49,\"1HXSX & wnorg17\",\"Revenge (Super Slowed 8D)\"\n50,\"a1x\",\"all
+        i need (sped up)\"\n51,\"Moby\",\"Extreme Ways\"\n52,\"DJ Shadow\",\"Six Days\"\n53,\"Grimes\",\"Oblivion\"\n54,\"Duke
+        Dumont\",\"Ocean Drive\"\n55,\"Josh Fawaz\",\"Like a Prayer\"\n56,\"Disclosure\",\"You
+        & Me (feat. Eliza Doolittle) [Rivo Remix]\"\n57,\"Bountyhunter\",\"Woops\"\n58,\"Young
+        Madz\",\"Super Funk\"\n59,\"Hippie Sabotage\",\"Devil Eyes\"\n60,\"Remix Monkey
+        Beats\",\"Carry Me Away\"\n61,\"Blue Foundation\",\"Eyes On Fire\"\n62,\"Jungle\",\"Back
+        On 74\"\n63,\"Digital Department\",\"Disconnection (Chillout Mix)\"\n64,\"Medasin\",\"Magic\"\n65,\"Serhat
+        Durmus\",\"Hislerim (feat. Zerrin Temiz)\"\n66,\"Leat'eq\",\"Tokyo\"\n67,\"David
+        Guetta\",\"Where Them Girls At (feat. Nicki Minaj & Flo Rida)\"\n68,\"Bicep\",\"Glue\"\n69,\"DJ.ILHAM\",\"Big
+        Boom\"\n70,\"Lewis OfMan & Alicia te quiero\",\"Siesta Freestyle\"\n71,\"Art
+        of Noise\",\"Moments In Love\"\n72,\"DJ Samir, MXXNAVRA & SIXTINAGER\",\"SEM
+        DEMORA (Ultra Slowed)\"\n73,\"Moby\",\"Flower\"\n74,\"dj Samir, Nulteex, John
+        Bis.T & RXDXVIL\",\"MONTAGEM ELDER (ULTRA SLOWED)\"\n75,\"merunes\",\"MONTAGEM
+        TENTA (Ultra Slowed)\"\n76,\"Grimes\",\"Genesis\"\n77,\"Arca\",\"KLK (feat.
+        ROSAL\xCDA)\"\n78,\"Flo Rida\",\"Good Feeling\"\n79,\"KREZUS & Surreal_dvd\",\"Skins
+        (Ultra Slowed + Reverb)\"\n80,\"DJ HARDWICK\",\"7 MANN\"\n81,\"Home\",\"Resonance\"\n82,\"HAVEN.
+        & Kaitlin Aragon\",\"I Run\"\n83,\"MOONLGHT\",\"Free Bird\"\n84,\"Gravagerz\",\"Self
+        Aware\"\n85,\"Major Lazer\",\"Particula (feat. DJ Maphorisa, Nasty C, Ice
+        Prince, Patoranking & Jidenna)\"\n86,\"HEALER\",\"Ultio\"\n87,\"QMIIR\",\"TIKI
+        TIKI (Slowed)\"\n88,\"Adriatique\",\"Palm Of Your Hands\"\n89,\"Flo Rida\",\"Whistle\"\n90,\"The
+        Chemical Brothers\",\"Galvanize (feat. Q-Tip)\"\n91,\"Bipolar Sunshine, Nariman
+        & Hardt Antoine\",\"Stay\"\n92,\"M83 & Felsmann + Tiley\",\"Solitude (Felsmann
+        + Tiley Reinterpretation)\"\n93,\"Riff Cohen\",\"Bye Dubai (\u0628\u0627\u064A
+        \u062F\u064F\u0628\u064A\u0651) [Dalit Rechester Remix]\"\n94,\"Gorillaz\",\"DARE
+        (Radio Edit)\"\n95,\"yatashi & LLOYDS PH\",\"FUNK POWER (Ultra Slowed)\"\n96,\"NUEKI
+        & Mc Menor Do Alvorada\",\"MONTAGEM ROYAL (SLOWED)\"\n97,\"Shluzov & NeShluzov\",\"\u0415\u0451
+        \u043F\u0430\u0440\u0435\u043D\u044C (Hardstyle Remix)\"\n98,\"Pogo\",\"Forget\"\n99,\"SEKIMANE,
+        shonci & Mc Gw\",\"TAKA LA DENTRO\"\n100,\"Everything Is Recorded\",\"Close
+        But Not Quite (feat. Sampha)\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

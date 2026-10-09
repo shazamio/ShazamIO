@@ -1,0 +1,46 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://www.shazam.com/services/charts/csv/genre/world/house/
+  response:
+    body:
+      string: "\uFEFF\n\"Thursday, 8 October 2026 [performance over the past 7 days]\"\nRank,Artist,Title\n1,\"Imael
+        Angel\",\"BAD TIMES\"\n2,\"Imael Angel\",\"BAD TIMES (Long Version)\"\n3,\"Ankara
+        Echoes\",\"Beni Al (Ta Ki Seni G\xF6rene Kadar) [Afro House Remix]\"\n4,\"Beekay
+        Monalayzzar, METT4LIQ-151, UDUBE & Simah Nation\",\"Ubaba wam\"\n5,\"Beekay
+        Monalayzzar, REEL ZAYO & Jayy D Musiq\",\"Khanyisa (feat. Mntomnandi)\"\n6,\"keelse\",\"\u0422\u0430\u043D\u0446\u0443\u0435\u043C\"\n7,\"Bad
+        Bunny\",\"DtMF\"\n8,\"SK.music\",\"Inside My Soul\"\n9,\"\u041A\u0430\u0442\u0440\u0438\u043D
+        \u0428\u0442\u043E\u043B\u044C\",\"\u041F\u044C\u044F\u043D\u044B\u0439\"\n10,\"Kimo
+        Sounds\",\"Make It Spectacular\"\n11,\"Jose Yanque music\",\"Bada Bing bada
+        boom\"\n12,\"Neptunica\",\"What If?\"\n13,\"Naarly & Major League DJz\",\"WASTED\"\n14,\"HUGEL,
+        French Montana, David Guetta & Aidan Martin\",\"Shine\"\n15,\"ALONR\",\"Back
+        to Yours\"\n16,\"HUGEL, LaBritney & Mili\",\"Stay Sexy\"\n17,\"Cokito Deep\",\"CRECIENDO
+        DIARIAMENTE (Afro House)\"\n18,\"Nu\",\"Who Loves the Sun feat. Jo.Ke\"\n19,\"Luchi
+        dj\",\"Ese Beso (Fruta Fresca)\"\n20,\"Theuzzo\",\"MEGA I FOLLOW\"\n21,\"Chillout
+        Musick\",\"Moonara\"\n22,\"Andronicus & GEE LEE\",\"Make U Whole (GEEMIX Extended)\"\n23,\"Andronicus\",\"Make
+        U Whole\"\n24,\"Egyptian Pharaoh\",\"Drums of Pharaoh\"\n25,\"Secret Society\",\"Neoperreo
+        (feat. ALIC3E)\"\n26,\"BabyUkick, DRJOTA ON THE BEATS & DreamBig Records\",\"THUWAYZ\"\n27,\"Zmeex\",\"Shadow\"\n28,\"Bad
+        Bunny & Los Pleneros de la Cresta\",\"CAF\xE9 CON RON\"\n29,\"Beave\",\"1997
+        (Radio Edit)\"\n30,\"Peter Axon\",\"Glass and Dust\"\n31,\"Anturage & Alexey
+        Union\",\"Shifting Gears (Grotesque Remix)\"\n32,\"MIZMO\",\"Hello (The Sun
+        Is Up Where Are You)\"\n33,\"oskar med k & Haley Joelle\",\"i think i'm addicted\"\n34,\"oskar
+        med k\",\"Make Me Feel\"\n35,\"George Ellinas\",\"Rainmaker (Extended Club
+        Mix)\"\n36,\"L.P. Rhythm\",\"Versatile\"\n37,\"TRAP MAFIA HOUSE, Nightwhisper
+        & ZeeDND\",\"DISCIPLINE\"\n38,\"Cheb Rezki\",\"Ana Al Ghaltane (BENYEG Remix)\"\n39,\"ItsArius,
+        Lynnic & Vancouver Sleep Clinic\",\"Lapse\"\n40,\"Ziger\",\"Feel the Bass\"\n41,\"Imael
+        Angel\",\"I'm Alive\"\n42,\"L.P. Rhythm\",\"How Ya Feelin\u2019\"\n43,\"Digital
+        Department\",\"Disconnection\"\n44,\"St-Amour, Thomas Asselman & Fred Paci\",\"night
+        lights. (trumpet rework)\"\n45,\"ZuluMafia & Coco Moloi\",\"Mother Earth (feat.
+        Kabza de Small)\"\n46,\"Tokischa, Anuel AA & \xD1engo Flow\",\"Delincuente\"\n47,\"Dream
+        Relic\",\"Time is a Limited Allowance\"\n48,\"Gaba Cannal & Mam K\",\"Opening
+        Prayer\"\n49,\"Metroplane\",\"Be Where I Am (feat. Daniel Wilson)\"\n50,\"all
+        things break\",\"dots\""
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1
