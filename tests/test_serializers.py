@@ -103,6 +103,18 @@ def test_a_video_section_wins_over_the_rebuilt_link() -> None:
     assert track.youtube_link == "https://youtu.be/x"
 
 
+def test_a_video_without_actions_has_no_uri() -> None:
+    video = Serialize.youtube(
+        {
+            "caption": "c",
+            "image": {"dimensions": {"width": 1, "height": 1}, "url": "https://image.example"},
+            "actions": [],
+        },
+    )
+
+    assert video.uri is None
+
+
 # The shape the `iphone` profile returns: one action per provider, so a mapping
 #  onto `actions[1]` reads nothing and leaves the Spotify fields `None`.
 _TRACK_WITH_PROVIDERS: Final[dict[str, Any]] = {
