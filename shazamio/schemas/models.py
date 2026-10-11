@@ -1,8 +1,10 @@
 from typing import Annotated, Any, Final, Literal, TypeAlias
-from urllib.parse import urlencode, urlparse, urlunparse
+from urllib.parse import quote_plus, urlencode, urlparse, urlunparse
 from uuid import UUID
 
 from pydantic import AliasPath, BaseModel, Field
+
+from shazamio.misc import ShazamUrl
 
 _SPOTIFY: Final[str] = "SPOTIFY"
 _SPOTIFY_SEARCH: Final[str] = "spotify:search:"
@@ -92,6 +94,26 @@ class HubProvider(BaseModel):
     caption: str
     type: str
     actions: list[HubProviderAction]
+
+
+class YoutubeDimensions(BaseModel):
+    width: int
+    height: int
+
+
+class YoutubeImage(BaseModel):
+    dimensions: YoutubeDimensions
+    url: str
+
+
+class YoutubeData(BaseModel):
+    caption: str
+    image: YoutubeImage
+    actions: list[HubProviderAction]
+    uri: str | None = None
+
+    def model_post_init(self, _context: Any, /) -> None:
+        self.uri = self.actions[0].uri if self.actions else None
 
 
 class RelatedSection(BaseModel):
@@ -187,12 +209,16 @@ class TrackInfo(BaseModel):
 
         return None
 
-    def __youtube_link(self) -> str | None:
+    def __youtube_link(self) -> str:
         for section in self.sections:
             if type(section) is VideoSection:
                 return section.youtube_url
 
-        return None
+        # Shazam no longer sends the section: see `ShazamUrl.YOUTUBE_VIDEO`.
+        return ShazamUrl.YOUTUBE_VIDEO.format(
+            track_id=self.key,
+            query=quote_plus(f'{self.subtitle} "{self.title}"'),
+        )
 
 
 class ResponseTrack(BaseModel):
