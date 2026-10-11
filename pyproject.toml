@@ -62,7 +62,7 @@ tests = [
     #  `ScopeMismatch` on anything below 0.23.
     "pytest-asyncio>=0.23.3",
     # The releases the cassettes were recorded with; nothing older was measured.
-    "pytest-recording>=0.13.4",
+    "pytest-recording>=0.14.0",
     "vcrpy>=8.3.0",
 ]
 lint = [
