@@ -22,6 +22,13 @@ _TRACK_WITHOUT_SPOTIFY_PROVIDER: Final[dict[str, Any]] = {
 }
 
 
+# The URL Shazam's own `VIDEO` section carried for this track.
+_ARRIVAL_TO_EARTH_VIDEO: Final[str] = (
+    "https://cdn.shazam.com/video/v3/-/GB/iphone/47440537/youtube"
+    "/video?q=Steve+Jablonsky+%22Arrival+To+Earth%22"
+)
+
+
 # What a recognition that matched nothing answers. Measured live on
 #  `examples/data/dora.ogg`, whose whole payload is these three keys: `retryms`
 #  is Shazam saying how long to record before asking again, and it is the only
@@ -48,7 +55,7 @@ def test_track_missing_paths_fall_back_to_defaults() -> None:
         "ringtone": "ringtone://example",
         "providers": [],
         "spotify_uri": None,
-        "youtube_link": None,
+        "youtube_link": _ARRIVAL_TO_EARTH_VIDEO,
         "sections": [],
     }
 
@@ -81,6 +88,31 @@ def test_sections_resolve_by_type_discriminator() -> None:
 
     section_types = [type(section).__name__ for section in track.sections]
     assert section_types == ["SongSection", "VideoSection", "ArtistSection", "RelatedSection"]
+
+
+def test_a_video_section_wins_over_the_rebuilt_link() -> None:
+    track = Serialize.track(
+        {
+            "key": "1",
+            "title": "t",
+            "subtitle": "s",
+            "sections": [{"type": "VIDEO", "tabname": "Video", "youtubeurl": "https://youtu.be/x"}],
+        },
+    )
+
+    assert track.youtube_link == "https://youtu.be/x"
+
+
+def test_a_video_without_actions_has_no_uri() -> None:
+    video = Serialize.youtube(
+        {
+            "caption": "c",
+            "image": {"dimensions": {"width": 1, "height": 1}, "url": "https://image.example"},
+            "actions": [],
+        },
+    )
+
+    assert video.uri is None
 
 
 # The shape the `iphone` profile returns: one action per provider, so a mapping
@@ -156,7 +188,7 @@ def test_the_spotify_fields_read_the_spotify_provider() -> None:
             },
         ],
         "spotify_uri": "spotify:search:Arrival%20To%20Earth%20Steve%20Jablonsky",
-        "youtube_link": None,
+        "youtube_link": _ARRIVAL_TO_EARTH_VIDEO,
         "sections": [],
     }
 

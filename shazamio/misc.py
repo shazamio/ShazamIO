@@ -22,6 +22,14 @@ class ShazamUrl:
         "https://amp.shazam.com/discovery/v5/{language}/{endpoint_country}/iphone/-/track"
         "/{track_id}?shazamapiversion=v3&video=v3"
     )
+    # The URL the retired `VIDEO` track section used to carry, `GB` included.
+    #  `query` alone picks the video, any `track_id` answers the same one, and
+    #  without it the service answers `400`. The country picks among regional
+    #  uploads, so `RU` can answer a different video.
+    #  `curl -s -w '%{http_code}' 'https://cdn.shazam.com/video/v3/-/GB/iphone/1/youtube/video'`
+    YOUTUBE_VIDEO: Final[str] = (
+        "https://cdn.shazam.com/video/v3/-/GB/iphone/{track_id}/youtube/video?q={query}"
+    )
     LOCATIONS: Final[str] = "https://www.shazam.com/services/charts/locations"
     # `country` comes first and `locale` second: the other order answers
     #  `200 {"error":{"msg":"Could not fetch ids"}}`, which reads like a dead

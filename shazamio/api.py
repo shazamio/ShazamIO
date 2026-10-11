@@ -414,6 +414,25 @@ class Shazam(Request):
             self.track_about(int(track_key), proxy=proxy) for track_key in track_keys
         )
 
+    async def get_youtube_data(
+        self,
+        link: str,
+        *,
+        proxy: str | None = None,
+    ) -> dict[str, Any]:
+        """Get the YouTube video Shazam shows for a track.
+
+        :param link: A track's `youtube_link`
+        :param proxy: Proxy server
+        :return: dict for `Serialize.youtube`
+        """
+        return await self.http_client.request(
+            "GET",
+            link,
+            headers=self.headers(),
+            proxy=proxy,
+        )
+
     async def recognize(
         self,
         data: str | pathlib.Path | bytes | bytearray,

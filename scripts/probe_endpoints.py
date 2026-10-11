@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Final
-from urllib.parse import urlencode
+from urllib.parse import quote_plus, urlencode
 
 import aiohttp
 from shazamio_core import Recognizer
@@ -39,6 +39,7 @@ _COUNTRY_SLUG: Final[str] = "russia"
 _CITY_SLUG: Final[str] = "moscow"
 _GENRE_SLUG: Final[str] = "pop"
 _SEARCH_TERM: Final[str] = "adele"
+_VIDEO_QUERY: Final[str] = 'Gloria Gaynor "I Will Survive"'
 
 
 class Verdict(enum.Enum):
@@ -91,6 +92,14 @@ def probes() -> list[Probe]:
                 language=_LANGUAGE,
                 endpoint_country=_ENDPOINT_COUNTRY,
                 track_id=_TRACK_ID,
+            ),
+            content_type=_JSON_CONTENT_TYPE,
+        ),
+        Probe(
+            url_name="YOUTUBE_VIDEO",
+            url=ShazamUrl.YOUTUBE_VIDEO.format(
+                track_id=_TRACK_ID,
+                query=quote_plus(_VIDEO_QUERY),
             ),
             content_type=_JSON_CONTENT_TYPE,
         ),

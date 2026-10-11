@@ -77,6 +77,31 @@ Get track information<br>
 
 <details>
 <summary>
+<i>🎵📺 YouTube video of a track</i>
+</summary>
+
+The video Shazam shows for a track, looked up by its artist and title<br>
+
+  ```python3
+  import asyncio
+  from shazamio import Serialize, Shazam
+
+
+  async def main():
+      async with Shazam() as shazam:
+          out = await shazam.recognize("Gloria.ogg")
+          track = Serialize.full_track(out).track
+
+          youtube_data = await shazam.get_youtube_data(link=track.youtube_link)
+          print(Serialize.youtube(youtube_data).uri)  # https://youtu.be/6dYWe1c3OyU?autoplay=1
+
+
+  asyncio.run(main())
+  ```
+</details>
+
+<details>
+<summary>
 <i>🍎🔑 Apple Music ids to Shazam track keys</i>
 </summary>
 
