@@ -12,6 +12,9 @@ resolution-markers = [
 exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
+[options.exclude-newer-package]
+shazamio-core = false
+
 [[package]]
 name = "aiohappyeyeballs"
 version = "2.7.1"
@@ -1100,7 +1103,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.8.0" },
     { name = "aiohttp-retry", specifier = ">=2.3" },
     { name = "pydantic", specifier = ">=2.2.0" },
-    { name = "shazamio-core", specifier = "==1.2.0" },
+    { name = "shazamio-core", specifier = "==2.0.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1123,18 +1126,20 @@ tests = [
 
 [[package]]
 name = "shazamio-core"
-version = "1.2.0"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/53/1844e9131ac5c2df10fb6d89e7b8f119e602d9d41f0aeea848729ef05079/shazamio_core-1.2.0.tar.gz", hash = "sha256:fd006639c1f6c34817cbc190121627844693171bbccc4991ea93d6b6ed8247d1", size = 558810, upload-time = "2026-08-29T17:36:27.696Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/6a/32ee3fd095df7bb03419657b064d50e9053b95dc05cf04ca64dcdef5e27c/shazamio_core-2.0.0.tar.gz", hash = "sha256:9849276a3a4795683e29218cd8aac14acdcc8bae66df13304b8ce5d7b9077a12", size = 1517584, upload-time = "2026-10-11T15:00:14.434Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/c7/19f699dafde1df9d576fb81864abf1325edfffde4b877d61cb02a3cf2180/shazamio_core-1.2.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:9cbe578da9f596a696c130656b14a2efb44ef36c1ff7c92fe4d7d496307b8dc5", size = 1111565, upload-time = "2026-08-29T17:36:15.717Z" },
-    { url = "https://files.pythonhosted.org/packages/7c/74/13dff77ad26d7fa4ccba078d7190691e1c065ceb494cb544326e9e49d402/shazamio_core-1.2.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:672a82721a21796ed459ee1c304fd181cb6bed08f9b5e8288d7cf43e79f00266", size = 1098780, upload-time = "2026-08-29T17:36:17.594Z" },
-    { url = "https://files.pythonhosted.org/packages/fe/d0/034db9ea693904b114d27a574f79b72d70697c6b7b4acc3c4427fc42f31c/shazamio_core-1.2.0-cp310-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:163f5caad6daabf79fa1a946c953841988e1b9de20c7563544d2e6313253aeab", size = 1219738, upload-time = "2026-08-29T17:36:19.163Z" },
-    { url = "https://files.pythonhosted.org/packages/f9/f8/646972a9532a14e62ef5d916abc477240d003dc12cd3fae8fc6b01e7ae9e/shazamio_core-1.2.0-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:0e042ea17b7f6d667db01d92e590aaa2c97a539c7ebc94b6af8e878b825c487a", size = 1205362, upload-time = "2026-08-29T17:36:20.616Z" },
-    { url = "https://files.pythonhosted.org/packages/1a/5b/14e7e5f16bc3ce5750db576c030be11c38aebbf04e026413bb8308e97d19/shazamio_core-1.2.0-cp310-abi3-win32.whl", hash = "sha256:74c06aed49088a5ea989645e77608aba1ae66e38388839c4593b9017e3d33ac5", size = 972152, upload-time = "2026-08-29T17:36:22.14Z" },
-    { url = "https://files.pythonhosted.org/packages/c3/b8/9543ba81bcd1da003bf4f1f3aa7877bdd7e5a37ed0c4ff35796ca4eae655/shazamio_core-1.2.0-cp310-abi3-win_amd64.whl", hash = "sha256:d49ebc208df82c96e8e73630dfeb393129cb264543b1d9f3db4b54f3f3a11e3d", size = 979946, upload-time = "2026-08-29T17:36:23.684Z" },
-    { url = "https://files.pythonhosted.org/packages/16/eb/51f54a53072abafb13740611b322ce8991a291402fdd72186d6eb4bc072a/shazamio_core-1.2.0-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:1fdae97bddfd2df041edaa0910ef60b23022b5a938d6adc74ec221d71bc49372", size = 1215464, upload-time = "2026-08-29T17:36:24.973Z" },
-    { url = "https://files.pythonhosted.org/packages/b8/71/e6bbb41aebd268e98091f4e3c18ef7ed70ae7d84618b0e9033f25c585f8c/shazamio_core-1.2.0-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:437e2d8231a53d449dbf50de3873cdde3347b707306d00b980df52b4dcbb731a", size = 1202989, upload-time = "2026-08-29T17:36:26.38Z" },
+    { url = "https://files.pythonhosted.org/packages/59/67/f9256e37808e6ae61fa8f037bef97464ec4188f7be888527fb6e482d3177/shazamio_core-2.0.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:dd20b534563a12fc3f6e1f38fd91b2edc3941f583295c60f806fb0ff26ba55cb", size = 1759831, upload-time = "2026-10-11T15:00:00.942Z" },
+    { url = "https://files.pythonhosted.org/packages/92/34/9728e3df03d7eeedd049af88244a05a9c6fc96b726ca5fb270d226c1e034/shazamio_core-2.0.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:024a3d63cae76757c6d52bd9b25e6fc81a1cdbbf9cad53c2a8d7e5c3c913e93d", size = 1606083, upload-time = "2026-10-11T15:00:02.61Z" },
+    { url = "https://files.pythonhosted.org/packages/5a/f3/5f3474e9218d98bbb152aa1742de877e16dea404387a09e8bf211ec91c15/shazamio_core-2.0.0-cp310-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:b5fab1063d47bd13048aa316728e593ec2bb074a0ec2c05a56473556ddf9a962", size = 1687582, upload-time = "2026-10-11T15:00:04.133Z" },
+    { url = "https://files.pythonhosted.org/packages/13/a1/9b4fe5c0a7a03565b4dcc9a7659c7877786ab395010342ff89671693ed60/shazamio_core-2.0.0-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:66b4897a58c0c82b087acc7c8117f3ce8a30a89c8e17103f8ff35c45af11bb48", size = 1890604, upload-time = "2026-10-11T15:00:05.542Z" },
+    { url = "https://files.pythonhosted.org/packages/af/74/7ea1cbe7226f06cbd25f9f00c0e5b4b82705f8f6a542cf8a8eca08993321/shazamio_core-2.0.0-cp310-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:d622afea5231e692f1bf12ef5839791c46970222b792a617660e0505e3763fac", size = 1755430, upload-time = "2026-10-11T15:00:06.83Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/c6/e75651fd454eb8b62d69801134f52d224dc40a52faf406a66b9243655c9f/shazamio_core-2.0.0-cp310-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:da6f9780115718baa3d57ea59279237976e73fa60cd0857f0a83bab9e56cf8aa", size = 1966574, upload-time = "2026-10-11T15:00:08.193Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/dd/747e92783181bcf229f79243069466d8e3e6f4927d794aa55bdfc61d0309/shazamio_core-2.0.0-cp310-abi3-win32.whl", hash = "sha256:2ec2f5b1a00c5aac824c36a531e48f8df6bb684462c60414825eb9a06fbee9ee", size = 1489816, upload-time = "2026-10-11T15:00:09.494Z" },
+    { url = "https://files.pythonhosted.org/packages/68/f2/8549445ad5dd1523643f9e26bccfb83408466912889e946641b9b0bce7d9/shazamio_core-2.0.0-cp310-abi3-win_amd64.whl", hash = "sha256:bd1ace4ac7409465eb028e67160d09cf77d49de8f64b70b9aa408c0842dc9eb9", size = 1766719, upload-time = "2026-10-11T15:00:10.799Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/0d/ca3815a4f838bf76a24116113b7e3b2afca707b6aef41928bf7ed5584dbe/shazamio_core-2.0.0-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:05abcc0dcf09ab6a0c2ab98a5a1533bef1fd0fe990f8a5da6a29d3c2010f6adb", size = 1687550, upload-time = "2026-10-11T15:00:12.031Z" },
+    { url = "https://files.pythonhosted.org/packages/44/e5/312259213cce85c57a78423612d6c55c1b6756a5f1dda4df6d2aae65dcc6/shazamio_core-2.0.0-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:ee8e22b22d2e5a162cc5e5058521219865768dba819b371a235bf84899a38da6", size = 1888639, upload-time = "2026-10-11T15:00:13.222Z" },
 ]
 
 [[package]]

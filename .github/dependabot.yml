@@ -31,3 +31,6 @@ updates:
    # Canonical: `exclude-newer` in `pyproject.toml`, keep both in sync.
    cooldown:
      default-days: 7
+   # Canonical: the `shazamio-core` pin in `pyproject.toml`, bumped by hand.
+   ignore:
+     - dependency-name: "shazamio-core"

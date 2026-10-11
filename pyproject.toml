@@ -33,9 +33,9 @@ dependencies = [
     #  the artist union is silently ignored before 2.2.0, so the union parses in
     #  smart mode there.
     "pydantic>=2.2.0",
-    # The sibling crate is released in lockstep with this package; an exact pin
-    #  ships the one pair that was tested together.
-    "shazamio-core==1.2.0",
+    # The sibling crate is released in lockstep with this package and bumped by
+    #  hand; an exact pin ships the one pair that was tested together.
+    "shazamio-core==2.0.0",
 ]
 
 [project.urls]
@@ -76,6 +76,10 @@ lint = [
 #  `exclude-newer`): keep both in sync.
 [tool.uv]
 exclude-newer = "7 days"
+# The `shazamio-core` pin is exact, so the cooldown never picks a version of it:
+#  it can only refuse the one we chose.
+#  https://github.com/astral-sh/uv/blob/4ecd0eff2a81e3ffdcd7cfee10d08936e4747c17/crates/uv-settings/src/settings.rs#L1176-L1177
+exclude-newer-package = { shazamio-core = false }
 
 [build-system]
 # `uv_build` is pre-1.0, so a minor (`0.13`) is allowed to break the build; the
