@@ -2,7 +2,10 @@ name: Publish
 
 on:
   release:
-    types: [created]
+    # Not `created`: it never fires for a draft, so a release drafted in the UI
+    #  and published later would never reach PyPI.
+    #  https://github.com/github/docs/blob/be38ec5d78e24172587e61b3c6ff40ace1865c71/content/actions/reference/workflows-and-actions/events-that-trigger-workflows.md#release
+    types: [published]
 
 jobs:
   deploy:
