@@ -26,7 +26,7 @@ classifiers = [
 #  environment, so a cap needs a reason.
 dependencies = [
     # Oldest release with CPython 3.10 wheels; 3.7.4.post0 ships none at all.
-    "aiohttp>=3.8.0",
+    "aiohttp>=3.14.4",
     # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
     "aiohttp-retry>=2.3",
     # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
