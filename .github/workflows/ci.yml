@@ -1,0 +1,69 @@
+name: CI
+
+# No `paths-ignore`: it skips the whole workflow, and a required check from a
+#  run that never happened stays pending forever, so a documentation-only pull
+#  request could never merge. The slowest job, `test (3.15)`, takes up to two
+#  minutes.
+#  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # CI never edits the code: fixes are the author's to make locally, with
+  #  `just format`.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: "3.10"
+
+      - name: Check the formatting and lint
+        run: just lint
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and just
+        uses: ./.github/actions/setup-just
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: just install
+
+      - name: Run tests
+        run: just test
+
+  # The one check `master` is meant to require: every matrix entry is a check
+  #  of its own, so requiring them by name would break on the next interpreter
+  #  added.
+  gate:
+    name: CI
+    needs: [lint, test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # `if: always()` runs this job even when a dependency failed, so the step
+      #  fails it explicitly; otherwise the gate would report success. A skipped
+      #  job passes, as a skipped required check does.
+      #  https://github.com/github/docs/blob/ae648a1d328cb15fb173e80984aac748cf4b5af2/data/reusables/actions/workflows/skipped-job-status-checks-passing.md
+      - name: Fail if any job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
