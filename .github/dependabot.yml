@@ -12,7 +12,13 @@ updates:
      interval: weekly
 
  - package-ecosystem: "github-actions"
-   directory: "/"
+   # `/` reaches `.github/workflows` and a root `action.yml` only, which left
+   #  `setup-uv` in `setup-just` on `v10.0.1` while `build.yml` moved to
+   #  `v10.3.0`. Only `directories` takes a glob.
+   #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/reference/supply-chain-security/dependabot-options-reference.md#L303-L309
+   directories:
+     - "/"
+     - "/.github/actions/*"
    schedule:
      interval: weekly
    # Same 7 days as the `uv` entry below: Dependabot alone waits only 3.
