@@ -15,14 +15,27 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
-   # `codeql-action` refuses steps on mixed versions, so a bump of one sub-action
-   #  alone fails with `Loaded a configuration file for version '4.37.9', but
-   #  running version '4.38.2'`. One group moves all three together.
-   #  https://github.com/github/codeql-action/blob/2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2/src/config-utils.ts#L1428
+   # Same 7 days as the `uv` entry below: Dependabot alone waits only 3.
+   #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/reference/supply-chain-security/dependabot-options-reference.md#L196
+   cooldown:
+     default-days: 7
+   # One pull request a week for every minor and patch bump; a major gets a pull
+   #  request of its own, for a person to read. A dependency lands in the first
+   #  group it matches, so `codeql-action` stays above `actions`.
+   #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/reference/supply-chain-security/dependabot-options-reference.md#L326-L339
    groups:
+     # Every level: a bump of one sub-action alone fails with `Loaded a
+     #  configuration file for version '4.37.9', but running version '4.38.2'`.
+     #  https://github.com/github/codeql-action/blob/2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2/src/config-utils.ts#L1428
      codeql-action:
        patterns:
          - "github/codeql-action*"
+     actions:
+       patterns:
+         - "*"
+       update-types:
+         - minor
+         - patch
 
  - package-ecosystem: "uv"
    directory: "/"
@@ -34,3 +47,17 @@ updates:
    # Canonical: the `shazamio-core` pin in `pyproject.toml`, bumped by hand.
    ignore:
      - dependency-name: "shazamio-core"
+   # One pull request a week for every minor and patch bump, as for actions above.
+   groups:
+     uv:
+       patterns:
+         - "*"
+       # Every `uv_build` bump keeps a pull request of its own: Dependabot reads
+       #  `0.12` to `0.13` as a minor, and a new series needs the manual check
+       #  in `pyproject.toml`.
+       #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/reference/supply-chain-security/dependabot-options-reference.md#L115
+       exclude-patterns:
+         - "uv-build"
+       update-types:
+         - minor
+         - patch
