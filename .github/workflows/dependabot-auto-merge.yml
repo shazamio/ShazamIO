@@ -1,0 +1,74 @@
+name: Dependabot auto-merge
+
+# A minor or patch `uv` bump from Dependabot lands by itself once `CI` passes,
+#  see the step's conditions below for what stays manual. Auto-merge
+#  only queues the merge, and the `master` ruleset requiring the `CI` check is
+#  what holds it until then. Without that rule, or with "Allow auto-merge" off in
+#  the repository settings, the step fails and nothing merges.
+#  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/tutorials/secure-your-dependencies/automate-dependabot-with-actions.md#L153-L190
+on:
+  pull_request:
+    branches:
+      - "master"
+
+permissions: {}
+
+concurrency:
+  group: dependabot-auto-merge-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  auto-merge:
+    name: Queue the merge
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Runs triggered by Dependabot get a read-only token, and a `permissions` key
+    #  is what raises it.
+    #  https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions#changing-github_token-permissions
+    permissions:
+      contents: write # enable auto-merge
+      pull-requests: write # enable auto-merge
+    steps:
+      # `update-type` is the highest bump in the pull request, so one major inside
+      #  a group keeps the whole group for a person to read.
+      #  https://github.com/dependabot/fetch-metadata/blob/25dd0e34f4fe68f24cc83900b1fe3fe149efef98/README.md?plain=1#L66-L67
+      - name: Read what the pull request bumps
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      # `uv` bumps only. `CI` never builds the devcontainer, and most Actions
+      #  bumps edit `.github/workflows/`, which the mutation refuses to
+      #  `GITHUB_TOKEN`, since it can never hold the `workflows` permission.
+      #  https://github.com/kairos-io/packages/actions/runs/36784840467/job/110123662107
+      #
+      # A major can break what `CI` never runs: `build.yml` runs on a release
+      #  only. `uv-build` is skipped at any level, see `.github/dependabot.yml`.
+      #
+      # The mutation rather than `gh pr merge --auto`: on a pull request GitHub
+      #  reports as `CLEAN` or `UNSTABLE`, which is every one while no check is
+      #  required, `gh` merges at once instead of enabling auto-merge. The
+      #  mutation only ever enables auto-merge and fails on such a pull request,
+      #  so a missing setting fails the step instead of merging.
+      #  https://github.com/cli/cli/blob/ec5b512045db67e5a2a4ff4a1b02660b2fb24390/pkg/cmd/pr/merge/merge.go#L826-L833
+      #  https://github.com/peter-evans/enable-pull-request-automerge/issues/1118
+      #
+      # `MERGE`, not squash: Dependabot's commit message is already a
+      #  Conventional Commit, so it lands as is. A merge through `GITHUB_TOKEN`
+      #  starts no `push` run, so `codeql.yml` sees the bump only through its
+      #  pull request run and its weekly schedule.
+      #  https://github.com/github/docs/blob/ae648a1d328cb15fb173e80984aac748cf4b5af2/data/reusables/actions/actions-do-not-trigger-workflows.md
+      - name: Queue the merge until `CI` passes
+        if: >-
+          steps.metadata.outputs.package-ecosystem == 'uv'
+          && !contains(steps.metadata.outputs.dependency-names, 'uv-build')
+          && (steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          || steps.metadata.outputs.update-type == 'version-update:semver-patch')
+        run: gh api graphql -f query="$MUTATION" -f id="$PR_ID"
+        env:
+          MUTATION: >-
+            mutation($id: ID!) {
+            enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE})
+            { clientMutationId } }
+          PR_ID: ${{ github.event.pull_request.node_id }}
+          GH_TOKEN: ${{ github.token }}
