@@ -47,6 +47,12 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
+   # The floors in `pyproject.toml` are measured, not latest: the default
+   #  raised `pytest-recording` to `>=0.14.0` with nothing failing on `0.13.4`.
+   #  This moves only the lock while the floor still admits the new release.
+   #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/reference/supply-chain-security/dependabot-options-reference.md#L974-L992
+   #  https://github.com/dependabot/dependabot-core/blob/ecbee00961d6e88d1f9a1bd5b40965acb025fb2d/python/lib/dependabot/python/update_checker/requirements_updater.rb#L150-L159
+   versioning-strategy: increase-if-necessary
    # Canonical: `exclude-newer` in `pyproject.toml`, keep both in sync.
    cooldown:
      default-days: 7
