@@ -26,13 +26,13 @@ classifiers = [
 #  environment, so a cap needs a reason.
 dependencies = [
     # Oldest release with CPython 3.10 wheels; 3.7.4.post0 ships none at all.
-    "aiohttp>=3.8.0",
+    "aiohttp>=3.14.5",
     # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
     "aiohttp-retry>=2.3",
     # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
     #  the artist union is silently ignored before 2.2.0, so the union parses in
     #  smart mode there.
-    "pydantic>=2.2.0",
+    "pydantic>=2.14.1",
     # The sibling crate is released in lockstep with this package and bumped by
     #  hand; an exact pin ships the one pair that was tested together.
     "shazamio-core==2.0.0",
@@ -66,7 +66,7 @@ tests = [
     "vcrpy>=8.3.0",
 ]
 lint = [
-    "ruff>=0.16.10",
+    "ruff>=0.17.0",
 ]
 
 # Supply-chain safety net: only resolve packages published at least 7 days ago,
