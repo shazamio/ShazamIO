@@ -1,15 +1,13 @@
-from collections.abc import Iterator
 from typing import Any
 
 import pytest
-import pytest_asyncio
 
 from shazamio import Serialize
 
 
-@pytest_asyncio.fixture(scope="session")
-def song_response() -> Iterator[dict[str, Any]]:
-    response = {
+@pytest.fixture(scope="session")
+def song_response() -> dict[str, Any]:
+    return {
         "matches": [
             {
                 "id": "230272433",
@@ -251,7 +249,6 @@ def song_response() -> Iterator[dict[str, Any]]:
         },
         "tagid": "89A4C33B-58C6-4A50-8475-94032FC34D06",
     }
-    yield response
 
 
 @pytest.mark.asyncio
