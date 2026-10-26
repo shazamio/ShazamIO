@@ -463,9 +463,15 @@ class Shazam(Request):
             _warn_on_window(options.segment_duration_seconds)
 
         if isinstance(data, (str, pathlib.Path)):
-            signature = await self.core_recognizer.recognize_path(value=data, options=options)
+            signature = await self.core_recognizer.recognize_path(
+                value=data,
+                options=options,
+            )
         elif isinstance(data, (bytes, bytearray)):
-            signature = await self.core_recognizer.recognize_bytes(value=data, options=options)
+            signature = await self.core_recognizer.recognize_bytes(
+                value=data,
+                options=options,
+            )
         else:
             # Callers have caught `ValueError` here since 0.x; switching to the
             #  `TypeError` the rule prefers is a breaking change, not a lint fix.
