@@ -1047,7 +1047,7 @@ dev = [
     { name = "pre-commit", specifier = ">=3.2.0" },
     { name = "pytest", specifier = ">=7.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.23.3" },
-    { name = "pytest-recording", specifier = ">=0.14.0" },
+    { name = "pytest-recording", specifier = ">=0.13.4" },
     { name = "ruff", specifier = ">=0.16.10" },
     { name = "vcrpy", specifier = ">=8.3.0" },
 ]
@@ -1056,7 +1056,7 @@ lint = [{ name = "ruff", specifier = ">=0.16.10" }]
 tests = [
     { name = "pytest", specifier = ">=7.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.23.3" },
-    { name = "pytest-recording", specifier = ">=0.14.0" },
+    { name = "pytest-recording", specifier = ">=0.13.4" },
     { name = "vcrpy", specifier = ">=8.3.0" },
 ]
 
