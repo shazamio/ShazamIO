@@ -7,13 +7,12 @@ license = "MIT"
 license-files = ["LICENSE.txt"]
 keywords = ["python", "shazam", "music", "recognize", "api", "async", "asyncio", "aiohttp", "identification"]
 readme = "README.md"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<4.0"
 # `poetry-core` derived these from `requires-python`; `uv_build` does not, and
 #  without them the PyPI page stops listing the supported versions. Keep in step
 #  with `requires-python` above.
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -25,8 +24,10 @@ classifiers = [
 #  library's upper caps conflict with everything else in a consumer's
 #  environment, so a cap needs a reason.
 dependencies = [
-    # Oldest release with CPython 3.10 wheels; 3.7.4.post0 ships none at all.
-    "aiohttp>=3.8.0",
+    # Oldest release with CPython 3.11 wheels; 3.8.2 is yanked, and 3.8.1 ships
+    #  none and fails to build there: `fatal error: longintrepr.h: No such file
+    #  or directory`.
+    "aiohttp>=3.8.3",
     # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
     "aiohttp-retry>=2.3",
     # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
@@ -114,7 +115,7 @@ asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]

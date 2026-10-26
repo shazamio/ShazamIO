@@ -1,7 +1,7 @@
 import asyncio
 from http import HTTPStatus
 from types import SimpleNamespace, TracebackType
-from typing import Any
+from typing import Any, Self
 
 from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
 from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
@@ -25,9 +25,7 @@ class HTTPClient(HTTPClientInterface):
         self._loop: asyncio.AbstractEventLoop | None = None
         self._closed: bool = False
 
-    # `typing.Self` arrived in 3.11 and the floor is 3.10, so the class names
-    #  itself here.
-    async def __aenter__(self) -> "HTTPClient":  # noqa: PYI034
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(

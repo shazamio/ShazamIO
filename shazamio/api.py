@@ -4,7 +4,7 @@ import uuid
 import warnings
 from collections.abc import Coroutine, Iterable, Sequence
 from types import TracebackType
-from typing import Any, Final, TypeVar
+from typing import Any, Final, Self, TypeVar
 
 from aiohttp_retry import ExponentialRetry
 from shazamio_core import Recognizer, SearchParams, Signature
@@ -68,8 +68,10 @@ def _reject_skewed(answer: dict[str, Any], *, max_skew: float) -> dict[str, Any]
 
 # `asyncio.gather` leaves the other calls running when one raises, so a failed
 #  search kept sending requests after it had raised:
-#  https://docs.python.org/3.10/library/asyncio-task.html#asyncio.gather
-#  `asyncio.TaskGroup` cancels them, but it needs Python 3.11.
+#  https://docs.python.org/3.11/library/asyncio-task.html#asyncio.gather
+#  `asyncio.TaskGroup` cancels them too, but wraps the error in an `ExceptionGroup`,
+#  so a caller's `except` for it would stop matching.
+#  https://docs.python.org/3.11/library/asyncio-task.html#task-groups
 async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> list[_Result]:
     tasks = [asyncio.ensure_future(call) for call in calls]
     try:
@@ -81,7 +83,7 @@ async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> li
 
 
 class Shazam(Request):
-    """Is asynchronous framework for reverse engineered Shazam API written in Python 3.10+ with
+    """Is asynchronous framework for reverse engineered Shazam API written in Python 3.11+ with
     asyncio and aiohttp.
     """
 
@@ -119,9 +121,7 @@ class Shazam(Request):
         self.http_client = http_client
         self.geo_service = GeoService(self.http_client, request=self)
 
-    # `typing.Self` arrived in 3.11 and the floor is 3.10, so the class names
-    #  itself here.
-    async def __aenter__(self) -> "Shazam":  # noqa: PYI034
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(
