@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from random import choice
 from typing import Final
 
@@ -79,7 +79,7 @@ class Request:
         }
 
 
-class Device(str, Enum):
+class Device(StrEnum):
     IPHONE = "iphone"
     ANDROID = "android"
     WEB = "web"
