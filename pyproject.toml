@@ -80,6 +80,11 @@ exclude-newer = "7 days"
 #  it can only refuse the one we chose.
 #  https://github.com/astral-sh/uv/blob/4ecd0eff2a81e3ffdcd7cfee10d08936e4747c17/crates/uv-settings/src/settings.rs#L1176-L1177
 exclude-newer-package = { shazamio-core = false }
+# `filelock` 4.1.1 and later need Python 3.11, so on 3.10 the resolver would
+#  pick 4.1.0, the first release three of its advisories cover. Drop this with
+#  Python 3.10.
+#  https://github.com/advisories/GHSA-jqc4-5cvw-7w85
+constraint-dependencies = ["filelock<4.1; python_full_version < '3.11'"]
 
 [build-system]
 # `uv_build` is pre-1.0, so a minor (`0.13`) is allowed to break the build; the
