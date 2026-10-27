@@ -7,10 +7,11 @@ from aiohttp_retry import ExponentialRetry
 
 from shazamio import HTTPClient, Serialize, Shazam
 
+logger = logging.getLogger(__name__)
+
 # Resolved from this file, so the example runs from any directory.
 SAMPLE: Final[Path] = Path(__file__).parent / "data" / "Gloria.ogg"
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(name)s - [%(filename)s:%(lineno)d - %(funcName)s()] - %(levelname)s - %(message)s",

@@ -74,6 +74,7 @@ def _reject_skewed(answer: dict[str, Any], *, max_skew: float) -> dict[str, Any]
 #  https://docs.python.org/3.11/library/asyncio-task.html#task-groups
 async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> list[_Result]:
     tasks = [asyncio.ensure_future(call) for call in calls]
+
     try:
         return await asyncio.gather(*tasks)
     finally:
@@ -463,9 +464,15 @@ class Shazam(Request):
             _warn_on_window(options.segment_duration_seconds)
 
         if isinstance(data, (str, pathlib.Path)):
-            signature = await self.core_recognizer.recognize_path(value=data, options=options)
+            signature = await self.core_recognizer.recognize_path(
+                value=data,
+                options=options,
+            )
         elif isinstance(data, (bytes, bytearray)):
-            signature = await self.core_recognizer.recognize_bytes(value=data, options=options)
+            signature = await self.core_recognizer.recognize_bytes(
+                value=data,
+                options=options,
+            )
         else:
             # Callers have caught `ValueError` here since 0.x; switching to the
             #  `TypeError` the rule prefers is a breaking change, not a lint fix.
@@ -476,6 +483,7 @@ class Shazam(Request):
             sig=signature,
             proxy=proxy,
         )
+
         if max_skew is None:
             return answer
 

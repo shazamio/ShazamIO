@@ -35,16 +35,20 @@ class GeoService:
         proxy: str | None = None,
     ) -> str:
         """Return a city's chart slug. Example: `Moscow` gives `moscow`."""
-        for entry in await self._countries(proxy=proxy):
-            if entry["id"] != country:
-                continue
+        countries = await self._countries(proxy=proxy)
+        url_names = (
+            city_entry["urlName"]
+            for entry in countries
+            if entry["id"] == country
+            for city_entry in entry["cities"]
+            if city_entry["name"] == city
+        )
 
-            for city_entry in entry["cities"]:
-                if city_entry["name"] == city:
-                    return city_entry["urlName"]
-
-        msg: str = f"City not found, check the city name: {city}"
-        raise BadCityName(msg)
+        try:
+            return next(url_names)
+        except StopIteration:
+            msg: str = f"City not found, check the city name: {city}"
+            raise BadCityName(msg) from None
 
     # Without the Shazam headers the edge answers `www.shazam.com` with the website
     #  itself, and the JSON decoder raises `FailedDecodeJson` on 1.7MB of HTML.
