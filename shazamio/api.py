@@ -94,8 +94,13 @@ class Shazam(Request):
         endpoint_country: str = "GB",
         http_client: HTTPClientInterface | None = None,
         segment_duration_seconds: int = WINDOW_SECONDS,
+        *,
+        recognition_device: str = "iphone",
     ) -> None:
         super().__init__(language=language)
+
+        # Validate before constructing a core recognizer or opening a client.
+        self.recognition_device = Device(recognition_device)
 
         _warn_on_window(segment_duration_seconds)
 
@@ -504,7 +509,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.IPHONE.value,
+                device=self.recognition_device.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),
