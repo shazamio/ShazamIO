@@ -83,13 +83,14 @@ exclude-newer = "7 days"
 exclude-newer-package = { shazamio-core = false }
 
 [build-system]
-# `uv_build` is pre-1.0, so a minor (`0.13`) is allowed to break the build; the
-#  range takes `0.12.x` patches automatically and holds the next series back.
-#  Bumping to a new series is fine and routine: raise both bounds, run
-#  `uv build`, and check the wheel still looks right. The bounded shape is what
-#  uv's own docs prescribe.
+# `uv_build` is pre-1.0 and a minor may break the build, so the range takes
+#  patches and holds the next series back, as uv's docs prescribe. To bump it,
+#  raise both bounds and build with each floor pinned through
+#  `--build-constraint`; a plain `uv build` uses the running uv's own backend
+#  even outside the range, though the page below says otherwise. The artifacts
+#  may differ only in `Generator`, its `RECORD` hash and `requires`.
 #  https://docs.astral.sh/uv/concepts/build-backend/
-requires = ["uv_build>=0.12.23,<0.13"]
+requires = ["uv_build>=0.13.0,<0.14"]
 build-backend = "uv_build"
 
 # The package is a flat `shazamio/` directory, not the `src/` layout the backend
