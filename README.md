@@ -339,6 +339,9 @@ has no ids, no artwork and no provider links, so a chart entry cannot be passed
 to `Serialize`. Nothing in the library resolves a chart row to a track id
 either: Shazam retired the search endpoints that used to do it.
 
+A row without exactly three fields is skipped and logged as a warning on the
+`shazamio` logger, so a chart can come back shorter than the one Shazam serves.
+
 `limit` defaults to the whole chart, and `offset` skips entries from the top:
 both are applied to the chart the service returns, which is always the full
 one.

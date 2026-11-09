@@ -3,7 +3,8 @@ name: cassettes
 # The suite replays recorded answers, so it stays green whatever Shazam changes.
 #  This re-records every cassette against the real services once a week and fails
 #  when a test no longer passes on what they answer today. Nothing is committed:
-#  a failure is the signal to re-record locally and fix the library.
+#  a failure uploads the re-recorded cassettes as the `cassettes` artifact, and
+#  the failing test's cassette there is the answer to fix the library against.
 on:
   schedule:
     - cron: "17 6 * * 1"
@@ -30,3 +31,12 @@ jobs:
 
       - name: Re-record against the real services
         run: just test-rerecord
+
+      # A failing test still writes its cassette, so the answer that broke it is kept.
+      #  https://github.com/kevin1024/vcrpy/blob/7aaaefe14721cdbe8e690350290aa73b3bb4a03e/vcr/cassette.py#L97
+      - name: Keep the answers that failed
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cassettes
+          path: tests/cassettes/

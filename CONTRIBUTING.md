@@ -61,8 +61,10 @@ Check a new cassette for anything personal before committing it.
 
 The `cassettes` workflow runs `just test-rerecord` every Monday and commits
 nothing. Green means the library still parses what the services answer today.
-Red means Shazam changed something: re-record locally, fix the library, and
-commit both.
+Red means Shazam changed something. A red run uploads the re-recorded cassettes
+as the `cassettes` artifact: read the failing test's cassette there first, since
+the services may answer differently by the time you re-record locally. Then fix
+the library, re-record, and commit both.
 
 ## When a method returns nothing
 
