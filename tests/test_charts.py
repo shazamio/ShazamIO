@@ -26,6 +26,22 @@ def test_the_preamble_is_skipped_and_every_row_is_read() -> None:
     ]
 
 
+def test_a_row_with_a_field_count_unlike_the_header_is_skipped(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    payload: str = _CHART_CSV + (
+        '3,"Imael Angel","BAD TIMES","Remix"\n4,"HUGEL"\n5,"HUGEL","Morenita"\n'
+    )
+
+    tracks = parse_chart_csv(payload)
+
+    assert [track.rank for track in tracks] == [1, 2, 5]
+    assert [(record.message, vars(record)["row"]) for record in caplog.records] == [
+        ("parse_chart_csv.skip", ["3", "Imael Angel", "BAD TIMES", "Remix"]),
+        ("parse_chart_csv.skip", ["4", "HUGEL"]),
+    ]
+
+
 def test_a_body_without_the_header_is_rejected() -> None:
     with pytest.raises(BadParseData):
         parse_chart_csv("<!doctype html>\n")
@@ -33,16 +49,26 @@ def test_a_body_without_the_header_is_rejected() -> None:
 
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_the_world_chart_carries_two_hundred_ranked_entries(shazam: Shazam) -> None:
+async def test_the_world_chart_carries_two_hundred_ranked_entries(
+    caplog: pytest.LogCaptureFixture,
+    shazam: Shazam,
+) -> None:
     tracks = await shazam.top_world_tracks()
 
     assert len(tracks) == 200
     assert [track.rank for track in tracks[:3]] == [1, 2, 3]
 
+    # The library skips an odd row, but a live re-record has to fail on one,
+    #  or the `cassettes` workflow never uploads the answer that holds it.
+    assert "parse_chart_csv.skip" not in caplog.messages
+
 
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) -> None:
+async def test_a_city_chart_resolves_its_country_and_city_slugs(
+    caplog: pytest.LogCaptureFixture,
+    shazam: Shazam,
+) -> None:
     tracks = await shazam.top_city_tracks(
         country_code="RU",
         city_name="Moscow",
@@ -50,6 +76,7 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) 
     )
 
     assert [track.rank for track in tracks] == [1, 2, 3, 4, 5]
+    assert "parse_chart_csv.skip" not in caplog.messages
 
 
 # Parametrized rather than sampled: a genre Shazam renames stops having a chart
@@ -61,6 +88,7 @@ async def test_a_city_chart_resolves_its_country_and_city_slugs(shazam: Shazam) 
     [pytest.param(genre, id=genre.value) for genre in GenreMusic],
 )
 async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
+    caplog: pytest.LogCaptureFixture,
     genre: GenreMusic,
     shazam: Shazam,
 ) -> None:
@@ -70,3 +98,4 @@ async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
     )
 
     assert [track.rank for track in tracks] == [1, 2, 3, 4, 5]
+    assert "parse_chart_csv.skip" not in caplog.messages
