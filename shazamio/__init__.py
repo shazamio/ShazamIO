@@ -2,7 +2,7 @@ from shazamio_core.shazamio_core import SearchParams, SignatureError
 
 from .api import Shazam
 from .client import HTTPClient
-from .enums import GenreMusic
+from .enums import Device, GenreMusic
 
 # `BadMethod` stays in `shazamio.exceptions`: it reports an internal invariant
 #  rather than something the caller passed in, so nothing outside the package
@@ -29,6 +29,7 @@ __all__ = (
     "BadParseData",
     "BadResponseStatus",
     "ChartTrack",
+    "Device",
     "FailedDecodeJson",
     "GenreMusic",
     "GeoService",

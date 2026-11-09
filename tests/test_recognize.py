@@ -1,11 +1,13 @@
 import warnings
 from pathlib import Path
 from typing import Any, Final
+from unittest.mock import AsyncMock
 
 import pytest
 from shazamio_core import Signature, SignatureError
 
-from shazamio import SearchParams, Shazam
+from shazamio import Device, HTTPClient, SearchParams, Shazam
+from shazamio.user_agent import USER_AGENTS
 
 # Anchored to this file, so the suite runs from any working directory.
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
@@ -153,3 +155,50 @@ async def test_max_skew_rejects_a_skewed_first_match(
 async def test_max_skew_must_be_positive(shazam: Shazam, max_skew: float) -> None:
     with pytest.raises(ValueError, match="must be above 0"):
         await shazam.recognize(_GLORIA, max_skew=max_skew)
+
+
+@pytest.mark.parametrize("device", list(Device))
+async def test_recognition_profile_only_changes_the_route(device: Device) -> None:
+    http = AsyncMock(spec=HTTPClient)
+    http.request.return_value = {"matches": []}
+    async with Shazam(http_client=http, recognition_device=device) as client:
+        await client.recognize(_GLORIA)
+    args, kwargs = http.request.call_args
+    assert args[0] == "POST"
+    assert f"/en-US/GB/{device.value}/-/tag/" in args[1]
+    assert kwargs["headers"]["X-Shazam-Platform"] == "IPHONE"
+    assert kwargs["headers"]["X-Shazam-AppVersion"] == "14.1.0"
+    assert kwargs["headers"]["User-Agent"] in USER_AGENTS
+    assert kwargs["headers"]["User-Agent"].startswith("Dalvik/")
+    assert set(kwargs["json"]) == {"timezone", "signature", "timestamp", "context", "geolocation"}
+
+
+@pytest.mark.parametrize("device", ["iphone", "android", "web"])
+async def test_recognition_profile_accepts_plain_strings_at_runtime(device: str) -> None:
+    http = AsyncMock(spec=HTTPClient)
+    http.request.return_value = {"matches": []}
+    async with Shazam(http_client=http, recognition_device=device) as client:  # type: ignore[arg-type]
+        await client.recognize(_GLORIA)
+    assert f"/GB/{device}/-/tag/" in http.request.call_args.args[1]
+
+
+async def test_profile_does_not_change_track_lookup() -> None:
+    http = AsyncMock(spec=HTTPClient)
+    http.request.return_value = {"matches": []}
+    async with Shazam(http_client=http, recognition_device=Device.ANDROID) as client:
+        await client.track_about("53982678")
+    assert "/GB/iphone/-/track/" in http.request.call_args.args[1]
+    assert http.request.call_args.kwargs["headers"]["X-Shazam-Platform"] == "IPHONE"
+
+
+async def test_default_recognition_profile_remains_iphone() -> None:
+    http = AsyncMock(spec=HTTPClient)
+    http.request.return_value = {"matches": []}
+    async with Shazam(http_client=http) as client:
+        await client.recognize(_GLORIA)
+    assert "/GB/iphone/-/tag/" in http.request.call_args.args[1]
+
+
+def test_invalid_device_is_rejected() -> None:
+    with pytest.raises(ValueError, match="not a valid Device"):
+        Shazam(recognition_device="unsupported")  # type: ignore[arg-type]

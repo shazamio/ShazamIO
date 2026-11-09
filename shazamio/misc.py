@@ -1,4 +1,3 @@
-from enum import StrEnum
 from random import choice
 from typing import Final
 
@@ -76,9 +75,3 @@ class Request:
             # Picking a user agent is not cryptographic.
             "User-Agent": choice(USER_AGENTS),  # noqa: S311
         }
-
-
-class Device(StrEnum):
-    IPHONE = "iphone"
-    ANDROID = "android"
-    WEB = "web"

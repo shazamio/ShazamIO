@@ -13,6 +13,7 @@ _EXPORTS: Final[tuple[str, ...]] = (
     "BadParseData",
     "BadResponseStatus",
     "ChartTrack",
+    "Device",
     "FailedDecodeJson",
     "GenreMusic",
     "GeoService",

@@ -1,4 +1,10 @@
-from enum import Enum
+from enum import Enum, StrEnum
+
+
+class Device(StrEnum):
+    IPHONE = "iphone"
+    ANDROID = "android"
+    WEB = "web"
 
 
 class GenreMusic(Enum):
