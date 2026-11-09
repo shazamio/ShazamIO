@@ -4,6 +4,13 @@ from pydantic import BaseModel, Field, ValidationError
 
 from shazamio.exceptions import BadParseData
 
+__all__ = [
+    "ITUNES_SEARCH_CONTENT_TYPE",
+    "ITUNES_SEARCH_MAX_LIMIT",
+    "parse_itunes_track_ids",
+]
+
+
 # The search answers JSON as `text/javascript`, so `response.json()` raises
 #  `ContentTypeError` and the body is decoded by hand:
 #  `curl -sI 'https://itunes.apple.com/search?term=adele&entity=song&limit=1'`.

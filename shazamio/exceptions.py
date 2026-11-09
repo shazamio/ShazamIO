@@ -1,3 +1,16 @@
+__all__ = [
+    "BadAppleIds",
+    "BadCityName",
+    "BadContentType",
+    "BadCountryName",
+    "BadMethod",
+    "BadParseData",
+    "BadResponseStatus",
+    "FailedDecodeJson",
+    "RateLimited",
+]
+
+
 class FailedDecodeJson(Exception):
     pass
 

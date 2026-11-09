@@ -1,5 +1,7 @@
 from enum import Enum
 
+__all__ = ["GenreMusic"]
+
 
 class GenreMusic(Enum):
     POP = "pop"

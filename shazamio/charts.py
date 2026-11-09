@@ -6,10 +6,10 @@ from shazamio.exceptions import BadParseData
 from shazamio.loggers import main as logger
 from shazamio.schemas.charts import ChartTrack
 
-__all__ = (
+__all__ = [
     "CHART_CONTENT_TYPE",
     "parse_chart_csv",
-)
+]
 
 CHART_CONTENT_TYPE: Final[str] = "text/csv"
 
