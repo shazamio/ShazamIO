@@ -11,6 +11,8 @@ from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.loggers import request as request_logger
 from shazamio.utils import validate_json
 
+__all__ = ["HTTPClient"]
+
 
 class HTTPClient(HTTPClientInterface):
     def __init__(self, retry_options: RetryOptionsBase | None = None) -> None:

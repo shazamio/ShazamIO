@@ -5,6 +5,12 @@ from pydantic import TypeAdapter, ValidationError
 
 from shazamio.exceptions import BadAppleIds, BadParseData
 
+__all__ = [
+    "APPLE_TO_SHAZAM_CONTENT_TYPE",
+    "parse_apple_to_shazam_keys",
+]
+
+
 # The mapping is JSON served as `application/octet-stream`, so `response.json()`
 #  raises `ContentTypeError` and the body is decoded by hand:
 #  `curl -sI -A 'Dalvik/2.1.0 (Linux; U; Android 13; Pixel 7 Build/TQ3A)'

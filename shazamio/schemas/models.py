@@ -6,6 +6,32 @@ from pydantic import AliasPath, BaseModel, Field
 
 from shazamio.misc import ShazamUrl
 
+__all__ = [
+    "ActionModel",
+    "ArtistSection",
+    "BaseIdTypeModel",
+    "BeaconDataLyricsSection",
+    "HubProvider",
+    "HubProviderAction",
+    "LocationModel",
+    "LyricsSection",
+    "MatchModel",
+    "RelatedSection",
+    "ResponseTrack",
+    "ShareModel",
+    "SongMetaPages",
+    "SongMetadata",
+    "SongSection",
+    "TopTracksModel",
+    "TrackInfo",
+    "TrackSectionType",
+    "VideoSection",
+    "YoutubeData",
+    "YoutubeDimensions",
+    "YoutubeImage",
+]
+
+
 _SPOTIFY: Final[str] = "SPOTIFY"
 _SPOTIFY_SEARCH: Final[str] = "spotify:search:"
 

@@ -6,6 +6,8 @@ from aiohttp import ContentTypeError
 
 from shazamio.exceptions import FailedDecodeJson, RateLimited
 
+__all__ = ["validate_json"]
+
 
 async def validate_json(response: aiohttp.ClientResponse) -> Any:
     # A throttled request carries no payload to decode, so without this it
