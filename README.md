@@ -1,11 +1,8 @@
 <p align="center">
-<img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/quality-score.png?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
-<img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/code-intelligence.svg?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
-<img src="https://scrutinizer-ci.com/g/dotX12/ShazamIO/badges/build.png?b=master" alt="https://scrutinizer-ci.com/g/dotX12/ShazamIO/">
-<img src="https://badge.fury.io/py/shazamio.svg" alt="https://badge.fury.io/py/shazamio">
-<img src="https://pepy.tech/badge/shazamio" alt="https://pepy.tech/project/shazamio">
-<img src="https://pepy.tech/badge/shazamio/month" alt="https://pepy.tech/project/shazamio">
-<img src="https://img.shields.io/github/license/dotX12/shazamio.svg" alt="https://github.com/dotX12/ShazamIO/blob/master/LICENSE.txt">
+<a href="https://pypi.org/project/shazamio/"><img src="https://badge.fury.io/py/shazamio.svg" alt="PyPI version"></a>
+<a href="https://pepy.tech/projects/shazamio"><img src="https://pepy.tech/badge/shazamio" alt="Downloads"></a>
+<a href="https://pepy.tech/projects/shazamio"><img src="https://pepy.tech/badge/shazamio/month" alt="Downloads per month"></a>
+<a href="https://github.com/shazamio/ShazamIO/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/shazamio/ShazamIO.svg" alt="License"></a>
 <br><br>
 
   <img width="1000" src="https://user-images.githubusercontent.com/64792903/109359596-ca561a00-7896-11eb-9c93-9cf1f283b1a5.png">
