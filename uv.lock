@@ -1105,15 +1105,15 @@ wheels = [
 
 [[package]]
 name = "vcrpy"
-version = "8.3.0"
+version = "9.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyyaml" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/39/d5/8a1f8eb603e2d35fbb0ecd1e309d0c5c18a0ecfc8c0a8f04088bbc8f833b/vcrpy-8.3.0.tar.gz", hash = "sha256:46d64e77e8d95e5c76c7d9a94ff05d8b38b2ae4e1d4869eb0235024b6fcb5212", size = 96117, upload-time = "2026-07-04T14:27:01.608Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/b9/9abf7df54f4d30d2b6ce47f12ab94ed4820395a953da30dd451af86dab9d/vcrpy-9.4.0.tar.gz", hash = "sha256:af6cb65abb1a0a5c1d25954b9a52f033b85c6f80679f3f91c9e7301da4107e74", size = 122146, upload-time = "2026-11-01T00:31:39.251Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/77/cb4219be91508399cbcb6143bad89462cfb16f6c638458f454a5d46ac95a/vcrpy-8.3.0-py3-none-any.whl", hash = "sha256:bd66e6143746778157f00e2a922527a8d96b2fdc350be8988a45a29c843815b9", size = 46530, upload-time = "2026-07-04T14:27:00.546Z" },
+    { url = "https://files.pythonhosted.org/packages/21/91/7bb14a9806dfa22cf9b3fb28587c3e5d697434ca06ecb4d8b63c7f7db01d/vcrpy-9.4.0-py3-none-any.whl", hash = "sha256:7f2e9c90bf996ed36a423c675119ddae7dd658571c55cfa8b1c954746a99702b", size = 57627, upload-time = "2026-11-01T00:31:37.771Z" },
 ]
 
 [[package]]
