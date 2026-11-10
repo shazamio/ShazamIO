@@ -7,6 +7,7 @@ from types import TracebackType
 from typing import Any, Final, Self, TypeVar
 
 from aiohttp_retry import ExponentialRetry
+from pydantic import BaseModel, ValidationError
 from shazamio_core import Recognizer, SearchParams, Signature
 
 from .apple import APPLE_TO_SHAZAM_CONTENT_TYPE, parse_apple_to_shazam_keys
@@ -14,12 +15,13 @@ from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
 from .enums import Device, GenreMusic
-from .exceptions import BadAppleIds
+from .exceptions import BadAppleIds, BadParseData
 from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .itunes import ITUNES_SEARCH_CONTENT_TYPE, ITUNES_SEARCH_MAX_LIMIT, parse_itunes_track_ids
 from .misc import Request, ShazamUrl
 from .schemas.charts import ChartTrack
+from .schemas.models import ResponseTrack, TrackInfo, YoutubeData
 from .typehints import CountryCode
 
 __all__ = [
@@ -36,6 +38,7 @@ WINDOW_SECONDS: Final[int] = 12
 _NO_MATCH_WINDOW_SECONDS: Final[int] = 15
 
 _Result = TypeVar("_Result")
+_Model = TypeVar("_Model", bound=BaseModel)
 
 
 def _warn_on_window(seconds: int) -> None:
@@ -56,20 +59,25 @@ def _warn_on_window(seconds: int) -> None:
     warnings.warn(msg, UserWarning, stacklevel=3)
 
 
-def _reject_skewed(answer: dict[str, Any], *, max_skew: float) -> dict[str, Any]:
-    matches: list[dict[str, Any]] = answer.get("matches", [])
-    if not matches:
+def _parse_answer(model: type[_Model], *, payload: list[Any] | dict[str, Any]) -> _Model:
+    try:
+        return model.model_validate(payload)
+    except ValidationError as er:
+        msg = f"Shazam answer is not a `{model.__name__}`: {str(payload)[:200]}"
+        raise BadParseData(msg) from er
+
+
+def _reject_skewed(answer: ResponseTrack, *, max_skew: float) -> ResponseTrack:
+    if not answer.matches:
         return answer
 
-    first: dict[str, Any] = matches[0]
-    skew: float = max(abs(first["timeskew"]), abs(first["frequencyskew"]))
+    first = answer.matches[0]
+    skew: float = max(abs(first.time_skew), abs(first.frequency_skew))
     if skew <= max_skew:
         return answer
 
     # `track` describes the first match only, so it goes with it.
-    rejected: dict[str, Any] = {key: value for key, value in answer.items() if key != "track"}
-    rejected["matches"] = []
-    return rejected
+    return answer.model_copy(update={"matches": [], "track": None})
 
 
 # `asyncio.gather` leaves the other calls running when one raises, so a failed
@@ -314,15 +322,16 @@ class Shazam(Request):
         self,
         track_id: int,
         proxy: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> TrackInfo:
         """Get track information.
 
         :param track_id: Track number. Example: (549952578)
         https://www.shazam.com/track/549952578/
         :param proxy: Proxy server
-        :return: dict about track
+        :return: the track
+        :raises BadParseData: the answer does not fit the model
         """
-        return await self.http_client.request(
+        payload = await self.http_client.request(
             "GET",
             ShazamUrl.ABOUT_TRACK.format(
                 language=self.language,
@@ -332,6 +341,8 @@ class Shazam(Request):
             headers=self.headers(),
             proxy=proxy,
         )
+
+        return _parse_answer(TrackInfo, payload=payload)
 
     async def track_keys_from_apple_ids(
         self,
@@ -378,7 +389,7 @@ class Shazam(Request):
         *,
         limit: int = 5,
         proxy: str | None = None,
-    ) -> list[dict[str, Any]]:
+    ) -> list[TrackInfo]:
         """Search Apple's iTunes index, then fetch the Shazam track of every song found.
 
         Shazam no longer has a text search, so relevance, order and coverage are
@@ -391,8 +402,9 @@ class Shazam(Request):
         :param query: Free text, as typed into a search box. Example: ("daft punk one more time")
         :param limit: How many Apple songs to resolve, from 1 to 200
         :param proxy: Proxy server
-        :return: `track_about` answers, in Apple's order
+        :return: the tracks, in Apple's order
         :raises ValueError: `limit` is outside 1 to 200
+        :raises BadParseData: a track answer does not fit `TrackInfo`
         """
         if not 1 <= limit <= ITUNES_SEARCH_MAX_LIMIT:
             msg = f"`limit` must be from 1 to {ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
@@ -431,19 +443,22 @@ class Shazam(Request):
         link: str,
         *,
         proxy: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> YoutubeData:
         """Get the YouTube video Shazam shows for a track.
 
         :param link: A track's `youtube_link`
         :param proxy: Proxy server
-        :return: dict for `Serialize.youtube`
+        :return: the video
+        :raises BadParseData: the answer does not fit the model
         """
-        return await self.http_client.request(
+        payload = await self.http_client.request(
             "GET",
             link,
             headers=self.headers(),
             proxy=proxy,
         )
+
+        return _parse_answer(YoutubeData, payload=payload)
 
     async def recognize(
         self,
@@ -452,7 +467,7 @@ class Shazam(Request):
         options: SearchParams | None = None,
         *,
         max_skew: float | None = None,
-    ) -> dict[str, Any]:
+    ) -> ResponseTrack:
         """Search the Shazam database for the signature of a song file or its bytes.
 
         :param data: Path to song file or bytes
@@ -464,7 +479,8 @@ class Shazam(Request):
             and 15 of 611 right ones. A right answer for audio played faster, slower or
             pitch-shifted carries that shift as its skew (about `0.02` for 2 %), so any useful
             limit rejects such audio too.
-        :return: Dictionary with information about the found song
+        :return: the answer, whose `track` is `None` when nothing matched
+        :raises BadParseData: the answer does not fit the model
         """
         # `not > 0` rather than `<= 0`: `nan <= 0` is `False`, so `NaN` would pass and then
         #  reject every answer, since no skew compares `<=` to it.
@@ -504,14 +520,14 @@ class Shazam(Request):
         self,
         sig: Signature,
         proxy: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> ResponseTrack:
         data = Converter.data_search(
             sig.timezone,
             sig.signature.uri,
             sig.signature.samples,
             sig.timestamp,
         )
-        return await self.http_client.request(
+        payload = await self.http_client.request(
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
@@ -524,3 +540,5 @@ class Shazam(Request):
             proxy=proxy,
             json=data,
         )
+
+        return _parse_answer(ResponseTrack, payload=payload)

@@ -32,15 +32,14 @@ Shazam finds nothing at all<br>
 
   ```python3
   import asyncio
-  from shazamio import Serialize, Shazam
+  from shazamio import Shazam
 
 
   async def main():
       async with Shazam() as shazam:
           out = await shazam.recognize("Gloria.ogg")
 
-          print(out)  # dict
-          print(Serialize.full_track(out).track.title)  # I Will Survive
+          print(out.track.title)  # I Will Survive
 
 
   asyncio.run(main())
@@ -57,15 +56,14 @@ Get track information<br>
 
   ```python3
   import asyncio
-  from shazamio import Serialize, Shazam
+  from shazamio import Shazam
 
 
   async def main():
       async with Shazam() as shazam:
-          about_track = await shazam.track_about(track_id=552406075)
+          track = await shazam.track_about(track_id=552406075)
 
-          print(about_track)  # dict
-          print(Serialize.track(data=about_track))  # pydantic model
+          print(track.title, track.subtitle)
 
 
   asyncio.run(main())
@@ -81,16 +79,15 @@ The video Shazam shows for a track, looked up by its artist and title<br>
 
   ```python3
   import asyncio
-  from shazamio import Serialize, Shazam
+  from shazamio import Shazam
 
 
   async def main():
       async with Shazam() as shazam:
           out = await shazam.recognize("Gloria.ogg")
-          track = Serialize.full_track(out).track
 
-          youtube_data = await shazam.get_youtube_data(link=track.youtube_link)
-          print(Serialize.youtube(youtube_data).uri)  # https://youtu.be/6dYWe1c3OyU?autoplay=1
+          video = await shazam.get_youtube_data(link=out.track.youtube_link)
+          print(video.uri)  # https://youtu.be/6dYWe1c3OyU?autoplay=1
 
 
   asyncio.run(main())
@@ -145,7 +142,7 @@ requests, which is why `limit` defaults to 5.<br>
       async with Shazam() as shazam:
           tracks = await shazam.search_tracks_via_itunes("daft punk one more time")
 
-          print([track["title"] for track in tracks])
+          print([track.title for track in tracks])
           # ['One More Time', 'One More Time (12 Mix)', "One More Time (Romanthony's Unplugged)"]
 
 
@@ -332,9 +329,9 @@ measurements.
 
 Shazam publishes its charts as CSV with three columns, so a chart entry is a
 `ChartTrack` carrying a rank, an artist and a title, and nothing else. A chart
-has no ids, no artwork and no provider links, so a chart entry cannot be passed
-to `Serialize`. Nothing in the library resolves a chart row to a track id
-either: Shazam retired the search endpoints that used to do it.
+has no ids, no artwork and no provider links, so it is not a `TrackInfo`.
+Nothing in the library resolves a chart row to a track id either: Shazam
+retired the search endpoints that used to do it.
 
 A row without exactly three fields is skipped and logged as a warning on the
 `shazamio` logger, so a chart can come back shorter than the one Shazam serves.
@@ -343,20 +340,22 @@ A row without exactly three fields is skipped and logged as a warning on the
 both are applied to the chart the service returns, which is always the full
 one.
 
-## 🔧 What data serialization gives you
+## 🔧 What the track methods return
 
-`Serialize.full_track` turns the output of `recognize` into a `ResponseTrack`,
-and `Serialize.track` turns the output of `track_about` into a `TrackInfo`.
-Both carry the title, the artist, the artwork and the provider links, so you
-no longer have to pick the fields out of the raw dictionary by hand.
+`recognize` returns a `ResponseTrack`, `track_about` and
+`search_tracks_via_itunes` return `TrackInfo` objects, and `get_youtube_data`
+returns a `YoutubeData`. They used to return the raw dictionaries.
+A track carries the title, the artist, the artwork and the provider links.
+Top-level keys that no field reads, such as `genres` or `isrc`, stay on the
+model: read them as attributes (`track.genres`) or from `track.model_extra`.
+The `images`, `hub` and `artists` objects do not: the model keeps only the
+values its fields read from them (`photo_url`, `apple_music_url`, `ringtone`,
+`providers`, `artist_id`), so `images.background` or `hub.explicit` is gone.
+An answer that does not fit the model raises `BadParseData`.
 
-<details>
-<summary>
-<i>Open photo: What song information looks like (Dict)</i>
-</summary>
-<img src="https://user-images.githubusercontent.com/64792903/109454521-75b4c980-7a65-11eb-917e-62da3abefb8a.png">
-
-</details>
+`Serialize.track`, `Serialize.full_track` and `Serialize.youtube` build the
+same models from a stored payload. Code that still passes them a method's
+result keeps working, since a model passed in comes back unchanged.
 
 <details>
 <summary>

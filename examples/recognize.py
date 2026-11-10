@@ -5,7 +5,7 @@ from typing import Final
 
 from aiohttp_retry import ExponentialRetry
 
-from shazamio import HTTPClient, Serialize, Shazam
+from shazamio import HTTPClient, Shazam
 
 logger = logging.getLogger(__name__)
 
@@ -32,15 +32,13 @@ async def main() -> None:
         shazam = Shazam(http_client=http_client)
 
         # pass path
-        new_version_path = await shazam.recognize(SAMPLE)
-        serialized_new_path = Serialize.full_track(new_version_path)
-        print(serialized_new_path)
+        out = await shazam.recognize(SAMPLE)
+        print(out)
 
         # pass bytes
         song_bytes = await asyncio.to_thread(SAMPLE.read_bytes)
-        new_version_path = await shazam.recognize(song_bytes)
-        serialized_new_path = Serialize.full_track(new_version_path)
-        print(serialized_new_path)
+        out = await shazam.recognize(song_bytes)
+        print(out)
 
 
 asyncio.run(main())

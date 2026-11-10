@@ -23,10 +23,13 @@ _EXPORTS: Final[tuple[str, ...]] = (
     "GeoService",
     "HTTPClient",
     "RateLimited",
+    "ResponseTrack",
     "SearchParams",
     "Serialize",
     "Shazam",
     "SignatureError",
+    "TrackInfo",
+    "YoutubeData",
 )
 
 
