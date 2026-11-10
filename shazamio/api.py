@@ -13,12 +13,12 @@ from .apple import APPLE_TO_SHAZAM_CONTENT_TYPE, parse_apple_to_shazam_keys
 from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
-from .enums import GenreMusic
+from .enums import Device, GenreMusic
 from .exceptions import BadAppleIds
 from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .itunes import ITUNES_SEARCH_CONTENT_TYPE, ITUNES_SEARCH_MAX_LIMIT, parse_itunes_track_ids
-from .misc import Device, Request, ShazamUrl
+from .misc import Request, ShazamUrl
 from .schemas.charts import ChartTrack
 from .typehints import CountryCode
 
@@ -100,8 +100,13 @@ class Shazam(Request):
         endpoint_country: str = "GB",
         http_client: HTTPClientInterface | None = None,
         segment_duration_seconds: int = WINDOW_SECONDS,
+        *,
+        recognition_device: Device = Device.IPHONE,
     ) -> None:
         super().__init__(language=language)
+
+        # Validate before constructing a core recognizer or opening a client.
+        self.recognition_device = Device(recognition_device)
 
         _warn_on_window(segment_duration_seconds)
 
@@ -510,7 +515,7 @@ class Shazam(Request):
             "POST",
             ShazamUrl.SEARCH_FROM_FILE.format(
                 language=self.language,
-                device=Device.IPHONE.value,
+                device=self.recognition_device.value,
                 endpoint_country=self.endpoint_country,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),

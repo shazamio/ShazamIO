@@ -1,6 +1,15 @@
-from enum import Enum
+from enum import Enum, StrEnum
 
-__all__ = ["GenreMusic"]
+__all__ = [
+    "Device",
+    "GenreMusic",
+]
+
+
+class Device(StrEnum):
+    IPHONE = "iphone"
+    ANDROID = "android"
+    WEB = "web"
 
 
 class GenreMusic(Enum):

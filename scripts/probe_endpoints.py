@@ -22,8 +22,9 @@ from shazamio_core import Recognizer
 from shazamio.apple import APPLE_TO_SHAZAM_CONTENT_TYPE
 from shazamio.charts import CHART_CONTENT_TYPE
 from shazamio.converter import Converter
+from shazamio.enums import Device
 from shazamio.itunes import ITUNES_SEARCH_CONTENT_TYPE
-from shazamio.misc import Device, Request, ShazamUrl
+from shazamio.misc import Request, ShazamUrl
 
 _LANGUAGE: Final[str] = "en-US"
 _ENDPOINT_COUNTRY: Final[str] = "GB"

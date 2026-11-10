@@ -365,3 +365,31 @@ no longer have to pick the fields out of the raw dictionary by hand.
 <img src="https://user-images.githubusercontent.com/64792903/109454465-57e76480-7a65-11eb-956c-1bcac41d7de5.png">
 
 </details>
+
+### Recognition request profiles
+
+Recognition defaults to the iPhone route, as in 0.9.0. To diagnose differences
+between client profiles, select a fixed route explicitly:
+
+```python
+from shazamio import Device, Shazam
+
+async with Shazam(recognition_device=Device.ANDROID) as shazam:
+    result = await shazam.recognize("audio.wav")
+```
+
+`recognition_device` accepts `Device.IPHONE` (the default), `Device.ANDROID`, or
+`Device.WEB`. Plain strings (`"iphone"`, `"android"`, or `"web"`) also work at
+runtime; use the enum for type checking. Invalid values raise `ValueError` when
+constructing the client.
+
+Only the recognition URL's device segment changes. All profiles retain the
+existing `X-Shazam-Platform: IPHONE` and `X-Shazam-AppVersion: 14.1.0` headers,
+with a randomly selected Android Dalvik user agent. Other endpoints retain their
+existing routes and headers.
+
+This option does not change fingerprints, retries, or rate limits, and does not
+rotate profiles automatically. A 429 still means the caller must back off. Changing
+profiles can change response fields: web responses may omit `hub.providers`, and
+Android responses may contain `intent://` Apple Music links. Applications depending
+on those fields should retain the default until they have checked compatibility.

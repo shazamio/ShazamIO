@@ -1,3 +1,4 @@
+import re
 import warnings
 from pathlib import Path
 from typing import Any, Final
@@ -5,7 +6,7 @@ from typing import Any, Final
 import pytest
 from shazamio_core import Signature, SignatureError
 
-from shazamio import SearchParams, Shazam
+from shazamio import Device, SearchParams, Shazam
 
 # Anchored to this file, so the suite runs from any working directory.
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
@@ -153,3 +154,66 @@ async def test_max_skew_rejects_a_skewed_first_match(
 async def test_max_skew_must_be_positive(shazam: Shazam, max_skew: float) -> None:
     with pytest.raises(ValueError, match="must be above 0"):
         await shazam.recognize(_GLORIA, max_skew=max_skew)
+
+
+_ROUTE: Final[str] = "https://amp.shazam.com/discovery/v5/en-US/GB"
+_UUID: Final[re.Pattern[str]] = re.compile(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}")
+_HEADERS: Final[dict[str, str]] = {"X-Shazam-Platform": "IPHONE"}
+
+
+def _record_requests(monkeypatch: pytest.MonkeyPatch, *, shazam: Shazam) -> list[dict[str, Any]]:
+    sent: list[dict[str, Any]] = []
+
+    async def request(method: str, url: str, /, **kwargs: Any) -> dict[str, Any]:
+        route = _UUID.sub("<uuid>", url.partition("?")[0])
+        sent.append({"method": method, "route": route, "headers": kwargs["headers"]})
+        return {"matches": []}
+
+    monkeypatch.setattr(shazam, "headers", lambda: _HEADERS)
+    monkeypatch.setattr(shazam.http_client, "request", request)
+
+    return sent
+
+
+@pytest.mark.parametrize(
+    ("options", "segment"),
+    [
+        pytest.param({}, "iphone", id="default"),
+        pytest.param({"recognition_device": Device.IPHONE}, "iphone", id="iphone"),
+        pytest.param({"recognition_device": Device.ANDROID}, "android", id="android"),
+        pytest.param({"recognition_device": Device.WEB}, "web", id="web"),
+        pytest.param({"recognition_device": "android"}, "android", id="plain-string"),
+    ],
+)
+async def test_the_device_changes_only_the_recognition_route(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    options: dict[str, Any],
+    segment: str,
+) -> None:
+    async with Shazam(**options) as shazam:
+        sent = _record_requests(monkeypatch, shazam=shazam)
+
+        await shazam.recognize(_GLORIA)
+
+    assert sent == [
+        {"method": "POST", "route": f"{_ROUTE}/{segment}/-/tag/<uuid>/<uuid>", "headers": _HEADERS},
+    ]
+
+
+async def test_the_device_leaves_the_track_lookup_on_iphone(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async with Shazam(recognition_device=Device.ANDROID) as shazam:
+        sent = _record_requests(monkeypatch, shazam=shazam)
+
+        await shazam.track_about(53982678)
+
+    assert sent == [
+        {"method": "GET", "route": f"{_ROUTE}/iphone/-/track/53982678", "headers": _HEADERS},
+    ]
+
+
+def test_an_unknown_device_is_rejected() -> None:
+    with pytest.raises(ValueError, match="not a valid Device"):
+        Shazam(recognition_device="unsupported")  # type: ignore[arg-type]
