@@ -1,5 +1,8 @@
 from typing import Final
 
+__all__ = ["USER_AGENTS"]
+
+
 # Only an app `User-Agent` reaches the API. `www.shazam.com` answers a browser
 #  one with the website itself, `200 text/html`, which surfaces as a parse
 #  failure rather than as a refusal; a current Chrome string gets `405`. Every

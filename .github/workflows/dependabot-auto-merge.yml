@@ -1,10 +1,11 @@
 name: Dependabot auto-merge
 
-# A minor or patch `uv` bump from Dependabot lands by itself once `CI` passes,
-#  see the step's conditions below for what stays manual. The `master` ruleset
-#  requiring the `CI` check is what holds the merge until then. Without that
-#  rule the step fails and nothing merges; with "Allow auto-merge" off in the
-#  repository settings it fails on a pull request still waiting for `CI`.
+# A minor or patch `uv` or Actions bump from Dependabot lands by itself once
+#  `CI` passes, see the step's conditions below for what stays manual. The
+#  `master` ruleset requiring the `CI` check is what holds the merge until then.
+#  Without that rule the step fails and nothing merges; with "Allow auto-merge"
+#  off in the repository settings it fails on a pull request still waiting for
+#  `CI`.
 #  https://github.com/github/docs/blob/602021b0ba16b4a90e9c0a962a67ca9744eac82e/content/code-security/tutorials/secure-your-dependencies/automate-dependabot-with-actions.md?plain=1#L153-L190
 on:
   pull_request:
@@ -24,7 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     # Runs triggered by Dependabot get a read-only token, and a `permissions` key
-    #  is what raises it.
+    #  is what raises it. The merge itself goes through `DEPENDABOT_PUSH_TOKEN`
+    #  when it is set, see the step below; these cover the fallback.
     #  https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions#changing-github_token-permissions
     permissions:
       contents: write # merge the pull request
@@ -37,10 +39,10 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
-      # `uv` bumps only. `CI` never builds the devcontainer, and most Actions
-      #  bumps edit `.github/workflows/`, which GitHub refuses to merge
-      #  for `GITHUB_TOKEN`, since it can never hold the `workflows` permission.
-      #  https://github.com/kairos-io/packages/actions/runs/36784840467/job/110123662107
+      # `uv` and Actions bumps only: `CI` never builds the devcontainer. Of the
+      #  pinned actions `CI` runs only `actions/checkout`, `astral-sh/setup-uv`
+      #  and `extractions/setup-just`, so a bump of any other one is held by
+      #  `CI` passing, not by running it.
       #
       # A major can break what `CI` never runs: `build.yml` runs on a release
       #  only. `uv-build` is skipped at any level, see `.github/dependabot.yml`.
@@ -55,13 +57,11 @@ jobs:
       #  https://github.com/github/docs/blob/b1cce113b64ba25d6c42021e91d788c3adbed6bc/data/reusables/pull_requests/auto-merge-requires-branch-protection.md?plain=1#L2
       #
       # `MERGE`, not squash: Dependabot's commit message is already a
-      #  Conventional Commit, so it lands as is. A merge through `GITHUB_TOKEN`
-      #  starts no `push` run, so `codeql.yml` sees the bump only through its
-      #  pull request run and its weekly schedule.
-      #  https://github.com/github/docs/blob/ae648a1d328cb15fb173e80984aac748cf4b5af2/data/reusables/actions/actions-do-not-trigger-workflows.md
+      #  Conventional Commit, so it lands as is.
       - name: Merge now, or once `CI` passes
         if: >-
-          steps.metadata.outputs.package-ecosystem == 'uv'
+          (steps.metadata.outputs.package-ecosystem == 'uv'
+          || steps.metadata.outputs.package-ecosystem == 'github_actions')
           && !contains(steps.metadata.outputs.dependency-names, 'uv-build')
           && (steps.metadata.outputs.update-type == 'version-update:semver-minor'
           || steps.metadata.outputs.update-type == 'version-update:semver-patch')
@@ -78,4 +78,18 @@ jobs:
           REPO: ${{ github.repository }}
           BASE: ${{ github.base_ref }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ github.token }}
+          # Not `GITHUB_TOKEN`, for two reasons:
+          #  - It can never hold the `workflows` permission, so GitHub refuses
+          #    to merge an Actions bump that edits `.github/workflows/`.
+          #    https://github.com/kairos-io/packages/actions/runs/36784840467/job/110123662107
+          #  - Its merge starts no `push` run, so `codeql.yml` never scans
+          #    `master` right after a bump lands.
+          #    https://github.com/github/docs/blob/ae648a1d328cb15fb173e80984aac748cf4b5af2/data/reusables/actions/actions-do-not-trigger-workflows.md
+          #
+          # Dependabot runs see Dependabot secrets only, so the token lives there
+          #  and needs Contents, Pull requests and Workflows write. Unset, a
+          #  workflow bump fails here and waits for a person. Set but expired or
+          #  short of a permission, every bump fails here, `uv` included, since
+          #  only an empty value falls back to `GITHUB_TOKEN`.
+          #  https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions#accessing-secrets
+          GH_TOKEN: ${{ secrets.DEPENDABOT_PUSH_TOKEN || github.token }}

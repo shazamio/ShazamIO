@@ -2,6 +2,8 @@ from typing import Any
 
 from shazamio.schemas.models import ResponseTrack, TrackInfo, YoutubeData
 
+__all__ = ["Serialize"]
+
 
 class Serialize:
     @classmethod

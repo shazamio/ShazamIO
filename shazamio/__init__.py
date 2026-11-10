@@ -21,7 +21,7 @@ from .geo import GeoService
 from .schemas.charts import ChartTrack
 from .serializers import Serialize
 
-__all__ = (
+__all__ = [
     "BadAppleIds",
     "BadCityName",
     "BadContentType",
@@ -39,4 +39,4 @@ __all__ = (
     "Serialize",
     "Shazam",
     "SignatureError",
-)
+]

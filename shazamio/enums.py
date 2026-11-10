@@ -1,5 +1,10 @@
 from enum import Enum, StrEnum
 
+__all__ = [
+    "Device",
+    "GenreMusic",
+]
+
 
 class Device(StrEnum):
     IPHONE = "iphone"

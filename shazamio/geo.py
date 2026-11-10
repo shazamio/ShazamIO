@@ -5,6 +5,8 @@ from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.misc import Request, ShazamUrl
 from shazamio.typehints import CountryCode
 
+__all__ = ["GeoService"]
+
 
 class GeoService:
     """Resolves the URL slugs the chart paths are keyed by."""

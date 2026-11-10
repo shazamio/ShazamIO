@@ -22,6 +22,12 @@ from .misc import Request, ShazamUrl
 from .schemas.charts import ChartTrack
 from .typehints import CountryCode
 
+__all__ = [
+    "WINDOW_SECONDS",
+    "Shazam",
+]
+
+
 # The window SongRec sends, 12 s:
 #  https://github.com/marin-m/SongRec/blob/b94ee61d51f40e8b3051da8f5c6a9e9c437b3633/src/core/fingerprinting/algorithm.rs#L77-L99
 WINDOW_SECONDS: Final[int] = 12

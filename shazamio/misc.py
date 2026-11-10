@@ -3,6 +3,11 @@ from typing import Final
 
 from shazamio.user_agent import USER_AGENTS
 
+__all__ = [
+    "Request",
+    "ShazamUrl",
+]
+
 
 class ShazamUrl:
     SEARCH_FROM_FILE: Final[str] = (
