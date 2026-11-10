@@ -6,10 +6,12 @@ from typing import Any, Final
 import pytest
 from shazamio_core import Signature, SignatureError
 
-from shazamio import Device, SearchParams, Shazam
+from shazamio import Device, ResponseTrack, SearchParams, Shazam
 
 # Anchored to this file, so the suite runs from any working directory.
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
+_TAG_ID: Final[str] = "0B9D4C34-6D3A-4F0B-9A4E-2B1C8E7F6A51"
+_NO_MATCH: Final[ResponseTrack] = ResponseTrack.model_validate({"matches": [], "tagid": _TAG_ID})
 
 
 @pytest.fixture(scope="session")
@@ -21,16 +23,18 @@ def song_bytes() -> bytes:
 @pytest.mark.asyncio
 async def test_recognize_file(shazam: Shazam) -> None:
     out = await shazam.recognize(data=_GLORIA)
-    assert out.get("matches") != []
-    assert out["track"]["key"] == "53982678"
+
+    assert out.track is not None
+    assert out.track.key == 53982678
 
 
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_recognize_bytes(song_bytes: bytes, shazam: Shazam) -> None:
     out = await shazam.recognize(data=song_bytes)
-    assert out.get("matches") != []
-    assert out["track"]["key"] == "53982678"
+
+    assert out.track is not None
+    assert out.track.key == 53982678
 
 
 @pytest.mark.parametrize(
@@ -70,32 +74,40 @@ async def test_a_window_in_options_warns_at_the_caller(shazam: Shazam) -> None:
     assert record[0].filename == __file__
 
 
-def _answer(*, timeskew: float, frequencyskew: float) -> dict[str, Any]:
-    return {
-        "matches": [{"id": "53982678", "timeskew": timeskew, "frequencyskew": frequencyskew}],
-        "track": {"key": "53982678"},
-        "tagid": "TAG",
-    }
+def _answer(*, timeskew: float, frequencyskew: float) -> ResponseTrack:
+    return ResponseTrack.model_validate(
+        {
+            "matches": [
+                {
+                    "id": "53982678",
+                    "offset": 0.0,
+                    "timeskew": timeskew,
+                    "frequencyskew": frequencyskew,
+                },
+            ],
+            "track": {"key": "53982678", "title": "I Will Survive", "subtitle": "Gloria Gaynor"},
+            "tagid": _TAG_ID,
+        },
+    )
 
 
-_NO_MATCH: Final[dict[str, Any]] = {"matches": [], "tagid": "TAG"}
-_WITHIN: Final[dict[str, Any]] = _answer(
+_WITHIN: Final[ResponseTrack] = _answer(
     timeskew=-5e-4,
     frequencyskew=5e-4,
 )
-_AT_THE_LIMIT: Final[dict[str, Any]] = _answer(
+_AT_THE_LIMIT: Final[ResponseTrack] = _answer(
     timeskew=1e-3,
     frequencyskew=0.0,
 )
-_TIME_BEYOND: Final[dict[str, Any]] = _answer(
+_TIME_BEYOND: Final[ResponseTrack] = _answer(
     timeskew=-2e-3,
     frequencyskew=0.0,
 )
-_FREQUENCY_BEYOND: Final[dict[str, Any]] = _answer(
+_FREQUENCY_BEYOND: Final[ResponseTrack] = _answer(
     timeskew=0.0,
     frequencyskew=2e-3,
 )
-_TEMPO_SHIFTED: Final[dict[str, Any]] = _answer(
+_TEMPO_SHIFTED: Final[ResponseTrack] = _answer(
     timeskew=2e-2,
     frequencyskew=0.0,
 )
@@ -105,9 +117,9 @@ def _answer_with(
     monkeypatch: pytest.MonkeyPatch,
     *,
     shazam: Shazam,
-    answer: dict[str, Any],
+    answer: ResponseTrack,
 ) -> None:
-    async def send(sig: Signature, *, proxy: str | None = None) -> dict[str, Any]:
+    async def send(sig: Signature, *, proxy: str | None = None) -> ResponseTrack:
         del sig, proxy  # The answer is fixed; the signature is never sent.
         return answer
 
@@ -128,9 +140,9 @@ def _answer_with(
 async def test_max_skew_rejects_a_skewed_first_match(
     monkeypatch: pytest.MonkeyPatch,
     shazam: Shazam,
-    answer: dict[str, Any],
+    answer: ResponseTrack,
     max_skew: float | None,
-    expected: dict[str, Any],
+    expected: ResponseTrack,
 ) -> None:
     _answer_with(
         monkeypatch,
@@ -161,13 +173,18 @@ _UUID: Final[re.Pattern[str]] = re.compile(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9
 _HEADERS: Final[dict[str, str]] = {"X-Shazam-Platform": "IPHONE"}
 
 
-def _record_requests(monkeypatch: pytest.MonkeyPatch, *, shazam: Shazam) -> list[dict[str, Any]]:
+def _record_requests(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    shazam: Shazam,
+    answer: dict[str, Any],
+) -> list[dict[str, Any]]:
     sent: list[dict[str, Any]] = []
 
     async def request(method: str, url: str, /, **kwargs: Any) -> dict[str, Any]:
         route = _UUID.sub("<uuid>", url.partition("?")[0])
         sent.append({"method": method, "route": route, "headers": kwargs["headers"]})
-        return {"matches": []}
+        return answer
 
     monkeypatch.setattr(shazam, "headers", lambda: _HEADERS)
     monkeypatch.setattr(shazam.http_client, "request", request)
@@ -192,7 +209,11 @@ async def test_the_device_changes_only_the_recognition_route(
     segment: str,
 ) -> None:
     async with Shazam(**options) as shazam:
-        sent = _record_requests(monkeypatch, shazam=shazam)
+        sent = _record_requests(
+            monkeypatch,
+            shazam=shazam,
+            answer={"matches": [], "tagid": _TAG_ID},
+        )
 
         await shazam.recognize(_GLORIA)
 
@@ -205,7 +226,11 @@ async def test_the_device_leaves_the_track_lookup_on_iphone(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     async with Shazam(recognition_device=Device.ANDROID) as shazam:
-        sent = _record_requests(monkeypatch, shazam=shazam)
+        sent = _record_requests(
+            monkeypatch,
+            shazam=shazam,
+            answer={"key": "53982678", "title": "I Will Survive", "subtitle": "Gloria Gaynor"},
+        )
 
         await shazam.track_about(53982678)
 

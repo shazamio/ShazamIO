@@ -19,6 +19,7 @@ from .exceptions import (
 )
 from .geo import GeoService
 from .schemas.charts import ChartTrack
+from .schemas.models import ResponseTrack, TrackInfo, YoutubeData
 from .serializers import Serialize
 
 __all__ = [
@@ -35,8 +36,11 @@ __all__ = [
     "GeoService",
     "HTTPClient",
     "RateLimited",
+    "ResponseTrack",
     "SearchParams",
     "Serialize",
     "Shazam",
     "SignatureError",
+    "TrackInfo",
+    "YoutubeData",
 ]
