@@ -39,6 +39,15 @@ _NO_MATCH: Final[dict[str, Any]] = {
     "matches": [],
 }
 
+_VIDEO_WITHOUT_ACTIONS: Final[dict[str, Any]] = {
+    "caption": "c",
+    "image": {"dimensions": {"width": 1, "height": 1}, "url": "https://image.example"},
+    "actions": [],
+}
+
+# Keys no field reads, which a caller of the dict results could read before.
+_UNMODELED: Final[dict[str, Any]] = {"genres": {"primary": "Soundtrack"}, "isrc": "USA2P0700146"}
+
 
 def test_track_missing_paths_fall_back_to_defaults() -> None:
     track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER)
@@ -104,13 +113,7 @@ def test_a_video_section_wins_over_the_rebuilt_link() -> None:
 
 
 def test_a_video_without_actions_has_no_uri() -> None:
-    video = Serialize.youtube(
-        {
-            "caption": "c",
-            "image": {"dimensions": {"width": 1, "height": 1}, "url": "https://image.example"},
-            "actions": [],
-        },
-    )
+    video = Serialize.youtube(_VIDEO_WITHOUT_ACTIONS)
 
     assert video.uri is None
 
@@ -217,7 +220,7 @@ async def _redirect_target(session: ClientSession, *, url: str) -> str:
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_the_built_url_resolves_and_a_dead_key_does_not(shazam: Shazam) -> None:
-    track = Serialize.track(await shazam.track_about(track_id=_LIVE_TRACK_ID))
+    track = await shazam.track_about(track_id=_LIVE_TRACK_ID)
 
     assert track.shazam_url == f"https://www.shazam.com/track/{_LIVE_TRACK_ID}"
 
@@ -246,3 +249,21 @@ def test_a_result_that_matched_nothing_carries_the_retry_hint() -> None:
         "timezone": None,
         "track": None,
     }
+
+
+def test_keys_no_field_reads_stay_on_the_model() -> None:
+    track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER | _UNMODELED)
+    answer = Serialize.full_track(_NO_MATCH | _UNMODELED)
+    video = Serialize.youtube(_VIDEO_WITHOUT_ACTIONS | _UNMODELED)
+
+    assert [track.model_extra, answer.model_extra, video.model_extra] == [_UNMODELED] * 3
+
+
+def test_a_model_passed_to_serialize_comes_back_unchanged() -> None:
+    track = Serialize.track(_TRACK_WITHOUT_SPOTIFY_PROVIDER)
+    answer = Serialize.full_track(_NO_MATCH)
+    video = Serialize.youtube(_VIDEO_WITHOUT_ACTIONS)
+
+    assert Serialize.track(track) is track
+    assert Serialize.full_track(answer) is answer
+    assert Serialize.youtube(video) is video

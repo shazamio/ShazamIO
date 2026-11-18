@@ -3,7 +3,7 @@ from typing import Any, Final
 
 import pytest
 
-from shazamio import Serialize, Shazam
+from shazamio import Shazam
 
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
 _LINK: Final[str] = "https://video.example/youtube/video?q=x"
@@ -27,7 +27,11 @@ async def test_the_lookup_sends_the_shazam_headers_through_the_proxy(
         proxy: str | None,
     ) -> dict[str, Any]:
         sent.append({"method": method, "url": url, "headers": headers, "proxy": proxy})
-        return {}
+        return {
+            "caption": "",
+            "image": {"dimensions": {"width": 0, "height": 0}, "url": ""},
+            "actions": [],
+        }
 
     monkeypatch.setattr(shazam, "headers", lambda: _HEADERS)
     monkeypatch.setattr(shazam.http_client, "request", request)
@@ -43,11 +47,11 @@ async def test_the_lookup_sends_the_shazam_headers_through_the_proxy(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_a_recognized_track_leads_to_its_youtube_video(shazam: Shazam) -> None:
-    track = Serialize.full_track(await shazam.recognize(data=_GLORIA)).track
+    track = (await shazam.recognize(data=_GLORIA)).track
     assert track is not None
     assert track.youtube_link is not None
 
-    video = Serialize.youtube(await shazam.get_youtube_data(link=track.youtube_link))
+    video = await shazam.get_youtube_data(link=track.youtube_link)
 
     assert video.model_dump() == {
         "caption": "Gloria Gaynor - I Will Survive",

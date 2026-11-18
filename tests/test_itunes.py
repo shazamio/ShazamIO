@@ -3,7 +3,7 @@ from typing import Any, Final
 
 import pytest
 
-from shazamio import Shazam
+from shazamio import Shazam, TrackInfo
 from shazamio.exceptions import BadAppleIds, BadParseData
 from shazamio.itunes import parse_itunes_track_ids
 
@@ -31,7 +31,7 @@ def test_an_answer_without_results_is_rejected() -> None:
 @pytest.mark.asyncio
 async def test_songs_sharing_a_shazam_track_come_back_once(shazam: Shazam) -> None:
     tracks = await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS)
-    track_keys = [track["key"] for track in tracks]
+    track_keys = [track.key for track in tracks]
 
     assert 0 < len(track_keys) < 5
     assert len(set(track_keys)) == len(track_keys)
@@ -119,10 +119,14 @@ async def test_a_failed_track_cancels_the_other_tracks(
         del proxy  # The method forwards it; the stand-in has no transport.
         return {str(apple_ids[0]): track_key_by_apple_id[apple_ids[0]]}
 
-    async def track_about(track_id: int, *, proxy: str | None = None) -> dict[str, Any]:
+    async def track_about(track_id: int, *, proxy: str | None = None) -> TrackInfo:
         del proxy  # The method forwards it; the stand-in has no transport.
         await call(track_id)
-        return {}
+        return TrackInfo(
+            key=track_id,
+            title="",
+            subtitle="",
+        )
 
     monkeypatch.setattr(shazam.http_client, "request_text", _search_two_songs)
     monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)

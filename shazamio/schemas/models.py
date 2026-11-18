@@ -2,7 +2,7 @@ from typing import Annotated, Any, Final, Literal, TypeAlias
 from urllib.parse import quote_plus, urlencode, urlparse, urlunparse
 from uuid import UUID
 
-from pydantic import AliasPath, BaseModel, Field
+from pydantic import AliasPath, BaseModel, ConfigDict, Field
 
 from shazamio.misc import ShazamUrl
 
@@ -133,6 +133,8 @@ class YoutubeImage(BaseModel):
 
 
 class YoutubeData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     caption: str
     image: YoutubeImage
     actions: list[HubProviderAction]
@@ -167,6 +169,8 @@ class LocationModel(BaseModel):
 
 
 class TrackInfo(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     key: int
     title: str
     subtitle: str
@@ -248,6 +252,8 @@ class TrackInfo(BaseModel):
 
 
 class ResponseTrack(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     tag_id: UUID | None = Field(validation_alias="tagid")
     retry_ms: int | None = Field(default=None, validation_alias="retryms")
     location: LocationModel | None = None
