@@ -2,7 +2,7 @@ from typing import Any, Final
 
 import pytest
 
-from shazamio import BadCityName, Shazam
+from shazamio import NotFound, Shazam
 from shazamio.typehints import CountryCode
 
 # A city name shared by two countries, listed in the other country first, not
@@ -46,7 +46,7 @@ async def test_the_city_slug_comes_from_the_requested_country(
 
 @pytest.mark.asyncio
 async def test_an_unknown_city_is_rejected(shazam_with_countries: Shazam) -> None:
-    with pytest.raises(BadCityName):
+    with pytest.raises(NotFound):
         await shazam_with_countries.geo_service.city_url_name(
             CountryCode("RU"),
             city="Minsk",

@@ -15,7 +15,7 @@ from .charts import CHART_CONTENT_TYPE, parse_chart_csv
 from .client import HTTPClient
 from .converter import Converter
 from .enums import Device, GenreMusic
-from .exceptions import BadAppleIds, BadParseData
+from .exceptions import BadPayload
 from .geo import GeoService
 from .interfaces.client import HTTPClientInterface
 from .itunes import ITUNES_SEARCH_CONTENT_TYPE, ITUNES_SEARCH_MAX_LIMIT, parse_itunes_track_ids
@@ -64,7 +64,7 @@ def _parse_answer(model: type[_Model], *, payload: list[Any] | dict[str, Any]) -
         return model.model_validate(payload)
     except ValidationError as er:
         msg = f"Shazam answer is not a `{model.__name__}`: {str(payload)[:200]}"
-        raise BadParseData(msg) from er
+        raise BadPayload(msg) from er
 
 
 def _reject_skewed(answer: ResponseTrack, *, max_skew: float) -> ResponseTrack:
@@ -329,7 +329,7 @@ class Shazam(Request):
         https://www.shazam.com/track/549952578/
         :param proxy: Proxy server
         :return: the track
-        :raises BadParseData: the answer does not fit the model
+        :raises BadPayload: the answer does not fit the model
         """
         payload = await self.http_client.request(
             "GET",
@@ -361,14 +361,15 @@ class Shazam(Request):
         :param apple_ids: Apple Music track ids. Example: (1125281672, 1440650711)
         :param proxy: Proxy server
         :return: Apple id to Shazam track key, as the service serves it
-        :raises BadAppleIds: no ids were given, or the service refused the whole
-            request: a malformed id, or a storefront it does not serve
+        :raises ValueError: no ids were given
+        :raises NotFound: the service refused the whole request: a malformed id,
+            or a storefront it does not serve
         """
         # An empty sequence asks for `.../{language}/`, which answers
         #  `404 text/html Not supported` and reads as a dead endpoint.
         if not apple_ids:
             msg: str = "No Apple ids given"
-            raise BadAppleIds(msg)
+            raise ValueError(msg)
 
         payload = await self.http_client.request_text(
             ShazamUrl.APPLE_IDS_TO_TRACK_KEYS.format(
@@ -404,7 +405,7 @@ class Shazam(Request):
         :param proxy: Proxy server
         :return: the tracks, in Apple's order
         :raises ValueError: `limit` is outside 1 to 200
-        :raises BadParseData: a track answer does not fit `TrackInfo`
+        :raises BadPayload: a track answer does not fit `TrackInfo`
         """
         if not 1 <= limit <= ITUNES_SEARCH_MAX_LIMIT:
             msg = f"`limit` must be from 1 to {ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
@@ -449,7 +450,7 @@ class Shazam(Request):
         :param link: A track's `youtube_link`
         :param proxy: Proxy server
         :return: the video
-        :raises BadParseData: the answer does not fit the model
+        :raises BadPayload: the answer does not fit the model
         """
         payload = await self.http_client.request(
             "GET",
@@ -480,7 +481,7 @@ class Shazam(Request):
             pitch-shifted carries that shift as its skew (about `0.02` for 2 %), so any useful
             limit rejects such audio too.
         :return: the answer, whose `track` is `None` when nothing matched
-        :raises BadParseData: the answer does not fit the model
+        :raises BadPayload: the answer does not fit the model
         """
         # `not > 0` rather than `<= 0`: `nan <= 0` is `False`, so `NaN` would pass and then
         #  reject every answer, since no skew compares `<=` to it.

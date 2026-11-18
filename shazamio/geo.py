@@ -1,6 +1,6 @@
 from typing import Any
 
-from shazamio.exceptions import BadCityName, BadCountryName
+from shazamio.exceptions import NotFound
 from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.misc import Request, ShazamUrl
 from shazamio.typehints import CountryCode
@@ -27,7 +27,7 @@ class GeoService:
                 return entry["urlName"]
 
         msg: str = f"Country not found, check the country code: {country}"
-        raise BadCountryName(msg)
+        raise NotFound(msg)
 
     async def city_url_name(
         self,
@@ -50,10 +50,10 @@ class GeoService:
             return next(url_names)
         except StopIteration:
             msg: str = f"City not found, check the city name: {city}"
-            raise BadCityName(msg) from None
+            raise NotFound(msg) from None
 
     # Without the Shazam headers the edge answers `www.shazam.com` with the website
-    #  itself, and the JSON decoder raises `FailedDecodeJson` on 1.7MB of HTML.
+    #  itself, and the JSON decoder raises `BadResponse` on 1.7MB of HTML.
     async def _countries(self, *, proxy: str | None) -> list[dict[str, Any]]:
         data = await self.client.request(
             "GET",

@@ -4,7 +4,7 @@ from typing import Any, Final
 import pytest
 
 from shazamio import Shazam, TrackInfo
-from shazamio.exceptions import BadAppleIds, BadParseData
+from shazamio.exceptions import BadPayload, NotFound
 from shazamio.itunes import parse_itunes_track_ids
 
 # Trimmed from a real answer: every song carries far more fields than `trackId`.
@@ -23,7 +23,7 @@ def test_the_track_ids_are_read_in_apple_order() -> None:
 
 
 def test_an_answer_without_results_is_rejected() -> None:
-    with pytest.raises(BadParseData):
+    with pytest.raises(BadPayload):
         parse_itunes_track_ids("<!doctype html>\n")
 
 
@@ -77,7 +77,7 @@ class _FailFirstWaitSecond:
         if subject == self._first:
             await asyncio.sleep(0)
             msg: str = "Could not fetch ids"
-            raise BadAppleIds(msg)
+            raise NotFound(msg)
 
         try:
             await asyncio.Event().wait()
@@ -101,7 +101,7 @@ async def test_a_failed_mapping_cancels_the_other_mappings(
     monkeypatch.setattr(shazam.http_client, "request_text", _search_two_songs)
     monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
 
-    with pytest.raises(BadAppleIds):
+    with pytest.raises(NotFound):
         await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
 
     assert call.cancelled
@@ -132,7 +132,7 @@ async def test_a_failed_track_cancels_the_other_tracks(
     monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
     monkeypatch.setattr(shazam, "track_about", track_about)
 
-    with pytest.raises(BadAppleIds):
+    with pytest.raises(NotFound):
         await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
 
     assert call.cancelled

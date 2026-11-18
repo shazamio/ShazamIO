@@ -6,7 +6,7 @@ from typing import Any, Self
 from aiohttp import ClientSession, TraceConfig, TraceRequestStartParams
 from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
 
-from shazamio.exceptions import BadContentType, BadMethod, BadResponseStatus
+from shazamio.exceptions import BadResponse
 from shazamio.interfaces.client import HTTPClientInterface
 from shazamio.loggers import request as request_logger
 from shazamio.utils import validate_json
@@ -98,7 +98,7 @@ class HTTPClient(HTTPClientInterface):
                 return await validate_json(response)
 
         msg: str = "Accept only GET/POST"
-        raise BadMethod(msg)
+        raise ValueError(msg)
 
     async def request_text(
         self,
@@ -113,13 +113,21 @@ class HTTPClient(HTTPClientInterface):
         async with client.get(url, **kwargs) as response:
             if response.status != HTTPStatus.OK:
                 msg = f"{url} answered {response.status}"
-                raise BadResponseStatus(msg)
+                raise BadResponse(
+                    msg,
+                    url=url,
+                    status=response.status,
+                )
 
             # A path the edge does not route to the API is answered by the website
             #  itself, `200 text/html`, so the status alone says nothing about the
             #  body. Without this the caller gets a parse error naming the parser.
             if response.content_type != content_type:
                 msg = f"{url} answered {response.content_type}, expected {content_type}"
-                raise BadContentType(msg)
+                raise BadResponse(
+                    msg,
+                    url=url,
+                    status=response.status,
+                )
 
             return await response.text()

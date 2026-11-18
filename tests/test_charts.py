@@ -4,7 +4,7 @@ import pytest
 
 from shazamio import GenreMusic, Shazam
 from shazamio.charts import parse_chart_csv
-from shazamio.exceptions import BadParseData
+from shazamio.exceptions import BadPayload
 
 # The shape the endpoint really returns: a byte order mark, a blank line and a
 #  quoted caption before the header row.
@@ -43,7 +43,7 @@ def test_a_row_with_a_field_count_unlike_the_header_is_skipped(
 
 
 def test_a_body_without_the_header_is_rejected() -> None:
-    with pytest.raises(BadParseData):
+    with pytest.raises(BadPayload):
         parse_chart_csv("<!doctype html>\n")
 
 

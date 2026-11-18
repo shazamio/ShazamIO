@@ -2,7 +2,7 @@ import csv
 import io
 from typing import Final
 
-from shazamio.exceptions import BadParseData
+from shazamio.exceptions import BadPayload
 from shazamio.loggers import main as logger
 from shazamio.schemas.charts import ChartTrack
 
@@ -27,7 +27,7 @@ def parse_chart_csv(payload: str) -> list[ChartTrack]:
             break
     else:
         msg = f"Chart CSV carries no {','.join(_HEADER)} header"
-        raise BadParseData(msg)
+        raise BadPayload(msg)
 
     tracks: list[ChartTrack] = []
     for row in rows:

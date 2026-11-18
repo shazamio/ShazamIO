@@ -5,7 +5,7 @@ from typing import Any, Final, Protocol
 import pytest
 from pydantic import BaseModel
 
-from shazamio import BadParseData, Shazam
+from shazamio import BadPayload, Shazam
 
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"
 # A section `type` the discriminated union does not know, so no model accepts the answer.
@@ -63,5 +63,5 @@ async def test_an_answer_the_model_rejects_raises_bad_parse_data(
 
     monkeypatch.setattr(shazam.http_client, "request", request)
 
-    with pytest.raises(BadParseData, match="Shazam answer is not a"):
+    with pytest.raises(BadPayload, match="Shazam answer is not a"):
         await lookup(shazam)

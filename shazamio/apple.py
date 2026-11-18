@@ -3,7 +3,7 @@ from typing import Final
 
 from pydantic import TypeAdapter, ValidationError
 
-from shazamio.exceptions import BadAppleIds, BadParseData
+from shazamio.exceptions import BadPayload, NotFound
 
 __all__ = [
     "APPLE_TO_SHAZAM_CONTENT_TYPE",
@@ -26,17 +26,17 @@ def parse_apple_to_shazam_keys(payload: str) -> dict[str, str]:
         answer = json.loads(payload)
     except json.JSONDecodeError as er:
         msg = f"Apple id mapping is not JSON: {payload[:200]}"
-        raise BadParseData(msg) from er
+        raise BadPayload(msg) from er
 
     # A storefront the service does not serve and ids it cannot resolve are both
     #  `200 {"error":{"msg":"Could not fetch ids"}}`, so the body decides and the
     #  status says nothing.
     if isinstance(answer, dict) and _ERROR in answer:
         msg = f"Apple ids could not be resolved: {answer[_ERROR]}"
-        raise BadAppleIds(msg)
+        raise NotFound(msg)
 
     try:
         return _MAPPING.validate_python(answer)
     except ValidationError as er:
         msg = f"Apple id mapping is not a map of ids to keys: {payload[:200]}"
-        raise BadParseData(msg) from er
+        raise BadPayload(msg) from er

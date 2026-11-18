@@ -2,7 +2,7 @@ from typing import Final
 
 from pydantic import BaseModel, Field, ValidationError
 
-from shazamio.exceptions import BadParseData
+from shazamio.exceptions import BadPayload
 
 __all__ = [
     "ITUNES_SEARCH_CONTENT_TYPE",
@@ -33,6 +33,6 @@ def parse_itunes_track_ids(payload: str) -> list[int]:
         answer = _SearchAnswer.model_validate_json(payload)
     except ValidationError as er:
         msg = f"iTunes search answer carries no track ids: {payload[:200]}"
-        raise BadParseData(msg) from er
+        raise BadPayload(msg) from er
 
     return [song.track_id for song in answer.results]

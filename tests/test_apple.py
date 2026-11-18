@@ -4,7 +4,7 @@ import pytest
 
 from shazamio import Shazam
 from shazamio.apple import parse_apple_to_shazam_keys
-from shazamio.exceptions import BadAppleIds, BadParseData
+from shazamio.exceptions import BadPayload, NotFound
 
 _GOOD_APPLE_ID: Final[int] = 1125281672
 # The same recording as `1440650711`, under the id Shazam stores rather than the
@@ -19,29 +19,29 @@ def test_a_mapping_is_read_as_served() -> None:
 
 
 def test_an_error_body_is_reported_as_bad_ids() -> None:
-    with pytest.raises(BadAppleIds, match="Could not fetch ids"):
+    with pytest.raises(NotFound, match="Could not fetch ids"):
         parse_apple_to_shazam_keys('{"error":{"msg":"Could not fetch ids"}}')
 
 
 def test_a_body_that_is_not_json_is_rejected() -> None:
-    with pytest.raises(BadParseData):
+    with pytest.raises(BadPayload):
         parse_apple_to_shazam_keys("<!doctype html>\n")
 
 
 def test_a_body_that_is_json_but_not_a_mapping_is_rejected() -> None:
-    with pytest.raises(BadParseData):
+    with pytest.raises(BadPayload):
         parse_apple_to_shazam_keys('["325127876"]')
 
 
 @pytest.mark.asyncio
 async def test_no_ids_is_refused_before_anything_is_requested(shazam: Shazam) -> None:
-    with pytest.raises(BadAppleIds):
+    with pytest.raises(ValueError, match="No Apple ids"):
         await shazam.track_keys_from_apple_ids([])
 
 
 # Also pins the path-segment order: with `language` first and `country` second
 #  the service answers `200 {"error":{"msg":"Could not fetch ids"}}`, so this
-#  test fails as `BadAppleIds` if the two are ever swapped.
+#  test fails as `NotFound` if the two are ever swapped.
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_an_apple_id_resolves_to_a_shazam_track_key(shazam: Shazam) -> None:
@@ -75,5 +75,5 @@ async def test_ids_sharing_one_track_collapse_into_a_single_entry(shazam: Shazam
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_an_id_the_service_cannot_resolve_at_all_is_reported(shazam: Shazam) -> None:
-    with pytest.raises(BadAppleIds, match="Could not fetch ids"):
+    with pytest.raises(NotFound, match="Could not fetch ids"):
         await shazam.track_keys_from_apple_ids([0])

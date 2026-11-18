@@ -10,12 +10,7 @@ from aiohttp.test_utils import TestServer
 from shazamio import Shazam
 from shazamio.charts import CHART_CONTENT_TYPE
 from shazamio.client import HTTPClient
-from shazamio.exceptions import (
-    BadContentType,
-    BadResponseStatus,
-    FailedDecodeJson,
-    RateLimited,
-)
+from shazamio.exceptions import BadResponse, RateLimited
 
 _NOT_PUBLISHED: Final[str] = "/not-published"
 _WEBSITE: Final[str] = "/website"
@@ -81,17 +76,19 @@ async def _source_port(client: HTTPClient, *, url: str) -> int:
 @pytest.mark.asyncio
 async def test_a_chart_that_is_not_published_names_its_status(server: TestServer) -> None:
     async with HTTPClient() as client:
-        with pytest.raises(BadResponseStatus, match="404"):
+        with pytest.raises(BadResponse, match="404") as raised:
             await client.request_text(
                 str(server.make_url(_NOT_PUBLISHED)),
                 content_type=CHART_CONTENT_TYPE,
             )
 
+    assert raised.value.status == HTTPStatus.NOT_FOUND
+
 
 @pytest.mark.asyncio
 async def test_a_path_answered_by_the_website_names_the_content_type(server: TestServer) -> None:
     async with HTTPClient() as client:
-        with pytest.raises(BadContentType, match="text/html"):
+        with pytest.raises(BadResponse, match="text/html"):
             await client.request_text(
                 str(server.make_url(_WEBSITE)),
                 content_type=CHART_CONTENT_TYPE,
@@ -101,8 +98,10 @@ async def test_a_path_answered_by_the_website_names_the_content_type(server: Tes
 @pytest.mark.asyncio
 async def test_a_throttled_request_names_the_rate_limit(server: TestServer) -> None:
     async with HTTPClient() as client:
-        with pytest.raises(RateLimited, match="rate limited"):
+        with pytest.raises(RateLimited, match="rate limited") as raised:
             await client.request("GET", str(server.make_url(_THROTTLED)))
+
+    assert raised.value.status == HTTPStatus.TOO_MANY_REQUESTS
 
 
 # The control for the test above: both answers are `text/html`, and only the
@@ -113,8 +112,10 @@ async def test_an_undecodable_body_that_is_not_throttling_still_names_the_decode
     server: TestServer,
 ) -> None:
     async with HTTPClient() as client:
-        with pytest.raises(FailedDecodeJson, match="status=200"):
+        with pytest.raises(BadResponse, match="status=200") as raised:
             await client.request("GET", str(server.make_url(_WEBSITE)))
+
+    assert not isinstance(raised.value, RateLimited)
 
 
 @pytest.mark.asyncio

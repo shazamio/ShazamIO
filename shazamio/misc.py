@@ -16,7 +16,7 @@ class ShazamUrl:
         "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
     )
     # `discovery/v5` answers on `amp.` and `cdn.` only: `www.` returns the 1.7MB
-    #  single-page-app shell as `text/html`, which surfaces as `FailedDecodeJson`
+    #  single-page-app shell as `text/html`, which surfaces as `BadResponse`
     #  and reads like a parsing bug.
     #  The device segment is `iphone`: the `web` profile omits `hub.providers`,
     #  the Spotify and Deezer links, from every track, and `android` returns

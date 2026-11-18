@@ -1,47 +1,56 @@
+from functools import partial
+from typing import Any, Self
+
 __all__ = [
-    "BadAppleIds",
-    "BadCityName",
-    "BadContentType",
-    "BadCountryName",
-    "BadMethod",
-    "BadParseData",
-    "BadResponseStatus",
-    "FailedDecodeJson",
+    "BadPayload",
+    "BadResponse",
+    "NotFound",
     "RateLimited",
+    "ShazamError",
 ]
 
 
-class FailedDecodeJson(Exception):
-    pass
+class ShazamError(Exception):
+    """Base of every error the library raises on purpose."""
 
 
-class BadCityName(Exception):
-    pass
+class BadResponse(ShazamError):
+    """The service answered with something other than the API answer."""
+
+    def __init__(self, message: str, *, url: str, status: int) -> None:
+        super().__init__(message)
+        self._url = url
+        self._status = status
+
+    # `pickle` rebuilds an exception from `args`, the message alone, so without
+    #  this `pickle.loads` raised `TypeError: BadResponse.__init__() missing 2
+    #  required keyword-only arguments: 'url' and 'status'`. The `__dict__`
+    #  carries what `add_note` attached, typed `Any` as `object.__dict__` is.
+    def __reduce__(self) -> tuple[partial[Self], tuple[str], dict[str, Any]]:
+        rebuild = partial(
+            type(self),
+            url=self._url,
+            status=self._status,
+        )
+
+        return rebuild, (str(self),), self.__dict__
+
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @property
+    def status(self) -> int:
+        return self._status
 
 
-class BadCountryName(Exception):
-    pass
+class RateLimited(BadResponse):
+    """The service throttled the request."""
 
 
-class BadMethod(Exception):
-    pass
+class BadPayload(ShazamError):
+    """The answer arrived and fits no model."""
 
 
-class BadParseData(Exception):
-    pass
-
-
-class BadResponseStatus(Exception):
-    pass
-
-
-class BadContentType(Exception):
-    pass
-
-
-class BadAppleIds(Exception):
-    pass
-
-
-class RateLimited(BadResponseStatus):
-    pass
+class NotFound(ShazamError, LookupError):
+    """A country, city or Apple id the service does not know."""

@@ -351,7 +351,7 @@ model: read them as attributes (`track.genres`) or from `track.model_extra`.
 The `images`, `hub` and `artists` objects do not: the model keeps only the
 values its fields read from them (`photo_url`, `apple_music_url`, `ringtone`,
 `providers`, `artist_id`), so `images.background` or `hub.explicit` is gone.
-An answer that does not fit the model raises `BadParseData`.
+An answer that does not fit the model raises `BadPayload`.
 
 `Serialize.track`, `Serialize.full_track` and `Serialize.youtube` build the
 same models from a stored payload. Code that still passes them a method's
