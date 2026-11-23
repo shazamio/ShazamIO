@@ -9,7 +9,7 @@ import pytest
 
 from shazamio import Request, Response, Retry, TransportError
 from shazamio.retry import _delay, send_with_retry
-from shazamio.testing import MockTransport
+from shazamio.transport import MockTransport
 
 _REQUEST: Final[Request] = Request(
     method=HTTPMethod.POST,

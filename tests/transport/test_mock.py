@@ -5,7 +5,7 @@ from typing import Final
 import pytest
 
 from shazamio import Request, Response, Shazam
-from shazamio.testing import MockTransport
+from shazamio.transport import MockTransport
 
 _TRACK: Final[str] = json.dumps(
     {"key": "53982678", "title": "I Will Survive", "subtitle": "Gloria Gaynor"}

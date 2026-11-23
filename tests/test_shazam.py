@@ -25,7 +25,7 @@ from shazamio import (
     _requests,
     _urls,
 )
-from shazamio.testing import MockTransport
+from shazamio.transport import MockTransport
 
 # Anchored to this file, so the suite runs from any working directory.
 _GLORIA: Final[Path] = Path(__file__).parents[1] / "examples" / "data" / "Gloria.ogg"

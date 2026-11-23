@@ -37,9 +37,9 @@ _PACKAGE_ROOT: Final[Path] = Path(shazamio.__file__).parent
 # A module's `logging.getLogger(name=__name__)` is configured by name, never imported.
 _LOGGER: Final[str] = "logger"
 
-# The root `__init__.py` only re-exports, and `_EXPORTS` above pins it.
+# An `__init__.py` only re-exports; `_EXPORTS` above pins the root one.
 _MODULES: Final[tuple[Path, ...]] = tuple(
-    path for path in sorted(_PACKAGE_ROOT.rglob("*.py")) if path != _PACKAGE_ROOT / "__init__.py"
+    path for path in sorted(_PACKAGE_ROOT.rglob("*.py")) if path.name != "__init__.py"
 )
 
 

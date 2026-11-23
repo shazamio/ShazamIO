@@ -282,12 +282,12 @@ sees every attempt:
 
 ## 🧪 Testing code that calls Shazam
 
-`shazamio.testing.MockTransport` sends nothing: a function of yours answers
+`shazamio.transport.MockTransport` sends nothing: a function of yours answers
 every request, and the transport keeps each one in `requests`:
 
   ```python3
   from shazamio import Request, Response, Shazam
-  from shazamio.testing import MockTransport
+  from shazamio.transport import MockTransport
 
 
   def answer(request: Request) -> Response:
@@ -420,7 +420,7 @@ on those fields should retain the default until they have checked compatibility.
 | `BadAppleIds` for an empty id list | `ValueError`, before any request |
 | `ValueError` for `recognize` data that is neither a path nor bytes | `TypeError` |
 | `GeoService`, `HTTPClient`, `Serialize`, `CountryCode` | gone |
-| `shazamio.api`, `shazamio.misc`, `shazamio.schemas` and the other submodules | `shazamio` itself, or one of `shazamio.client`, `shazamio.enums`, `shazamio.exceptions`, `shazamio.models`, `shazamio.retry`, `shazamio.testing`, `shazamio.transport` |
+| `shazamio.api`, `shazamio.misc`, `shazamio.schemas` and the other submodules | `shazamio` itself, or one of `shazamio.client`, `shazamio.enums`, `shazamio.exceptions`, `shazamio.models`, `shazamio.retry`, `shazamio.transport` |
 | the attributes `headers()`, `language`, `endpoint_country`, `http_client`, `geo_service`, `core_recognizer` | gone, the constructor arguments are not exposed |
 | a debug record per attempt on the `shazamio.request` logger | a debug record per retry on the `shazamio.retry` logger |
 | Python 3.10, `aiohttp>=3.8.0`, `aiohttp-retry>=2.3` | Python 3.11, `aiohttp>=3.11`, no `aiohttp-retry` |
