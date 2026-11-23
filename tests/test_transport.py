@@ -1,14 +1,24 @@
 import asyncio
 import json
+import socket
 from collections.abc import AsyncGenerator
 from http import HTTPMethod, HTTPStatus
 from typing import Final
 
 import pytest
-from aiohttp import ClientSession, web
+from aiohttp import ClientSession, ClientTimeout, web
 from aiohttp.test_utils import TestServer
 
-from shazamio import AiohttpTransport, BadResponse, Request, Response, Retry, Shazam
+from shazamio import (
+    AiohttpTransport,
+    BadResponse,
+    Request,
+    Response,
+    Retry,
+    Shazam,
+    Transport,
+    TransportError,
+)
 
 _JSON: Final[str] = "application/json"
 _PEER: Final[str] = "/peer"
@@ -16,9 +26,18 @@ _VIDEO: Final[str] = "/video"
 _UNAVAILABLE: Final[str] = "/unavailable"
 _ECHO: Final[str] = "/echo"
 _BROKEN_CHARSET: Final[str] = "/broken-charset"
+_MIXED_CASE_TYPE: Final[str] = "/mixed-case-type"
+_SLOW: Final[str] = "/slow"
 _UNROUTABLE_HOST: Final[str] = "shazam.invalid"
 _ATTEMPTS: Final[web.AppKey[list[str]]] = web.AppKey("attempts")
 _CONNECTIONS: Final[web.AppKey[list[asyncio.BaseTransport]]] = web.AppKey("connections")
+# What every transport owes `Shazam`, run against each one the package ships.
+_EVERY_TRANSPORT: Final[pytest.MarkDecorator] = pytest.mark.parametrize(
+    "factory",
+    [
+        pytest.param(AiohttpTransport, id="aiohttp"),
+    ],
+)
 
 
 def _application() -> web.Application:
@@ -69,6 +88,17 @@ def _application() -> web.Application:
             charset="utf-8",
         )
 
+    async def mixed_case_type(_request: web.Request) -> web.Response:
+        return web.Response(
+            text="{}",
+            headers={"Content-Type": "Application/JSON ; charset=utf-8"},
+        )
+
+    async def slow(_request: web.Request) -> web.Response:
+        await asyncio.sleep(1)
+
+        return web.json_response({})
+
     app = web.Application()
     app[_ATTEMPTS] = []
     app[_CONNECTIONS] = []
@@ -77,6 +107,8 @@ def _application() -> web.Application:
     app.router.add_get(_PEER, peer)
     app.router.add_get(_VIDEO, video)
     app.router.add_get(_BROKEN_CHARSET, broken_charset)
+    app.router.add_get(_MIXED_CASE_TYPE, mixed_case_type)
+    app.router.add_get(_SLOW, slow)
 
     app.router.add_post(_ECHO, echo)
 
@@ -104,7 +136,7 @@ def _get(url: str) -> Request:
 
 
 async def _source_port(
-    transport: AiohttpTransport,
+    transport: Transport,
     *,
     url: str,
 ) -> int:
@@ -114,9 +146,14 @@ async def _source_port(
 
 
 @pytest.mark.asyncio
-async def test_sequential_requests_share_one_connection(server: TestServer) -> None:
+@_EVERY_TRANSPORT
+async def test_sequential_requests_share_one_connection(
+    server: TestServer,
+    *,
+    factory: type[Transport],
+) -> None:
     url = str(server.make_url(_PEER))
-    transport = AiohttpTransport()
+    transport = factory()
 
     source_ports = {await _source_port(transport, url=url) for _ in range(3)}
     await transport.close()
@@ -125,8 +162,13 @@ async def test_sequential_requests_share_one_connection(server: TestServer) -> N
 
 
 @pytest.mark.asyncio
-async def test_a_post_arrives_with_its_body_query_and_content_type(server: TestServer) -> None:
-    transport = AiohttpTransport()
+@_EVERY_TRANSPORT
+async def test_a_post_arrives_with_its_body_query_and_content_type(
+    server: TestServer,
+    *,
+    factory: type[Transport],
+) -> None:
+    transport = factory()
 
     response = await transport.send(
         Request(
@@ -196,8 +238,13 @@ async def test_a_session_raising_for_status_still_hands_over_the_status(
 
 
 @pytest.mark.asyncio
-async def test_a_response_carries_the_retry_after_the_service_sent(server: TestServer) -> None:
-    transport = AiohttpTransport()
+@_EVERY_TRANSPORT
+async def test_a_response_carries_the_retry_after_the_service_sent(
+    server: TestServer,
+    *,
+    factory: type[Transport],
+) -> None:
+    transport = factory()
 
     response = await transport.send(_get(str(server.make_url(_UNAVAILABLE))))
     await transport.close()
@@ -206,10 +253,13 @@ async def test_a_response_carries_the_retry_after_the_service_sent(server: TestS
 
 
 @pytest.mark.asyncio
+@_EVERY_TRANSPORT
 async def test_an_error_page_in_a_broken_charset_still_hands_over_the_status(
     server: TestServer,
+    *,
+    factory: type[Transport],
 ) -> None:
-    transport = AiohttpTransport()
+    transport = factory()
 
     response = await transport.send(_get(str(server.make_url(_BROKEN_CHARSET))))
     await transport.close()
@@ -217,11 +267,62 @@ async def test_an_error_page_in_a_broken_charset_still_hands_over_the_status(
     assert response.status == HTTPStatus.SERVICE_UNAVAILABLE
 
 
+# `Shazam` compares the media type alone, as the service spells it in lowercase.
 @pytest.mark.asyncio
-async def test_closing_a_transport_that_never_made_a_request_is_not_an_error() -> None:
-    # Nothing to assert past not raising: the session is built on the first
+@_EVERY_TRANSPORT
+async def test_the_content_type_is_the_lowercase_media_type(
+    server: TestServer,
+    *,
+    factory: type[Transport],
+) -> None:
+    transport = factory()
+
+    response = await transport.send(_get(str(server.make_url(_MIXED_CASE_TYPE))))
+    await transport.close()
+
+    assert response.content_type == _JSON
+
+
+def _closed_port() -> int:
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+
+        return int(listener.getsockname()[1])
+
+
+@pytest.mark.asyncio
+@_EVERY_TRANSPORT
+async def test_a_refused_connection_raises_a_transport_error(*, factory: type[Transport]) -> None:
+    transport = factory()
+
+    with pytest.raises(TransportError, match="sent no answer") as raised:
+        await transport.send(_get(f"http://127.0.0.1:{_closed_port()}/"))
+
+    await transport.close()
+
+    assert raised.value.__cause__ is not None
+
+
+@pytest.mark.asyncio
+async def test_a_timeout_of_the_given_session_raises_a_transport_error(
+    server: TestServer,
+) -> None:
+    async with ClientSession(timeout=ClientTimeout(total=0.05)) as session:
+        transport = AiohttpTransport(session=session)
+
+        with pytest.raises(TransportError, match="sent no answer"):
+            await transport.send(_get(str(server.make_url(_SLOW))))
+
+
+@pytest.mark.asyncio
+@_EVERY_TRANSPORT
+async def test_closing_a_transport_that_never_made_a_request_is_not_an_error(
+    *,
+    factory: type[Transport],
+) -> None:
+    # Nothing to assert past not raising: the pool is built on the first
     #  request, so a transport that made none has nothing to close.
-    await AiohttpTransport().close()
+    await factory().close()
 
 
 @pytest.mark.asyncio
@@ -263,7 +364,7 @@ async def test_shazam_retries_with_the_options_it_was_given(
     async with ClientSession() as session:
         shazam = Shazam(
             transport=AiohttpTransport(session=session if given_session else None),
-            retry=Retry(attempts=2),
+            middleware=[Retry(attempts=2)],
         )
 
         # The default options retry twenty times, so ignoring the given ones
@@ -302,7 +403,7 @@ async def test_a_request_goes_through_the_proxy_of_the_given_session(server: Tes
     assert video.caption == _UNROUTABLE_HOST
 
 
-async def _one_request_on_its_own_server(transport: AiohttpTransport) -> Response:
+async def _one_request_on_its_own_server(transport: Transport) -> Response:
     test_server = TestServer(_application())
     await test_server.start_server()
 
@@ -316,16 +417,18 @@ async def _one_request_on_its_own_server(transport: AiohttpTransport) -> Respons
 #  `Shazam` at module scope and calling `asyncio.run` per song does; the
 #  comment in `AiohttpTransport._ensure_session` says what the second call used
 #  to raise.
-def test_one_transport_answers_across_two_event_loops() -> None:
-    transport = AiohttpTransport()
+@_EVERY_TRANSPORT
+def test_one_transport_answers_across_two_event_loops(*, factory: type[Transport]) -> None:
+    transport = factory()
 
     asyncio.run(_one_request_on_its_own_server(transport))
     asyncio.run(_one_request_on_its_own_server(transport))
     asyncio.run(transport.close())
 
 
-def test_a_closed_transport_stays_closed_in_a_new_event_loop() -> None:
-    transport = AiohttpTransport()
+@_EVERY_TRANSPORT
+def test_a_closed_transport_stays_closed_in_a_new_event_loop(*, factory: type[Transport]) -> None:
+    transport = factory()
 
     async def request_then_close() -> None:
         await _one_request_on_its_own_server(transport)

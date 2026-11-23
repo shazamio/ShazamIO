@@ -1,22 +1,29 @@
 import asyncio
-import json
 import pathlib
-import uuid
 import warnings
-from collections.abc import Coroutine, Iterable, Mapping, Sequence
-from http import HTTPMethod, HTTPStatus
+from collections.abc import Coroutine, Iterable, Sequence
+from http import HTTPStatus
 from types import TracebackType
 from typing import Any, Final, Self, TypeVar
 
-from pydantic import BaseModel, Field, ValidationError
 from shazamio_core import Recognizer, SearchParams, Signature
 
-from shazamio import _endpoints as endpoints
+from shazamio import _service as service
+from shazamio._endpoint import Endpoint, Settings
 from shazamio._enums import Device, GenreMusic
-from shazamio._exceptions import BadPayload, BadResponse, NotFound, RateLimited
-from shazamio._parsers import parse_apple_ids, parse_chart, parse_itunes_track_ids
-from shazamio._retry import Retry, send_with_retry
-from shazamio._transport import AiohttpTransport, Request, Response, Transport
+from shazamio._exceptions import BadResponse, NotFound, RateLimited
+from shazamio._middleware import Middleware, chain
+from shazamio._retry import Retry
+from shazamio._transport import AiohttpTransport, Response, Transport
+from shazamio.endpoints import (
+    ItunesSearch,
+    RecognizeSignature,
+    TrackAbout,
+    TrackKeysFromAppleIds,
+    YoutubeVideo,
+    _Chart,
+    _ChartLocations,
+)
 from shazamio.models import ChartTrack, ResponseTrack, TrackInfo, YoutubeData
 
 __all__ = [
@@ -34,22 +41,7 @@ _NO_MATCH_WINDOW_SECONDS: Final[int] = 15
 
 # PEP 695 generics need Python 3.12, and the package supports 3.11.
 _Result = TypeVar("_Result")
-_Model = TypeVar("_Model", bound=BaseModel)
-
-
-class _City(BaseModel):
-    name: str
-    url_name: str = Field(alias="urlName")
-
-
-class _Country(BaseModel):
-    code: str = Field(alias="id")
-    url_name: str = Field(alias="urlName")
-    cities: list[_City]
-
-
-class _Locations(BaseModel):
-    countries: list[_Country]
+_Answer = TypeVar("_Answer")
 
 
 def _read(
@@ -110,18 +102,6 @@ def _warn_on_window(seconds: int) -> None:
     warnings.warn(msg, UserWarning, stacklevel=3)
 
 
-def _parse_answer(
-    model: type[_Model],
-    *,
-    payload: str,
-) -> _Model:
-    try:
-        return model.model_validate_json(payload)
-    except ValidationError as er:
-        msg = f"Shazam answer is not a `{model.__name__}`: {payload[:200]}"
-        raise BadPayload(msg) from er
-
-
 def _reject_skewed(
     answer: ResponseTrack,
     *,
@@ -159,9 +139,9 @@ async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> li
 class Shazam:
     """Async client for the Shazam API.
 
-    `transport` sends the requests, `AiohttpTransport()` unless given; `retry` says
-    which answers are sent again, `Retry()` unless given. `close()` closes the
-    transport.
+    `transport` sends the requests, `AiohttpTransport()` unless given. Every request
+    passes through `middleware` on its way, the first one outermost; `(Retry(),)`
+    unless given, and `()` sends each request once. `close()` closes the transport.
     """
 
     __module__ = "shazamio"
@@ -172,16 +152,21 @@ class Shazam:
         language: str = "en-US",
         country: str = "GB",
         transport: Transport | None = None,
-        retry: Retry | None = None,
+        middleware: Sequence[Middleware] | None = None,
         recognition_device: Device = Device.IPHONE,
     ) -> None:
-        self._device = Device(recognition_device)
+        self._settings = Settings(
+            language=language,
+            country=country,
+            device=Device(recognition_device),
+        )
         self._recognizer = Recognizer(segment_duration_seconds=WINDOW_SECONDS)
-        self._language = language
-        self._country = country
         self._transport: Transport = transport if transport is not None else AiohttpTransport()
         self._owns_transport: bool = transport is None
-        self._retry: Retry = retry or Retry()
+        self._call_next = chain(
+            (Retry(),) if middleware is None else middleware,
+            transport=self._transport,
+        )
         self._closed: bool = False
 
     async def __aenter__(self) -> Self:
@@ -202,44 +187,27 @@ class Shazam:
         if self._owns_transport:
             await self._transport.close()
 
-    async def _get(
-        self,
-        url: str,
-        *,
-        content_type: str,
-        headers: Mapping[str, str],
-        params: Mapping[str, str | int] | None = None,
-    ) -> str:
-        request = Request(
-            method=HTTPMethod.GET,
-            url=url,
-            headers=headers,
-            params=params or {},
-        )
+    async def __call__(self, endpoint: Endpoint[_Answer]) -> _Answer:
+        """Send the request of `endpoint` and return its answer.
 
-        return await self._send(request, content_type=content_type)
-
-    async def _send(
-        self,
-        request: Request,
-        *,
-        content_type: str,
-    ) -> str:
+        :raises TransportError: no answer arrived
+        :raises RateLimited: the service answered `429`
+        :raises BadResponse: another status than `200`, or another content type
+        :raises BadPayload: the answer does not fit `endpoint`
+        """
         if self._closed:
             msg: str = "Shazam is closed"
             raise RuntimeError(msg)
 
-        response = await send_with_retry(
-            self._transport,
-            request=request,
-            retry=self._retry,
-        )
-
-        return _read(
+        request = endpoint.request(self._settings)
+        response = await self._call_next(request)
+        payload = _read(
             response,
             url=request.url,
-            content_type=content_type,
+            content_type=endpoint.content_type,
         )
+
+        return endpoint.parse(payload)
 
     async def top_tracks(
         self,
@@ -272,7 +240,7 @@ class Shazam:
         genre_slug = None if genre is None else GenreMusic(genre).value
 
         if country_code is None:
-            path = endpoints.chart_path(genre=genre_slug)
+            path = service.chart_path(genre=genre_slug)
         else:
             path = await self._country_path(
                 country_code,
@@ -280,13 +248,7 @@ class Shazam:
                 genre_slug=genre_slug,
             )
 
-        payload = await self._get(
-            endpoints.CHART_URL.format(path=path),
-            content_type=endpoints.CHART_CONTENT_TYPE,
-            headers=self._headers(),
-        )
-
-        return parse_chart(payload)
+        return await self(_Chart(path=path))
 
     async def _country_path(
         self,
@@ -295,12 +257,7 @@ class Shazam:
         city: str | None,
         genre_slug: str | None,
     ) -> str:
-        payload = await self._get(
-            endpoints.LOCATIONS_URL,
-            content_type=endpoints.JSON_CONTENT_TYPE,
-            headers=self._headers(),
-        )
-        locations = _parse_answer(_Locations, payload=payload)
+        locations = await self(_ChartLocations())
 
         country = next((entry for entry in locations.countries if entry.code == country_code), None)
         if country is None:
@@ -308,20 +265,20 @@ class Shazam:
             raise NotFound(msg)
 
         if genre_slug is not None:
-            return endpoints.chart_path(
+            return service.chart_path(
                 country=country.url_name,
                 genre=genre_slug,
             )
 
         if city is None:
-            return endpoints.chart_path(country=country.url_name)
+            return service.chart_path(country=country.url_name)
 
         city_entry = next((entry for entry in country.cities if entry.name == city), None)
         if city_entry is None:
             msg = f"City not found, check the city name: {city}"
             raise NotFound(msg)
 
-        return endpoints.chart_path(
+        return service.chart_path(
             country=country.url_name,
             city=city_entry.url_name,
         )
@@ -331,17 +288,7 @@ class Shazam:
 
         :raises BadPayload: the answer does not fit the model
         """
-        payload = await self._get(
-            endpoints.TRACK_URL.format(
-                language=self._language,
-                country=self._country,
-                track_id=track_id,
-            ),
-            content_type=endpoints.JSON_CONTENT_TYPE,
-            headers=self._headers(),
-        )
-
-        return _parse_answer(TrackInfo, payload=payload)
+        return await self(TrackAbout(track_id=track_id))
 
     async def track_keys_from_apple_ids(self, apple_ids: Sequence[int | str]) -> dict[str, str]:
         """Map Apple Music track ids to Shazam track keys, in one request.
@@ -358,23 +305,7 @@ class Shazam:
         :raises NotFound: the service refused the whole request: a malformed id,
             or a storefront it does not serve
         """
-        # An empty sequence asks for `.../{language}/`, which answers
-        #  `404 text/html Not supported` and reads as a dead endpoint.
-        if not apple_ids:
-            msg: str = "No Apple ids given"
-            raise ValueError(msg)
-
-        payload = await self._get(
-            endpoints.APPLE_IDS_URL.format(
-                country=self._country,
-                language=self._language,
-                apple_ids=",".join(str(apple_id) for apple_id in apple_ids),
-            ),
-            content_type=endpoints.APPLE_IDS_CONTENT_TYPE,
-            headers=self._headers(),
-        )
-
-        return parse_apple_ids(payload)
+        return await self(TrackKeysFromAppleIds(apple_ids=apple_ids))
 
     async def search_tracks_via_itunes(
         self,
@@ -397,23 +328,12 @@ class Shazam:
         :raises ValueError: `limit` is outside 1 to 200
         :raises BadPayload: a track answer does not fit `TrackInfo`
         """
-        if not 1 <= limit <= endpoints.ITUNES_SEARCH_MAX_LIMIT:
-            msg = f"`limit` must be from 1 to {endpoints.ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
-            raise ValueError(msg)
-
-        payload = await self._get(
-            endpoints.ITUNES_SEARCH_URL,
-            content_type=endpoints.ITUNES_SEARCH_CONTENT_TYPE,
-            # Apple's search is no Shazam endpoint, so it gets none of its headers.
-            headers={},
-            params={
-                "term": query,
-                "entity": "song",
-                "limit": limit,
-                "country": self._country,
-            },
+        apple_ids = await self(
+            ItunesSearch(
+                query=query,
+                limit=limit,
+            ),
         )
-        apple_ids = parse_itunes_track_ids(payload)
 
         # One id per call: a batch keys its entries by the id Shazam stores, which
         #  can be one never sent, so its tracks could not be put in Apple's order.
@@ -433,13 +353,7 @@ class Shazam:
 
         :raises BadPayload: the answer does not fit the model
         """
-        payload = await self._get(
-            link,
-            content_type=endpoints.JSON_CONTENT_TYPE,
-            headers=self._headers(),
-        )
-
-        return _parse_answer(YoutubeData, payload=payload)
+        return await self(YoutubeVideo(link=link))
 
     async def recognize(
         self,
@@ -494,26 +408,4 @@ class Shazam:
 
     async def recognize_signature(self, signature: Signature) -> ResponseTrack:
         """Search the Shazam database for a signature `shazamio_core` computed."""
-        request = Request(
-            method=HTTPMethod.POST,
-            url=endpoints.TAG_URL.format(
-                language=self._language,
-                country=self._country,
-                device=self._device.value,
-                # SongRec sends random v4 ids:
-                #  https://github.com/marin-m/SongRec/blob/b94ee61d51f40e8b3051da8f5c6a9e9c437b3633/src/core/fingerprinting/communication.rs#L89-L90
-                uuid_1=str(uuid.uuid4()).upper(),
-                uuid_2=str(uuid.uuid4()).upper(),
-            ),
-            headers={
-                **self._headers(),
-                "Content-Type": endpoints.JSON_CONTENT_TYPE,
-            },
-            body=json.dumps(endpoints.tag_payload(signature)).encode(),
-        )
-        payload = await self._send(request, content_type=endpoints.JSON_CONTENT_TYPE)
-
-        return _parse_answer(ResponseTrack, payload=payload)
-
-    def _headers(self) -> dict[str, str]:
-        return endpoints.headers(self._language)
+        return await self(RecognizeSignature(signature=signature))

@@ -4,7 +4,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from http import HTTPMethod
 
-from aiohttp import ClientSession
+from aiohttp import ClientError, ClientSession
+
+from shazamio._exceptions import TransportError
 
 __all__ = [
     "AiohttpTransport",
@@ -45,19 +47,51 @@ class Response:
 class Transport(abc.ABC):
     """Sends the requests of one `Shazam`.
 
-    It only moves bytes: `Shazam` retries, checks the status and the content type,
-    and parses the answer, so every transport gets the same errors.
+    It only moves bytes: the middleware of `Shazam` retries, and `Shazam` checks
+    the status and the content type and parses the answer, so every transport
+    gets the same errors.
     """
 
     __module__ = "shazamio"
 
     @abc.abstractmethod
     async def send(self, request: Request) -> Response:
-        """Send `request` once and return the answer, whatever its status."""
+        """Send `request` once and return the answer, whatever its status.
+
+        :raises TransportError: no answer arrived, the transport's own error chained
+        """
 
     @abc.abstractmethod
     async def close(self) -> None:
         """Release what the transport holds; `Shazam.close()` calls it."""
+
+
+async def _exchange(
+    session: ClientSession,
+    *,
+    request: Request,
+) -> Response:
+    async with session.request(
+        request.method,
+        request.url,
+        headers=request.headers,
+        params=request.params,
+        data=request.body,
+        # A session built with `raise_for_status` raised `ClientResponseError`
+        #  here, before `Shazam` saw the status, so a `503` was neither retried
+        #  nor a `BadResponse`; the per-request flag wins over the session's:
+        #  https://github.com/aio-libs/aiohttp/blob/f17c631bddcfd4ec712342db28f1d3381a3fec71/aiohttp/client.py#L1045-L1046
+        raise_for_status=False,
+    ) as response:
+        # An error page in a broken charset is still a status to report.
+        text = await response.text(errors="replace")
+
+        return Response(
+            status=response.status,
+            content_type=response.content_type,
+            text=text,
+            headers=response.headers,
+        )
 
 
 class AiohttpTransport(Transport):
@@ -80,27 +114,13 @@ class AiohttpTransport(Transport):
     async def send(self, request: Request) -> Response:
         session = self._ensure_session()
 
-        async with session.request(
-            request.method,
-            request.url,
-            headers=request.headers,
-            params=request.params,
-            data=request.body,
-            # A session built with `raise_for_status` raised `ClientResponseError`
-            #  here, before `Shazam` saw the status, so a `503` was neither retried
-            #  nor a `BadResponse`; the per-request flag wins over the session's:
-            #  https://github.com/aio-libs/aiohttp/blob/f17c631bddcfd4ec712342db28f1d3381a3fec71/aiohttp/client.py#L1045-L1046
-            raise_for_status=False,
-        ) as response:
-            # An error page in a broken charset is still a status to report.
-            text = await response.text(errors="replace")
-
-            return Response(
-                status=response.status,
-                content_type=response.content_type,
-                text=text,
-                headers=response.headers,
-            )
+        # A total timeout raises a bare `TimeoutError`, no `ClientError`: on `aiohttp`
+        #  3.14.5, `ClientTimeout(total=0.05)` against a handler sleeping 1 s did.
+        try:
+            return await _exchange(session, request=request)
+        except (ClientError, TimeoutError) as er:
+            msg = f"{request.url} sent no answer: {er!r}"
+            raise TransportError(msg) from er
 
     async def close(self) -> None:
         self._closed = True

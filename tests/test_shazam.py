@@ -19,12 +19,11 @@ from shazamio import (
     Request,
     Response,
     ResponseTrack,
-    Retry,
     SearchParams,
     Shazam,
     TrackInfo,
 )
-from shazamio import _endpoints as endpoints
+from shazamio import _service as service
 from shazamio.testing import MockTransport
 
 # Anchored to this file, so the suite runs from any working directory.
@@ -33,8 +32,8 @@ _TAG_ID: Final[str] = "0B9D4C34-6D3A-4F0B-9A4E-2B1C8E7F6A51"
 _NO_MATCH: Final[ResponseTrack] = ResponseTrack.model_validate({"matches": [], "tagid": _TAG_ID})
 _UUID: Final[re.Pattern[str]] = re.compile(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}")
 _HEADERS: Final[dict[str, str]] = {"X-Shazam-Platform": "IPHONE"}
-_CSV: Final[str] = endpoints.CHART_CONTENT_TYPE
-_JSON: Final[str] = endpoints.JSON_CONTENT_TYPE
+_CSV: Final[str] = service.CHART_CONTENT_TYPE
+_JSON: Final[str] = service.JSON_CONTENT_TYPE
 _ROUTE: Final[str] = "https://amp.shazam.com/discovery/v5/en-US/GB"
 _GLORIA_TRACK: Final[str] = json.dumps(
     {"key": "53982678", "title": "I Will Survive", "subtitle": "Gloria Gaynor"},
@@ -90,11 +89,11 @@ _TWO_SONGS: Final[str] = json.dumps({"results": [{"trackId": 697195462}, {"track
 
 
 def _content_type_of(url: str) -> str:
-    if url.startswith(endpoints.CHART_URL.partition("{")[0]):
+    if url.startswith(service.CHART_URL.partition("{")[0]):
         return _CSV
 
-    if url.startswith(endpoints.ITUNES_SEARCH_URL):
-        return endpoints.ITUNES_SEARCH_CONTENT_TYPE
+    if url.startswith(service.ITUNES_SEARCH_URL):
+        return service.ITUNES_SEARCH_CONTENT_TYPE
 
     return _JSON
 
@@ -115,7 +114,7 @@ def _answer_every_request(
             text=answers[content_type],
         )
 
-    monkeypatch.setattr(endpoints, "headers", lambda _language: _HEADERS)
+    monkeypatch.setattr(service, "headers", lambda _language: _HEADERS)
 
     return MockTransport(answer)
 
@@ -628,7 +627,7 @@ async def test_no_ids_is_refused_before_anything_is_requested(shazam: Shazam) ->
         await shazam.track_keys_from_apple_ids([])
 
 
-# Also pins the path-segment order `endpoints.APPLE_IDS_URL` documents: this
+# Also pins the path-segment order `service.APPLE_IDS_URL` documents: this
 #  test fails as `NotFound` if the two are ever swapped.
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -730,7 +729,7 @@ async def test_a_failed_mapping_cancels_the_other_mappings(
 
     transport = _answer_every_request(
         monkeypatch,
-        answers={endpoints.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+        answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
     )
     shazam = Shazam(transport=transport)
     monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
@@ -761,7 +760,7 @@ async def test_a_failed_track_cancels_the_other_tracks(
 
     transport = _answer_every_request(
         monkeypatch,
-        answers={endpoints.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+        answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
     )
     shazam = Shazam(transport=transport)
     monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
@@ -796,7 +795,7 @@ async def test_a_chart_that_is_not_published_names_its_status() -> None:
         await shazam.top_tracks()
 
     assert (raised.value.url, raised.value.status) == (
-        endpoints.CHART_URL.format(path=endpoints.chart_path()),
+        service.CHART_URL.format(path=service.chart_path()),
         HTTPStatus.NOT_FOUND,
     )
 
@@ -832,7 +831,7 @@ async def test_a_throttled_request_names_the_rate_limit() -> None:
     )
     shazam = Shazam(
         transport=transport,
-        retry=Retry(attempts=1),
+        middleware=(),
     )
 
     with pytest.raises(RateLimited, match="rate limited") as raised:

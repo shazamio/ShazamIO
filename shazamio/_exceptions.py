@@ -7,11 +7,21 @@ __all__ = [
     "NotFound",
     "RateLimited",
     "ShazamError",
+    "TransportError",
 ]
 
 
 class ShazamError(Exception):
     """Base of every error the library raises on purpose."""
+
+    __module__ = "shazamio"
+
+
+class TransportError(ShazamError):
+    """The request got no answer: a refused connection, a reset, a timeout.
+
+    The transport's own error is the `__cause__`.
+    """
 
     __module__ = "shazamio"
 

@@ -19,8 +19,8 @@ class Handler(Protocol):
 class MockTransport(Transport):
     """Sends nothing: `handler` answers every request, and `requests` keeps each one.
 
-    `Shazam(transport=MockTransport(handler))` then retries, checks and parses the
-    answers as it does the service's.
+    `Shazam(transport=MockTransport(handler))` then runs its middleware, checks and
+    parses the answers as it does the service's.
     """
 
     def __init__(self, handler: Handler) -> None:

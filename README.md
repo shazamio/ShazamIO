@@ -229,25 +229,84 @@ retries and the errors below.
 
 Another HTTP library plugs in as a subclass of `Transport` with two methods:
 `send(request)`, which sends a `Request` once and returns a `Response` whatever
-its status, and `close()`. `Shazam` does the rest, retries, status checks and
-parsing included. A transport you pass stays yours to close, so one can serve
-several `Shazam` clients in turn.
+its status, or raises `TransportError` when no answer came, and `close()`.
+`Shazam` does the rest, middleware, status checks and parsing included. A
+transport you pass stays yours to close, so one can serve several `Shazam`
+clients in turn.
 
-## 🔁 Retries
+## 🔁 Retries and middleware
 
-A request answered `429` or any `5xx` is sent again, by default until it has
-gone out 20 times, with an exponential backoff from 0.2 s capped at 60 s. A
-`Retry-After` given in seconds replaces the backoff, under the same cap. Pass your own `Retry` to
-change that, here three attempts on a `429` alone:
+Every request passes through the client's middleware on its way to the
+transport, `[Retry()]` unless you pass your own list. `Retry` sends a request
+answered `429` or any `5xx` again, by default until it has gone out 20 times,
+with an exponential backoff from 0.2 s capped at 60 s. A `Retry-After` given in
+seconds replaces the backoff, under the same cap. Here three attempts on a
+`429` alone, and on a request that got no answer:
 
   ```python3
   from shazamio import Retry, Shazam
 
-  Shazam(retry=Retry(attempts=3, statuses=frozenset({429})))
+  Shazam(
+      middleware=[
+          Retry(attempts=3, statuses=frozenset({429}), on_transport_error=True),
+      ],
+  )
   ```
 
-`Retry(attempts=1)` sends every request once. Each retry is logged at debug
-level on the `shazamio._retry` logger.
+Without `on_transport_error=True` a `TransportError` is raised at once.
+`middleware=[]` sends every request once. Each retry is logged at debug level
+on the `shazamio._retry` logger.
+
+A middleware is an async callable taking the `Request` and `call_next`; it may
+change the request, answer it itself, or read the response on its way back. The
+first one in the list runs outermost:
+
+  ```python3
+  import time
+
+  from shazamio import CallNext, Request, Response, Retry, Shazam
+
+
+  async def timed(request: Request, *, call_next: CallNext) -> Response:
+      started = time.monotonic()
+      response = await call_next(request)
+      print(request.url, response.status, time.monotonic() - started)
+
+      return response
+
+
+  Shazam(middleware=[timed, Retry()])
+  ```
+
+## 🧩 Endpoints
+
+Every method runs an endpoint from `shazamio.endpoints`, and `await shazam(endpoint)`
+runs any of them, yours included. An `Endpoint` builds its `Request` from the
+client's `Settings` and parses the answer's text; `Shazam` sends it through the
+middleware and checks for `200` and the endpoint's `content_type` in between:
+
+  ```python3
+  from dataclasses import dataclass
+
+  from shazamio import Endpoint, Request, Settings, Shazam, TrackInfo
+  from shazamio.endpoints import TrackAbout
+
+
+  @dataclass(frozen=True, kw_only=True)
+  class RawTrack(Endpoint[str]):
+      track_id: int
+
+      def request(self, settings: Settings) -> Request:
+          return TrackAbout(track_id=self.track_id).request(settings)
+
+      def parse(self, payload: str) -> str:
+          return payload
+
+
+  async with Shazam() as shazam:
+      track: TrackInfo = await shazam(TrackAbout(track_id=549952578))
+      raw: str = await shazam(RawTrack(track_id=549952578))
+  ```
 
 ## 🧪 Testing code that calls Shazam
 
@@ -255,7 +314,7 @@ level on the `shazamio._retry` logger.
 every request, and the transport keeps each one in `requests`:
 
   ```python3
-  from shazamio import Request, Response, Retry, Shazam
+  from shazamio import Request, Response, Shazam
   from shazamio.testing import MockTransport
 
 
@@ -267,32 +326,29 @@ every request, and the transport keeps each one in `requests`:
       )
 
 
-  shazam = Shazam(transport=MockTransport(answer), retry=Retry(attempts=1))
+  shazam = Shazam(transport=MockTransport(answer), middleware=[])
   ```
 
-The answers go through the same retries and checks as the service's, so this
-one raises `RateLimited`; `Retry(attempts=1)` skips the waits the default
+The answers go through the same middleware and checks as the service's, so
+this one raises `RateLimited`; `middleware=[]` skips the waits the default
 retries would add.
 
 ## 🚨 Errors
 
-Every error about an answer is a `ShazamError`:
+Every error the library raises about a request is a `ShazamError`:
 
 | Error | Raised when |
 |---|---|
-| `BadResponse` | the service answered with another status or content type than the API answer; `.url` and `.status` say which |
+| `BadResponse` | the service answered with another status or content type than the API answer; `.url`, the URL the endpoint built, and `.status` say which |
 | `RateLimited` | a `BadResponse` for a throttled request, status `429`, still there after the retries; back off |
 | `BadPayload` | the answer arrived and fits no model |
 | `NotFound` | a country, city or Apple id the service does not know; also a `LookupError` |
+| `TransportError` | no answer came: a failed connection or proxy, a timeout; the transport's own error is its `__cause__` |
 
 A wrong argument raises `ValueError` or `TypeError` before any request is sent,
 and a request on a closed `Shazam` raises `RuntimeError`.
 `recognize` raises `SignatureError` when it cannot read the audio, a missing
 file included.
-
-A request that gets no answer (a failed connection or proxy, a timeout) raises
-what `aiohttp` or the session's connector raised, such as `aiohttp.ClientError`
-or `TimeoutError`.
 
 ## 🎯 When a match may be wrong
 
@@ -380,7 +436,7 @@ on those fields should retain the default until they have checked compatibility.
 | `Serialize.track(payload)`, `Serialize.full_track(payload)`, `Serialize.youtube(payload)` | `TrackInfo.model_validate(payload)`, `ResponseTrack.model_validate(payload)`, `YoutubeData.model_validate(payload)` |
 | `proxy=` on every method, positional in `recognize(data, proxy)` and `track_about(track_id, proxy)` | a session of yours: `ClientSession(proxy=...)` passed as `Shazam(transport=AiohttpTransport(session=...))`, closed by you |
 | a subclass of `HTTPClientInterface`, for SOCKS or anything else | `AiohttpTransport(session=...)` on the connector you need, or a `Transport` subclass for another HTTP library |
-| `Shazam(http_client=HTTPClient(retry_options=ExponentialRetry(...)))` | `Shazam(retry=Retry(...))`, whose `start_delay` and `max_delay` are `start_timeout` and `max_timeout`; `statuses` is now the whole set retried, so `statuses=S` with the default `retry_all_server_errors=True` becomes `statuses=frozenset(S) \| set(range(500, 600))`; `exceptions=`, `evaluate_response_callback=` and the other retry classes have no counterpart, and a request that raises is sent once, so retry it in your code or in a `Transport` subclass |
+| `Shazam(http_client=HTTPClient(retry_options=ExponentialRetry(...)))` | `Shazam(middleware=[Retry(...)])`, whose `start_delay` and `max_delay` are `start_timeout` and `max_timeout`; `statuses` is now the whole set retried, so `statuses=S` with the default `retry_all_server_errors=True` becomes `statuses=frozenset(S) \| set(range(500, 600))`; `exceptions=` becomes `on_transport_error=True`, which retries every `TransportError`; `evaluate_response_callback=` and the other retry classes become a middleware of yours |
 | `Shazam(endpoint_country="GB")` | `Shazam(country="GB")`, every argument by keyword |
 | `Shazam(segment_duration_seconds=n)` | `recognize(..., options=SearchParams(segment_duration_seconds=n))` |
 | `recognize(data, proxy, options)`, `options` positional | `recognize(data, options=...)`, `options` and `max_skew` by keyword |
@@ -393,7 +449,7 @@ on those fields should retain the default until they have checked compatibility.
 | `BadAppleIds` for an empty id list | `ValueError`, before any request |
 | `ValueError` for `recognize` data that is neither a path nor bytes | `TypeError` |
 | `GeoService`, `HTTPClient`, `Serialize`, `CountryCode` | gone |
-| `shazamio.exceptions`, `shazamio.enums` and the other submodules | `shazamio` itself; `shazamio.models` and `shazamio.testing` are the only public submodules |
+| `shazamio.exceptions`, `shazamio.enums` and the other submodules | `shazamio` itself; `shazamio.models`, `shazamio.endpoints` and `shazamio.testing` are the only public submodules |
 | the attributes `headers()`, `language`, `endpoint_country`, `http_client`, `geo_service`, `core_recognizer` | gone, the constructor arguments are not exposed |
 | a debug record per attempt on the `shazamio.request` logger | a debug record per retry on the `shazamio._retry` logger |
 | Python 3.10, `aiohttp>=3.8.0`, `aiohttp-retry>=2.3` | Python 3.11, `aiohttp>=3.11`, no `aiohttp-retry` |

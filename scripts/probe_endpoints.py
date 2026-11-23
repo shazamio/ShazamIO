@@ -20,7 +20,7 @@ import aiohttp
 from shazamio_core import Recognizer
 
 from shazamio import Device
-from shazamio import _endpoints as endpoints
+from shazamio import _service as service
 
 _LANGUAGE: Final[str] = "en-US"
 _COUNTRY: Final[str] = "GB"
@@ -67,8 +67,8 @@ def _chart(
 ) -> Probe:
     return Probe(
         url_name="CHART_URL",
-        url=endpoints.CHART_URL.format(path=path),
-        content_type=endpoints.CHART_CONTENT_TYPE,
+        url=service.CHART_URL.format(path=path),
+        content_type=service.CHART_CONTENT_TYPE,
         expected=expected,
     )
 
@@ -77,49 +77,49 @@ def probes() -> list[Probe]:
     return [
         Probe(
             url_name="TAG_URL",
-            url=endpoints.TAG_URL.format(
+            url=service.TAG_URL.format(
                 language=_LANGUAGE,
                 country=_COUNTRY,
                 device=Device.IPHONE.value,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),
             ),
-            content_type=endpoints.JSON_CONTENT_TYPE,
+            content_type=service.JSON_CONTENT_TYPE,
         ),
         Probe(
             url_name="TRACK_URL",
-            url=endpoints.TRACK_URL.format(
+            url=service.TRACK_URL.format(
                 language=_LANGUAGE,
                 country=_COUNTRY,
                 track_id=_TRACK_ID,
             ),
-            content_type=endpoints.JSON_CONTENT_TYPE,
+            content_type=service.JSON_CONTENT_TYPE,
         ),
         Probe(
             url_name="YOUTUBE_VIDEO_URL",
-            url=endpoints.YOUTUBE_VIDEO_URL.format(
+            url=service.YOUTUBE_VIDEO_URL.format(
                 track_id=_TRACK_ID,
                 query=quote_plus(_VIDEO_QUERY),
             ),
-            content_type=endpoints.JSON_CONTENT_TYPE,
+            content_type=service.JSON_CONTENT_TYPE,
         ),
         Probe(
             url_name="LOCATIONS_URL",
-            url=endpoints.LOCATIONS_URL,
-            content_type=endpoints.JSON_CONTENT_TYPE,
+            url=service.LOCATIONS_URL,
+            content_type=service.JSON_CONTENT_TYPE,
         ),
         Probe(
             url_name="APPLE_IDS_URL",
-            url=endpoints.APPLE_IDS_URL.format(
+            url=service.APPLE_IDS_URL.format(
                 country=_COUNTRY,
                 language=_LANGUAGE,
                 apple_ids=_APPLE_ID,
             ),
-            content_type=endpoints.APPLE_IDS_CONTENT_TYPE,
+            content_type=service.APPLE_IDS_CONTENT_TYPE,
         ),
         Probe(
             url_name="ITUNES_SEARCH_URL",
-            url=endpoints.ITUNES_SEARCH_URL
+            url=service.ITUNES_SEARCH_URL
             + "?"
             + urlencode(
                 {
@@ -129,28 +129,28 @@ def probes() -> list[Probe]:
                     "country": _COUNTRY,
                 },
             ),
-            content_type=endpoints.ITUNES_SEARCH_CONTENT_TYPE,
+            content_type=service.ITUNES_SEARCH_CONTENT_TYPE,
         ),
-        _chart(endpoints.chart_path()),
-        _chart(endpoints.chart_path(genre=_GENRE_SLUG)),
-        _chart(endpoints.chart_path(country=_COUNTRY_SLUG)),
+        _chart(service.chart_path()),
+        _chart(service.chart_path(genre=_GENRE_SLUG)),
+        _chart(service.chart_path(country=_COUNTRY_SLUG)),
         _chart(
-            endpoints.chart_path(
+            service.chart_path(
                 country=_COUNTRY_SLUG,
                 genre=_GENRE_SLUG,
             ),
         ),
         _chart(
-            endpoints.chart_path(
+            service.chart_path(
                 country=_COUNTRY_SLUG,
                 city=_CITY_SLUG,
             ),
         ),
         # An unknown slug is a clean empty `404`, which is the service working.
-        _chart(endpoints.chart_path(genre="no-such-genre"), expected=Verdict.BAD_INPUT),
-        _chart(endpoints.chart_path(country="no-such-country"), expected=Verdict.BAD_INPUT),
+        _chart(service.chart_path(genre="no-such-genre"), expected=Verdict.BAD_INPUT),
+        _chart(service.chart_path(country="no-such-country"), expected=Verdict.BAD_INPUT),
         _chart(
-            endpoints.chart_path(
+            service.chart_path(
                 country=_COUNTRY_SLUG,
                 city="no-such-city",
             ),
@@ -160,7 +160,7 @@ def probes() -> list[Probe]:
 
 
 def unprobed_url_names(checked: list[Probe]) -> set[str]:
-    declared = {name for name in endpoints.__all__ if name.endswith("_URL")}
+    declared = {name for name in service.__all__ if name.endswith("_URL")}
     return declared - {probe.url_name for probe in checked}
 
 
@@ -181,7 +181,7 @@ def classify(
         return Verdict.UNEXPECTED
 
     # `a2st` reports a bad request in a `200` body, as `parse_apple_ids` says.
-    is_apple_ids: bool = probe.content_type == endpoints.APPLE_IDS_CONTENT_TYPE
+    is_apple_ids: bool = probe.content_type == service.APPLE_IDS_CONTENT_TYPE
     if is_apple_ids and "error" in json.loads(answer.body):
         return Verdict.UNEXPECTED
 
@@ -190,7 +190,7 @@ def classify(
 
 async def _recognition_payload() -> dict[str, Any]:
     signature = await Recognizer().recognize_path(value=str(_SAMPLE))
-    return endpoints.tag_payload(signature)
+    return service.tag_payload(signature)
 
 
 async def _ask(
@@ -198,7 +198,7 @@ async def _ask(
     *,
     probe: Probe,
 ) -> Answer:
-    headers = endpoints.headers(_LANGUAGE)
+    headers = service.headers(_LANGUAGE)
 
     if probe.url_name == "TAG_URL":
         request = session.post(
@@ -242,7 +242,7 @@ async def main() -> int:
     unprobed = unprobed_url_names(all_probes)
 
     if unprobed:
-        print(f"no probe for endpoints.{', endpoints.'.join(sorted(unprobed))}", file=sys.stderr)
+        print(f"no probe for service.{', service.'.join(sorted(unprobed))}", file=sys.stderr)
         return 2
 
     surprises: int = 0

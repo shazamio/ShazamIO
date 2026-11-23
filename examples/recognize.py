@@ -19,10 +19,12 @@ logging.basicConfig(
 
 async def main() -> None:
     async with Shazam(
-        retry=Retry(
-            attempts=12,
-            max_delay=204.8,
-        ),
+        middleware=[
+            Retry(
+                attempts=12,
+                max_delay=204.8,
+            ),
+        ],
     ) as shazam:
         # pass path
         out = await shazam.recognize(SAMPLE)

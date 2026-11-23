@@ -3,7 +3,7 @@ from typing import Final
 import pytest
 
 from scripts.probe_endpoints import Answer, Probe, Verdict, classify, probes, unprobed_url_names
-from shazamio._endpoints import APPLE_IDS_CONTENT_TYPE, CHART_CONTENT_TYPE
+from shazamio._service import APPLE_IDS_CONTENT_TYPE, CHART_CONTENT_TYPE
 
 _CHART: Final[Probe] = Probe(
     url_name="CHART_URL",
