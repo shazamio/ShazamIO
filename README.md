@@ -250,7 +250,7 @@ Here three attempts on a `429` alone, and on a request that got no answer:
 
 Without `on_transport_error=True` a `TransportError` is raised at once.
 `retry=None` sends every request once. Each retry is logged at debug level on
-the `shazamio._retry` logger.
+the `shazamio.retry` logger.
 
 Anything else every request should pass through, a log line, a cache or a rate
 limit, is a `Transport` wrapping another one. The retries run outside it, so it
@@ -420,8 +420,8 @@ on those fields should retain the default until they have checked compatibility.
 | `BadAppleIds` for an empty id list | `ValueError`, before any request |
 | `ValueError` for `recognize` data that is neither a path nor bytes | `TypeError` |
 | `GeoService`, `HTTPClient`, `Serialize`, `CountryCode` | gone |
-| `shazamio.exceptions`, `shazamio.enums` and the other submodules | `shazamio` itself; `shazamio.models` and `shazamio.testing` are the only public submodules |
+| `shazamio.api`, `shazamio.misc`, `shazamio.schemas` and the other submodules | `shazamio` itself, or one of `shazamio.client`, `shazamio.enums`, `shazamio.exceptions`, `shazamio.models`, `shazamio.retry`, `shazamio.testing`, `shazamio.transport` |
 | the attributes `headers()`, `language`, `endpoint_country`, `http_client`, `geo_service`, `core_recognizer` | gone, the constructor arguments are not exposed |
-| a debug record per attempt on the `shazamio.request` logger | a debug record per retry on the `shazamio._retry` logger |
+| a debug record per attempt on the `shazamio.request` logger | a debug record per retry on the `shazamio.retry` logger |
 | Python 3.10, `aiohttp>=3.8.0`, `aiohttp-retry>=2.3` | Python 3.11, `aiohttp>=3.11`, no `aiohttp-retry` |
 | `GenreMusic` as a plain `Enum` | a `StrEnum`: `f"{GenreMusic.ROCK}"` is `rock` |

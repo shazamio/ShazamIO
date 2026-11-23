@@ -8,7 +8,7 @@ from typing import Final
 import pytest
 
 from shazamio import Request, Response, Retry, TransportError
-from shazamio._retry import _delay, send_with_retry
+from shazamio.retry import _delay, send_with_retry
 from shazamio.testing import MockTransport
 
 _REQUEST: Final[Request] = Request(

@@ -11,8 +11,6 @@ from typing import Any, Final, Self, TypeVar
 from shazamio_core import Recognizer, SearchParams, Signature
 
 from shazamio import _service as service
-from shazamio._enums import Device, GenreMusic
-from shazamio._exceptions import BadResponse, NotFound, RateLimited
 from shazamio._parsers import (
     Locations,
     parse_apple_ids,
@@ -20,9 +18,11 @@ from shazamio._parsers import (
     parse_itunes_track_ids,
     parse_model,
 )
-from shazamio._retry import Retry, send_with_retry
-from shazamio._transport import AiohttpTransport, Request, Response, Transport
+from shazamio.enums import Device, GenreMusic
+from shazamio.exceptions import BadResponse, NotFound, RateLimited
 from shazamio.models import ChartTrack, ResponseTrack, TrackInfo, YoutubeData
+from shazamio.retry import Retry, send_with_retry
+from shazamio.transport import AiohttpTransport, Request, Response, Transport
 
 __all__ = [
     "WINDOW_SECONDS",
@@ -140,8 +140,6 @@ class Shazam:
     `transport` sends the requests, `AiohttpTransport()` unless given. `retry` repeats
     a failed one, and `None` sends each request once. `close()` closes the transport.
     """
-
-    __module__ = "shazamio"
 
     def __init__(
         self,

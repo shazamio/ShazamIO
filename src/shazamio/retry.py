@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Final
 
-from shazamio._exceptions import TransportError
-from shazamio._transport import Request, Response, Transport
+from shazamio.exceptions import TransportError
+from shazamio.transport import Request, Response, Transport
 
 __all__ = [
     "Retry",
@@ -30,8 +30,6 @@ class Retry:
     attempt's answer or error goes back as it came. `Retry(attempts=1)` sends every
     request once.
     """
-
-    __module__ = "shazamio"
 
     attempts: int = 20
     start_delay: float = 0.1

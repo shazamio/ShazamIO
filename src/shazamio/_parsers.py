@@ -6,7 +6,7 @@ from typing import Final, TypeVar
 
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
-from shazamio._exceptions import BadPayload, NotFound
+from shazamio.exceptions import BadPayload, NotFound
 from shazamio.models import ChartTrack
 
 __all__ = [

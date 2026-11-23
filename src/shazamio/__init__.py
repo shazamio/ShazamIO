@@ -1,7 +1,8 @@
 from shazamio_core.shazamio_core import SearchParams, SignatureError
 
-from ._enums import Device, GenreMusic
-from ._exceptions import (
+from .client import Shazam
+from .enums import Device, GenreMusic
+from .exceptions import (
     BadPayload,
     BadResponse,
     NotFound,
@@ -9,10 +10,9 @@ from ._exceptions import (
     ShazamError,
     TransportError,
 )
-from ._retry import Retry
-from ._shazam import Shazam
-from ._transport import AiohttpTransport, Request, Response, Transport
 from .models import ChartTrack, ResponseTrack, TrackInfo, YoutubeData
+from .retry import Retry
+from .transport import AiohttpTransport, Request, Response, Transport
 
 __all__ = [
     "AiohttpTransport",

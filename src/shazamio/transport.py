@@ -6,7 +6,7 @@ from http import HTTPMethod
 
 from aiohttp import ClientError, ClientSession
 
-from shazamio._exceptions import TransportError
+from shazamio.exceptions import TransportError
 
 __all__ = [
     "AiohttpTransport",
@@ -19,8 +19,6 @@ __all__ = [
 @dataclass(frozen=True, kw_only=True)
 class Request:
     """One HTTP request `Shazam` hands its transport."""
-
-    __module__ = "shazamio"
 
     method: HTTPMethod
     url: str
@@ -36,8 +34,6 @@ class Response:
     `content_type` is the media type alone, without its parameters: `text/csv`.
     """
 
-    __module__ = "shazamio"
-
     status: int
     content_type: str
     text: str
@@ -50,8 +46,6 @@ class Transport(abc.ABC):
     It only moves bytes: `Shazam` retries, checks the status and the content
     type and parses the answer, so every transport gets the same errors.
     """
-
-    __module__ = "shazamio"
 
     @abc.abstractmethod
     async def send(self, request: Request) -> Response:
@@ -101,8 +95,6 @@ class AiohttpTransport(Transport):
     Without one, the transport opens its own pool on the first request and closes
     it in `close()`.
     """
-
-    __module__ = "shazamio"
 
     def __init__(self, *, session: ClientSession | None = None) -> None:
         self._session = session

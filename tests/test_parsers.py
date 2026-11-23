@@ -2,8 +2,8 @@ from typing import Final
 
 import pytest
 
-from shazamio._exceptions import BadPayload, NotFound
 from shazamio._parsers import parse_apple_ids, parse_chart, parse_itunes_track_ids
+from shazamio.exceptions import BadPayload, NotFound
 
 # The shape the endpoint really returns, as `_CHART_HEADER` in `shazamio._parsers` describes.
 _CHART_CSV: Final[str] = (

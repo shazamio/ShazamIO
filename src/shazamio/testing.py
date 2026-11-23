@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from shazamio._transport import Request, Response, Transport
+from shazamio.transport import Request, Response, Transport
 
 __all__ = [
     "Handler",
