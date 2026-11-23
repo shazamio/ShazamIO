@@ -91,12 +91,6 @@ exclude-newer-package = { shazamio-core = false }
 requires = ["uv_build>=0.13.0,<0.14"]
 build-backend = "uv_build"
 
-# The package is a flat `shazamio/` directory, not the `src/` layout the backend
-#  expects by default.
-#  https://docs.astral.sh/uv/concepts/build-backend/#modules
-[tool.uv.build-backend]
-module-root = ""
-
 [tool.pytest.ini_options]
 # `-ra` prints the reason beside every non-passing test. Without it a skip is
 #  a bare `1 skipped` count, and a live test that skips itself where the

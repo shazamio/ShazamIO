@@ -64,5 +64,5 @@ repos:
         entry: just
         args: [test]
         language: system
-        files: ^(shazamio/|tests/|examples/data/|pyproject\.toml$|uv\.lock$)
+        files: ^(src/|tests/|examples/data/|pyproject\.toml$|uv\.lock$)
         pass_filenames: false
