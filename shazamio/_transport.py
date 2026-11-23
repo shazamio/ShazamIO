@@ -1,0 +1,130 @@
+import abc
+import asyncio
+from collections.abc import Mapping
+from dataclasses import dataclass, field
+from http import HTTPMethod
+
+from aiohttp import ClientSession
+
+__all__ = [
+    "AiohttpTransport",
+    "Request",
+    "Response",
+    "Transport",
+]
+
+
+@dataclass(frozen=True, kw_only=True)
+class Request:
+    """One HTTP request `Shazam` hands its transport."""
+
+    __module__ = "shazamio"
+
+    method: HTTPMethod
+    url: str
+    headers: Mapping[str, str] = field(default_factory=dict)
+    params: Mapping[str, str | int] = field(default_factory=dict)
+    body: bytes | None = None
+
+
+@dataclass(frozen=True, kw_only=True)
+class Response:
+    """What the service answered, whatever the status.
+
+    `content_type` is the media type alone, without its parameters: `text/csv`.
+    """
+
+    __module__ = "shazamio"
+
+    status: int
+    content_type: str
+    text: str
+    headers: Mapping[str, str] = field(default_factory=dict)
+
+
+class Transport(abc.ABC):
+    """Sends the requests of one `Shazam`.
+
+    It only moves bytes: `Shazam` retries, checks the status and the content type,
+    and parses the answer, so every transport gets the same errors.
+    """
+
+    __module__ = "shazamio"
+
+    @abc.abstractmethod
+    async def send(self, request: Request) -> Response:
+        """Send `request` once and return the answer, whatever its status."""
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        """Release what the transport holds; `Shazam.close()` calls it."""
+
+
+class AiohttpTransport(Transport):
+    """The default transport, on an `aiohttp` session.
+
+    Pass `session` to route traffic your way, a proxy or SOCKS connector included;
+    that session stays yours to close, and its `raise_for_status` is ignored.
+    Without one, the transport opens its own pool on the first request and closes
+    it in `close()`.
+    """
+
+    __module__ = "shazamio"
+
+    def __init__(self, *, session: ClientSession | None = None) -> None:
+        self._session = session
+        self._own_session: ClientSession | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._closed: bool = False
+
+    async def send(self, request: Request) -> Response:
+        session = self._ensure_session()
+
+        async with session.request(
+            request.method,
+            request.url,
+            headers=request.headers,
+            params=request.params,
+            data=request.body,
+            # A session built with `raise_for_status` raised `ClientResponseError`
+            #  here, before `Shazam` saw the status, so a `503` was neither retried
+            #  nor a `BadResponse`; the per-request flag wins over the session's:
+            #  https://github.com/aio-libs/aiohttp/blob/f17c631bddcfd4ec712342db28f1d3381a3fec71/aiohttp/client.py#L1045-L1046
+            raise_for_status=False,
+        ) as response:
+            # An error page in a broken charset is still a status to report.
+            text = await response.text(errors="replace")
+
+            return Response(
+                status=response.status,
+                content_type=response.content_type,
+                text=text,
+                headers=response.headers,
+            )
+
+    async def close(self) -> None:
+        self._closed = True
+
+        if self._own_session is not None:
+            await self._own_session.close()
+
+    def _ensure_session(self) -> ClientSession:
+        if self._closed:
+            msg: str = "AiohttpTransport is closed"
+            raise RuntimeError(msg)
+
+        if self._session is not None:
+            return self._session
+
+        # Built on the first request and rebuilt when the loop changes: a
+        #  `ClientSession` binds to the loop it is built on, so a client reused
+        #  across two `asyncio.run` calls raised `RuntimeError: Event loop is
+        #  closed`. The spent session is abandoned: closing it from the new loop
+        #  marks it closed and still leaves its socket open.
+        #  https://github.com/aio-libs/aiohttp/blob/5e392ce0456f5235a4ee6ad46f0e806df2f15873/aiohttp/client.py#L353
+        loop = asyncio.get_running_loop()
+        if self._own_session is None or self._loop is not loop:
+            self._own_session = ClientSession()
+            self._loop = loop
+
+        return self._own_session

@@ -13,11 +13,21 @@ __all__ = [
 class ShazamError(Exception):
     """Base of every error the library raises on purpose."""
 
+    __module__ = "shazamio"
+
 
 class BadResponse(ShazamError):
     """The service answered with something other than the API answer."""
 
-    def __init__(self, message: str, *, url: str, status: int) -> None:
+    __module__ = "shazamio"
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        url: str,
+        status: int,
+    ) -> None:
         super().__init__(message)
         self._url = url
         self._status = status
@@ -47,10 +57,16 @@ class BadResponse(ShazamError):
 class RateLimited(BadResponse):
     """The service throttled the request."""
 
+    __module__ = "shazamio"
+
 
 class BadPayload(ShazamError):
     """The answer arrived and fits no model."""
 
+    __module__ = "shazamio"
+
 
 class NotFound(ShazamError, LookupError):
     """A country, city or Apple id the service does not know."""
+
+    __module__ = "shazamio"

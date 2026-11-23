@@ -19,16 +19,11 @@ from urllib.parse import quote_plus, urlencode
 import aiohttp
 from shazamio_core import Recognizer
 
-from shazamio.apple import APPLE_TO_SHAZAM_CONTENT_TYPE
-from shazamio.charts import CHART_CONTENT_TYPE
-from shazamio.converter import Converter
-from shazamio.enums import Device
-from shazamio.itunes import ITUNES_SEARCH_CONTENT_TYPE
-from shazamio.misc import Request, ShazamUrl
+from shazamio import Device
+from shazamio import _endpoints as endpoints
 
 _LANGUAGE: Final[str] = "en-US"
-_ENDPOINT_COUNTRY: Final[str] = "GB"
-_JSON_CONTENT_TYPE: Final[str] = "application/json"
+_COUNTRY: Final[str] = "GB"
 _SAMPLE: Final[Path] = Path(__file__).parent.parent / "examples" / "data" / "Gloria.ogg"
 _SHOWN_BYTES: Final[int] = 60
 
@@ -65,11 +60,15 @@ class Answer:
     body: bytes
 
 
-def _chart(url_name: str, *, url: str, expected: Verdict = Verdict.LIVE) -> Probe:
+def _chart(
+    path: str,
+    *,
+    expected: Verdict = Verdict.LIVE,
+) -> Probe:
     return Probe(
-        url_name=url_name,
-        url=url,
-        content_type=CHART_CONTENT_TYPE,
+        url_name="CHART_URL",
+        url=endpoints.CHART_URL.format(path=path),
+        content_type=endpoints.CHART_CONTENT_TYPE,
         expected=expected,
     )
 
@@ -77,98 +76,81 @@ def _chart(url_name: str, *, url: str, expected: Verdict = Verdict.LIVE) -> Prob
 def probes() -> list[Probe]:
     return [
         Probe(
-            url_name="SEARCH_FROM_FILE",
-            url=ShazamUrl.SEARCH_FROM_FILE.format(
+            url_name="TAG_URL",
+            url=endpoints.TAG_URL.format(
                 language=_LANGUAGE,
-                endpoint_country=_ENDPOINT_COUNTRY,
+                country=_COUNTRY,
                 device=Device.IPHONE.value,
                 uuid_1=str(uuid.uuid4()).upper(),
                 uuid_2=str(uuid.uuid4()).upper(),
             ),
-            content_type=_JSON_CONTENT_TYPE,
+            content_type=endpoints.JSON_CONTENT_TYPE,
         ),
         Probe(
-            url_name="ABOUT_TRACK",
-            url=ShazamUrl.ABOUT_TRACK.format(
+            url_name="TRACK_URL",
+            url=endpoints.TRACK_URL.format(
                 language=_LANGUAGE,
-                endpoint_country=_ENDPOINT_COUNTRY,
+                country=_COUNTRY,
                 track_id=_TRACK_ID,
             ),
-            content_type=_JSON_CONTENT_TYPE,
+            content_type=endpoints.JSON_CONTENT_TYPE,
         ),
         Probe(
-            url_name="YOUTUBE_VIDEO",
-            url=ShazamUrl.YOUTUBE_VIDEO.format(
+            url_name="YOUTUBE_VIDEO_URL",
+            url=endpoints.YOUTUBE_VIDEO_URL.format(
                 track_id=_TRACK_ID,
                 query=quote_plus(_VIDEO_QUERY),
             ),
-            content_type=_JSON_CONTENT_TYPE,
+            content_type=endpoints.JSON_CONTENT_TYPE,
         ),
         Probe(
-            url_name="LOCATIONS",
-            url=ShazamUrl.LOCATIONS,
-            content_type=_JSON_CONTENT_TYPE,
+            url_name="LOCATIONS_URL",
+            url=endpoints.LOCATIONS_URL,
+            content_type=endpoints.JSON_CONTENT_TYPE,
         ),
         Probe(
-            url_name="APPLE_IDS_TO_TRACK_KEYS",
-            url=ShazamUrl.APPLE_IDS_TO_TRACK_KEYS.format(
-                country=_ENDPOINT_COUNTRY,
+            url_name="APPLE_IDS_URL",
+            url=endpoints.APPLE_IDS_URL.format(
+                country=_COUNTRY,
                 language=_LANGUAGE,
                 apple_ids=_APPLE_ID,
             ),
-            content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
+            content_type=endpoints.APPLE_IDS_CONTENT_TYPE,
         ),
         Probe(
-            url_name="ITUNES_SEARCH",
-            url=ShazamUrl.ITUNES_SEARCH
+            url_name="ITUNES_SEARCH_URL",
+            url=endpoints.ITUNES_SEARCH_URL
             + "?"
             + urlencode(
                 {
                     "term": _SEARCH_TERM,
                     "entity": "song",
                     "limit": 1,
-                    "country": _ENDPOINT_COUNTRY,
+                    "country": _COUNTRY,
                 },
             ),
-            content_type=ITUNES_SEARCH_CONTENT_TYPE,
+            content_type=endpoints.ITUNES_SEARCH_CONTENT_TYPE,
         ),
-        _chart("TOP_WORLD_TRACKS", url=ShazamUrl.TOP_WORLD_TRACKS),
+        _chart(endpoints.chart_path()),
+        _chart(endpoints.chart_path(genre=_GENRE_SLUG)),
+        _chart(endpoints.chart_path(country=_COUNTRY_SLUG)),
         _chart(
-            "TOP_WORLD_GENRE_TRACKS",
-            url=ShazamUrl.TOP_WORLD_GENRE_TRACKS.format(genre=_GENRE_SLUG),
-        ),
-        _chart(
-            "TOP_COUNTRY_TRACKS",
-            url=ShazamUrl.TOP_COUNTRY_TRACKS.format(country=_COUNTRY_SLUG),
-        ),
-        _chart(
-            "TOP_COUNTRY_GENRE_TRACKS",
-            url=ShazamUrl.TOP_COUNTRY_GENRE_TRACKS.format(
+            endpoints.chart_path(
                 country=_COUNTRY_SLUG,
                 genre=_GENRE_SLUG,
             ),
         ),
         _chart(
-            "TOP_CITY_TRACKS",
-            url=ShazamUrl.TOP_CITY_TRACKS.format(
+            endpoints.chart_path(
                 country=_COUNTRY_SLUG,
                 city=_CITY_SLUG,
             ),
         ),
         # An unknown slug is a clean empty `404`, which is the service working.
+        _chart(endpoints.chart_path(genre="no-such-genre"), expected=Verdict.BAD_INPUT),
+        _chart(endpoints.chart_path(country="no-such-country"), expected=Verdict.BAD_INPUT),
         _chart(
-            "TOP_WORLD_GENRE_TRACKS",
-            url=ShazamUrl.TOP_WORLD_GENRE_TRACKS.format(genre="no-such-genre"),
-            expected=Verdict.BAD_INPUT,
-        ),
-        _chart(
-            "TOP_COUNTRY_TRACKS",
-            url=ShazamUrl.TOP_COUNTRY_TRACKS.format(country="no-such-country"),
-            expected=Verdict.BAD_INPUT,
-        ),
-        _chart(
-            "TOP_CITY_TRACKS",
-            url=ShazamUrl.TOP_CITY_TRACKS.format(
+            endpoints.chart_path(
                 country=_COUNTRY_SLUG,
                 city="no-such-city",
             ),
@@ -178,11 +160,15 @@ def probes() -> list[Probe]:
 
 
 def unprobed_url_names(checked: list[Probe]) -> set[str]:
-    declared = {name for name in vars(ShazamUrl) if name.isupper()}
+    declared = {name for name in endpoints.__all__ if name.endswith("_URL")}
     return declared - {probe.url_name for probe in checked}
 
 
-def classify(probe: Probe, *, answer: Answer) -> Verdict:
+def classify(
+    probe: Probe,
+    *,
+    answer: Answer,
+) -> Verdict:
     # A retired path answers the website instead, often as `200 text/html`.
     if answer.content_type == "text/html":
         return Verdict.DEAD
@@ -194,8 +180,9 @@ def classify(probe: Probe, *, answer: Answer) -> Verdict:
     if answer.status != HTTPStatus.OK or answer.content_type != probe.content_type:
         return Verdict.UNEXPECTED
 
-    # `a2st` reports a bad request as `200 {"error":{"msg":"Could not fetch ids"}}`.
-    if probe.content_type == APPLE_TO_SHAZAM_CONTENT_TYPE and "error" in json.loads(answer.body):
+    # `a2st` reports a bad request in a `200` body, as `parse_apple_ids` says.
+    is_apple_ids: bool = probe.content_type == endpoints.APPLE_IDS_CONTENT_TYPE
+    if is_apple_ids and "error" in json.loads(answer.body):
         return Verdict.UNEXPECTED
 
     return Verdict.LIVE
@@ -203,19 +190,17 @@ def classify(probe: Probe, *, answer: Answer) -> Verdict:
 
 async def _recognition_payload() -> dict[str, Any]:
     signature = await Recognizer().recognize_path(value=str(_SAMPLE))
-
-    return Converter.data_search(
-        signature.timezone,
-        signature.signature.uri,
-        signature.signature.samples,
-        signature.timestamp,
-    )
+    return endpoints.tag_payload(signature)
 
 
-async def _ask(session: aiohttp.ClientSession, *, probe: Probe) -> Answer:
-    headers = Request(_LANGUAGE).headers()
+async def _ask(
+    session: aiohttp.ClientSession,
+    *,
+    probe: Probe,
+) -> Answer:
+    headers = endpoints.headers(_LANGUAGE)
 
-    if probe.url_name == "SEARCH_FROM_FILE":
+    if probe.url_name == "TAG_URL":
         request = session.post(
             probe.url,
             headers=headers,
@@ -236,7 +221,12 @@ async def _ask(session: aiohttp.ClientSession, *, probe: Probe) -> Answer:
         )
 
 
-def _report_line(probe: Probe, *, answer: Answer, verdict: Verdict) -> str:
+def _report_line(
+    probe: Probe,
+    *,
+    answer: Answer,
+    verdict: Verdict,
+) -> str:
     marker = "  " if verdict is probe.expected else "!!"
     shown = answer.body[:_SHOWN_BYTES]
 
@@ -252,7 +242,7 @@ async def main() -> int:
     unprobed = unprobed_url_names(all_probes)
 
     if unprobed:
-        print(f"no probe for ShazamUrl.{', ShazamUrl.'.join(sorted(unprobed))}", file=sys.stderr)
+        print(f"no probe for endpoints.{', endpoints.'.join(sorted(unprobed))}", file=sys.stderr)
         return 2
 
     surprises: int = 0

@@ -50,7 +50,7 @@ says why:
 
 - Request headers are dropped, so nothing a request carries is committed.
 - Response headers are kept only where the library reads them
-  (`Content-Type`, `Location`). The rest are CDN details that change on every
+  (`Content-Type`, `Location`, `Retry-After`). The rest are CDN details that change on every
   recording, and some name the edge nearest to whoever recorded.
 - HTML bodies are emptied; the library reads only their status and headers.
 - `429` responses are left out, so replay does not sleep through retries.

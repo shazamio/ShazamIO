@@ -10,27 +10,31 @@ import shazamio
 # What the package promises to keep working. Removing a name from here is a
 #  breaking change for anyone importing it, so it takes two deliberate edits.
 _EXPORTS: Final[tuple[str, ...]] = (
+    "AiohttpTransport",
     "BadPayload",
     "BadResponse",
     "ChartTrack",
     "Device",
     "GenreMusic",
-    "GeoService",
-    "HTTPClient",
     "NotFound",
     "RateLimited",
+    "Request",
+    "Response",
     "ResponseTrack",
+    "Retry",
     "SearchParams",
-    "Serialize",
     "Shazam",
     "ShazamError",
     "SignatureError",
     "TrackInfo",
+    "Transport",
     "YoutubeData",
 )
 
 
 _PACKAGE_ROOT: Final[Path] = Path(shazamio.__file__).parent
+# A module's `logging.getLogger(name=__name__)` is configured by name, never imported.
+_LOGGER: Final[str] = "logger"
 
 # The root `__init__.py` only re-exports, and `_EXPORTS` above pins it.
 _MODULES: Final[tuple[Path, ...]] = tuple(
@@ -50,6 +54,18 @@ def test_every_exported_name_resolves() -> None:
     unresolvable = [name for name in shazamio.__all__ if not hasattr(shazamio, name)]
 
     assert unresolvable == []
+
+
+# A traceback, a `repr` and `pickle` name a class by its `__module__`, which
+#  for a class defined in a private module would be a path nobody may import.
+def test_no_export_names_a_private_module() -> None:
+    private = [
+        name
+        for name in shazamio.__all__
+        if getattr(shazamio, name).__module__.startswith("shazamio._")
+    ]
+
+    assert private == []
 
 
 def _top_level_names(tree: ast.Module) -> tuple[list[str], list[str] | None]:
@@ -87,4 +103,6 @@ def test_every_module_declares_exactly_its_public_names(path: Path) -> None:
     defined, declared = _top_level_names(ast.parse(path.read_text(encoding="utf-8")))
 
     assert isinstance(declared, list)
-    assert set(declared) == {name for name in defined if not name.startswith("_")}
+    assert set(declared) == {
+        name for name in defined if not name.startswith("_") and name != _LOGGER
+    }

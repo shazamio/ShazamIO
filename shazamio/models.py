@@ -4,13 +4,14 @@ from uuid import UUID
 
 from pydantic import AliasPath, BaseModel, ConfigDict, Field
 
-from shazamio.misc import ShazamUrl
+from shazamio._endpoints import YOUTUBE_VIDEO_URL
 
 __all__ = [
     "ActionModel",
     "ArtistSection",
     "BaseIdTypeModel",
     "BeaconDataLyricsSection",
+    "ChartTrack",
     "HubProvider",
     "HubProviderAction",
     "LocationModel",
@@ -34,6 +35,14 @@ __all__ = [
 
 _SPOTIFY: Final[str] = "SPOTIFY"
 _SPOTIFY_SEARCH: Final[str] = "spotify:search:"
+
+
+class ChartTrack(BaseModel):
+    """One row of a chart. Three columns is everything Shazam publishes."""
+
+    rank: int
+    artist: str
+    title: str
 
 
 class ShareModel(BaseModel):
@@ -244,8 +253,8 @@ class TrackInfo(BaseModel):
             if type(section) is VideoSection:
                 return section.youtube_url
 
-        # Shazam no longer sends the section: see `ShazamUrl.YOUTUBE_VIDEO`.
-        return ShazamUrl.YOUTUBE_VIDEO.format(
+        # Shazam no longer sends the section: see `YOUTUBE_VIDEO_URL`.
+        return YOUTUBE_VIDEO_URL.format(
             track_id=self.key,
             query=quote_plus(f'{self.subtitle} "{self.title}"'),
         )

@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import StrEnum
 
 __all__ = [
     "Device",
@@ -7,12 +7,16 @@ __all__ = [
 
 
 class Device(StrEnum):
+    __module__ = "shazamio"
+
     IPHONE = "iphone"
     ANDROID = "android"
     WEB = "web"
 
 
-class GenreMusic(Enum):
+class GenreMusic(StrEnum):
+    __module__ = "shazamio"
+
     POP = "pop"
     HIP_HOP_RAP = "hip-hop-rap"
     DANCE = "dance"

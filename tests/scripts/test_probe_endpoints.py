@@ -3,24 +3,23 @@ from typing import Final
 import pytest
 
 from scripts.probe_endpoints import Answer, Probe, Verdict, classify, probes, unprobed_url_names
-from shazamio.apple import APPLE_TO_SHAZAM_CONTENT_TYPE
-from shazamio.charts import CHART_CONTENT_TYPE
+from shazamio._endpoints import APPLE_IDS_CONTENT_TYPE, CHART_CONTENT_TYPE
 
 _CHART: Final[Probe] = Probe(
-    url_name="TOP_WORLD_TRACKS",
+    url_name="CHART_URL",
     url="https://example.com/chart",
     content_type=CHART_CONTENT_TYPE,
 )
 _UNKNOWN_SLUG: Final[Probe] = Probe(
-    url_name="TOP_WORLD_GENRE_TRACKS",
+    url_name="CHART_URL",
     url="https://example.com/chart/no-such-genre",
     content_type=CHART_CONTENT_TYPE,
     expected=Verdict.BAD_INPUT,
 )
 _A2ST: Final[Probe] = Probe(
-    url_name="APPLE_IDS_TO_TRACK_KEYS",
+    url_name="APPLE_IDS_URL",
     url="https://example.com/a2st",
-    content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
+    content_type=APPLE_IDS_CONTENT_TYPE,
 )
 _WEBSITE: Final[Answer] = Answer(
     status=200,
@@ -65,7 +64,7 @@ def test_every_url_the_library_calls_has_a_probe() -> None:
             _A2ST,
             Answer(
                 status=200,
-                content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
+                content_type=APPLE_IDS_CONTENT_TYPE,
                 body=b'{"error":{"msg":"Could not fetch ids"}}',
             ),
             Verdict.UNEXPECTED,
@@ -73,5 +72,10 @@ def test_every_url_the_library_calls_has_a_probe() -> None:
         ),
     ],
 )
-def test_classify(probe: Probe, *, answer: Answer, expected: Verdict) -> None:
+def test_classify(
+    probe: Probe,
+    *,
+    answer: Answer,
+    expected: Verdict,
+) -> None:
     assert classify(probe, answer=answer) is expected

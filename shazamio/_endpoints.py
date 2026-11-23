@@ -1,14 +1,87 @@
-from typing import Final
+from random import choice
+from typing import Any, Final
 
-__all__ = ["USER_AGENTS"]
+from shazamio_core import Signature
 
+__all__ = [
+    "APPLE_IDS_CONTENT_TYPE",
+    "APPLE_IDS_URL",
+    "CHART_CONTENT_TYPE",
+    "CHART_URL",
+    "ITUNES_SEARCH_CONTENT_TYPE",
+    "ITUNES_SEARCH_MAX_LIMIT",
+    "ITUNES_SEARCH_URL",
+    "JSON_CONTENT_TYPE",
+    "LOCATIONS_URL",
+    "TAG_URL",
+    "TRACK_URL",
+    "USER_AGENTS",
+    "YOUTUBE_VIDEO_URL",
+    "chart_path",
+    "headers",
+    "tag_payload",
+]
+
+JSON_CONTENT_TYPE: Final[str] = "application/json"
+TAG_URL: Final[str] = (
+    "https://amp.shazam.com/discovery/v5/{language}/{country}/{device}/-/tag"
+    "/{uuid_1}/{uuid_2}?sync=true&webv3=true&sampling=true"
+    "&connected=&shazamapiversion=v3&sharehub=true&hubv5minorversion=v5.1&hidelb=true&video=v3"
+)
+# `discovery/v5` answers on `amp.` and `cdn.` only: `www.` returns the 1.7MB
+#  single-page-app shell as `text/html` or answers `404`, either one a
+#  `BadResponse`.
+#  The device segment is `iphone`: the `web` profile omits `hub.providers`,
+#  the Spotify and Deezer links, from every track, and `android` returns
+#  `apple_music_url` as an `intent://` deep link no browser opens.
+TRACK_URL: Final[str] = (
+    "https://amp.shazam.com/discovery/v5/{language}/{country}/iphone/-/track"
+    "/{track_id}?shazamapiversion=v3&video=v3"
+)
+# The URL the retired `VIDEO` track section used to carry, `GB` included.
+#  `query` picks the video, and without it the service answers `400`. The
+#  country picks among regional uploads, so `RU` can answer a different video.
+#  `curl -s -w '%{http_code}' 'https://cdn.shazam.com/video/v3/-/GB/iphone/1/youtube/video'`
+YOUTUBE_VIDEO_URL: Final[str] = (
+    "https://cdn.shazam.com/video/v3/-/GB/iphone/{track_id}/youtube/video?q={query}"
+)
+LOCATIONS_URL: Final[str] = "https://www.shazam.com/services/charts/locations"
+# `country` comes first and `locale` second: the other order answers
+#  `200 {"error":{"msg":"Could not fetch ids"}}`, which reads like a dead
+#  endpoint. The order is the one the website itself sends, from
+#  `_next/static/chunks/1683-*.js`:
+#  `fetch("/services/sd/s/a2st/".concat(t, "/").concat(n, "/").concat(e))`.
+APPLE_IDS_URL: Final[str] = (
+    "https://www.shazam.com/services/sd/s/a2st/{country}/{language}/{apple_ids}"
+)
+# The mapping is JSON served as `application/octet-stream`, so `response.json()`
+#  raises `ContentTypeError` and the body is decoded by hand:
+#  `curl -sI -A 'Dalvik/2.1.0 (Linux; U; Android 13; Pixel 7 Build/TQ3A)'
+#  'https://www.shazam.com/services/sd/s/a2st/US/en-US/1125281672'`.
+APPLE_IDS_CONTENT_TYPE: Final[str] = "application/octet-stream"
+# Apple's index, not Shazam's: Shazam's own search answers `404 Not supported`,
+#  `curl -A Dalvik/2.1.0 'https://www.shazam.com/services/search/v4/en-US/GB/web/search?term=adele'`.
+ITUNES_SEARCH_URL: Final[str] = "https://itunes.apple.com/search"
+# The search answers JSON as `text/javascript`, so `response.json()` raises
+#  `ContentTypeError` and the body is decoded by hand:
+#  `curl -sI 'https://itunes.apple.com/search?term=adele&entity=song&limit=1'`.
+ITUNES_SEARCH_CONTENT_TYPE: Final[str] = "text/javascript"
+# Apple serves `limit` from 1 to 200 (https://performance-partners.apple.com/search-api)
+#  and answers `0` or a negative one with 20 songs, not with an error.
+ITUNES_SEARCH_MAX_LIMIT: Final[int] = 200
+# Charts are CSV only: on `cdn.`, the one host still routing the JSON ones,
+#  `shazam/v3/.../tracks/ip-*-chart` answers `204` and `tracks/genre-*-chart-<id>`
+#  a chart last updated in 2024, while the CSV is dated the current week.
+#  Query parameters are ignored. `path` comes from `chart_path`.
+CHART_URL: Final[str] = "https://www.shazam.com/services/charts/csv/{path}/"
+CHART_CONTENT_TYPE: Final[str] = "text/csv"
 
 # Only an app `User-Agent` reaches the API. `www.shazam.com` answers a browser
-#  one with the website itself, `200 text/html`, which surfaces as a parse
-#  failure rather than as a refusal; a current Chrome string gets `405`. Every
+#  one with the website itself, which `Shazam` refuses by its content type;
+#  a current Chrome string gets `405`. Every
 #  agent below answers `200 text/csv` to
 #  `curl -A '<agent>' https://www.shazam.com/services/charts/csv/top-200/world/`.
-USER_AGENTS: Final[list[str]] = [
+USER_AGENTS: Final[tuple[str, ...]] = (
     "Dalvik/2.1.0 (Linux; U; Android 5.0.2; VS980 4G Build/LRX22G)",
     "Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-T210 Build/KOT49H)",
     "Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-P905V Build/LMY47X)",
@@ -97,4 +170,53 @@ USER_AGENTS: Final[list[str]] = [
     "Dalvik/2.1.0 (Linux; U; Android 6.0.1; SM-J700T Build/MMB29K)",
     "Dalvik/1.6.0 (Linux; U; Android 4.2.2; SM-T217S Build/JDQ39)",
     "Dalvik/1.6.0 (Linux; U; Android 4.4.4; SAMSUNG-SM-N900A Build/KTU84P)",
-]
+)
+
+
+def headers(language: str) -> dict[str, str]:
+    return {
+        "X-Shazam-Platform": "IPHONE",
+        "X-Shazam-AppVersion": "14.1.0",
+        "Accept": "*/*",
+        "Accept-Language": language,
+        "Accept-Encoding": "gzip, deflate",
+        # Picking a user agent is not cryptographic.
+        "User-Agent": choice(USER_AGENTS),  # noqa: S311
+    }
+
+
+def tag_payload(signature: Signature) -> dict[str, Any]:
+    return {
+        "timezone": signature.timezone,
+        "signature": {
+            "uri": signature.signature.uri,
+            "samplems": signature.signature.samples,
+        },
+        "timestamp": signature.timestamp,
+        "context": {},
+        "geolocation": {},
+    }
+
+
+def chart_path(
+    *,
+    country: str | None = None,
+    city: str | None = None,
+    genre: str | None = None,
+) -> str:
+    """The `CHART_URL` path of a chart, from the slugs `LOCATIONS_URL` lists.
+
+    :param country: country `urlName`, `None` for worldwide
+    :param city: city `urlName`, only with a country and without a genre
+    :param genre: `GenreMusic` value
+    """
+    if genre is not None:
+        return f"genre/{country or 'world'}/{genre}"
+
+    if country is None:
+        return "top-200/world"
+
+    if city is None:
+        return f"top-200/{country}"
+
+    return f"top-50/{country}/{city}"
