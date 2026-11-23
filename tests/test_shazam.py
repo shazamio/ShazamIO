@@ -799,7 +799,7 @@ class TestClient:
         transport = _answer_every_request(monkeypatch, answers={_JSON: body})
         shazam = Shazam(transport=transport)
 
-        with pytest.raises(BadPayload, match="Shazam answer is not a"):
+        with pytest.raises(BadPayload, match="The answer is not a"):
             await lookup(shazam)
 
     @pytest.mark.asyncio

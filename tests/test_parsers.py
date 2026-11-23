@@ -2,7 +2,7 @@ from typing import Final
 
 import pytest
 
-from shazamio._parsers import parse_apple_ids, parse_chart, parse_itunes_track_ids
+from shazamio._parsers import SearchAnswer, parse_apple_ids, parse_chart, parse_model
 from shazamio.exceptions import BadPayload, NotFound
 
 # The shape the endpoint really returns, as `_CHART_HEADER` in `shazamio._parsers` describes.
@@ -74,9 +74,11 @@ def test_a_body_that_is_json_but_not_a_mapping_is_rejected() -> None:
 
 
 def test_the_track_ids_are_read_in_apple_order() -> None:
-    assert parse_itunes_track_ids(_SEARCH_ANSWER) == [697195462, 697402071]
+    answer = parse_model(_SEARCH_ANSWER, model=SearchAnswer)
+
+    assert [song.track_id for song in answer.results] == [697195462, 697402071]
 
 
 def test_an_answer_without_results_is_rejected() -> None:
     with pytest.raises(BadPayload):
-        parse_itunes_track_ids("<!doctype html>\n")
+        parse_model("<!doctype html>\n", model=SearchAnswer)

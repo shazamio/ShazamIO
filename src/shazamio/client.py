@@ -13,9 +13,9 @@ from shazamio_core import Recognizer, SearchParams, Signature
 from shazamio import _requests, _urls
 from shazamio._parsers import (
     Locations,
+    SearchAnswer,
     parse_apple_ids,
     parse_chart,
-    parse_itunes_track_ids,
     parse_model,
 )
 from shazamio.enums import Device, GenreMusic
@@ -274,7 +274,7 @@ class Shazam:
         genre_slug: str | None,
     ) -> str:
         payload = await self._get(_urls.LOCATIONS_URL)
-        locations = parse_model(Locations, payload=payload)
+        locations = parse_model(payload, model=Locations)
 
         country = next((entry for entry in locations.countries if entry.code == country_code), None)
         if country is None:
@@ -313,7 +313,7 @@ class Shazam:
 
         payload = await self._get(url)
 
-        return parse_model(TrackInfo, payload=payload)
+        return parse_model(payload, model=TrackInfo)
 
     async def track_keys_from_apple_ids(self, apple_ids: Sequence[int | str]) -> dict[str, str]:
         """Map Apple Music track ids to Shazam track keys, in one request.
@@ -389,7 +389,8 @@ class Shazam:
             search,
             content_type=_urls.ITUNES_SEARCH_CONTENT_TYPE,
         )
-        apple_ids = parse_itunes_track_ids(payload)
+        answer = parse_model(payload, model=SearchAnswer)
+        apple_ids = [song.track_id for song in answer.results]
 
         # One id per call: a batch keys its entries by the id Shazam stores, which
         #  can be one never sent, so its tracks could not be put in Apple's order.
@@ -411,7 +412,7 @@ class Shazam:
         """
         payload = await self._get(link)
 
-        return parse_model(YoutubeData, payload=payload)
+        return parse_model(payload, model=YoutubeData)
 
     async def recognize(
         self,
@@ -486,4 +487,4 @@ class Shazam:
 
         payload = await self._send(request)
 
-        return parse_model(ResponseTrack, payload=payload)
+        return parse_model(payload, model=ResponseTrack)
