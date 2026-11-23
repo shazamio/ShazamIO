@@ -6,7 +6,7 @@ import pytest
 from aiohttp import ClientSession
 
 from shazamio import ResponseTrack, Shazam, TrackInfo, YoutubeData
-from shazamio._service import headers
+from shazamio._requests import headers
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path

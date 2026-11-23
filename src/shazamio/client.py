@@ -10,7 +10,7 @@ from typing import Any, Final, Self, TypeVar
 
 from shazamio_core import Recognizer, SearchParams, Signature
 
-from shazamio import _service as service
+from shazamio import _requests, _urls
 from shazamio._parsers import (
     Locations,
     parse_apple_ids,
@@ -181,7 +181,7 @@ class Shazam:
         self,
         request: Request,
         *,
-        content_type: str = service.JSON_CONTENT_TYPE,
+        content_type: str = _urls.JSON_CONTENT_TYPE,
     ) -> str:
         if self._closed:
             msg: str = "Shazam is closed"
@@ -207,12 +207,12 @@ class Shazam:
         self,
         url: str,
         *,
-        content_type: str = service.JSON_CONTENT_TYPE,
+        content_type: str = _urls.JSON_CONTENT_TYPE,
     ) -> str:
         request = Request(
             method=HTTPMethod.GET,
             url=url,
-            headers=service.headers(self._language),
+            headers=_requests.headers(self._language),
         )
 
         return await self._send(
@@ -251,7 +251,7 @@ class Shazam:
         genre_slug = None if genre is None else GenreMusic(genre).value
 
         if country_code is None:
-            path = service.chart_path(genre=genre_slug)
+            path = _urls.chart_path(genre=genre_slug)
         else:
             path = await self._country_path(
                 country_code,
@@ -260,8 +260,8 @@ class Shazam:
             )
 
         payload = await self._get(
-            service.CHART_URL.format(path=path),
-            content_type=service.CHART_CONTENT_TYPE,
+            _urls.CHART_URL.format(path=path),
+            content_type=_urls.CHART_CONTENT_TYPE,
         )
 
         return parse_chart(payload)
@@ -273,7 +273,7 @@ class Shazam:
         city: str | None,
         genre_slug: str | None,
     ) -> str:
-        payload = await self._get(service.LOCATIONS_URL)
+        payload = await self._get(_urls.LOCATIONS_URL)
         locations = parse_model(Locations, payload=payload)
 
         country = next((entry for entry in locations.countries if entry.code == country_code), None)
@@ -282,20 +282,20 @@ class Shazam:
             raise NotFound(msg)
 
         if genre_slug is not None:
-            return service.chart_path(
+            return _urls.chart_path(
                 country=country.url_name,
                 genre=genre_slug,
             )
 
         if city is None:
-            return service.chart_path(country=country.url_name)
+            return _urls.chart_path(country=country.url_name)
 
         city_entry = next((entry for entry in country.cities if entry.name == city), None)
         if city_entry is None:
             msg = f"City not found, check the city name: {city}"
             raise NotFound(msg)
 
-        return service.chart_path(
+        return _urls.chart_path(
             country=country.url_name,
             city=city_entry.url_name,
         )
@@ -305,7 +305,7 @@ class Shazam:
 
         :raises BadPayload: the answer does not fit the model
         """
-        url = service.TRACK_URL.format(
+        url = _urls.TRACK_URL.format(
             language=self._language,
             country=self._country,
             track_id=track_id,
@@ -336,7 +336,7 @@ class Shazam:
             msg: str = "No Apple ids given"
             raise ValueError(msg)
 
-        url = service.APPLE_IDS_URL.format(
+        url = _urls.APPLE_IDS_URL.format(
             country=self._country,
             language=self._language,
             apple_ids=",".join(str(apple_id) for apple_id in apple_ids),
@@ -344,7 +344,7 @@ class Shazam:
 
         payload = await self._get(
             url,
-            content_type=service.APPLE_IDS_CONTENT_TYPE,
+            content_type=_urls.APPLE_IDS_CONTENT_TYPE,
         )
 
         return parse_apple_ids(payload)
@@ -370,13 +370,13 @@ class Shazam:
         :raises ValueError: `limit` is outside 1 to 200
         :raises BadPayload: a track answer does not fit `TrackInfo`
         """
-        if not 1 <= limit <= service.ITUNES_SEARCH_MAX_LIMIT:
-            msg = f"`limit` must be from 1 to {service.ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
+        if not 1 <= limit <= _urls.ITUNES_SEARCH_MAX_LIMIT:
+            msg = f"`limit` must be from 1 to {_urls.ITUNES_SEARCH_MAX_LIMIT}, got {limit}"
             raise ValueError(msg)
 
         search = Request(
             method=HTTPMethod.GET,
-            url=service.ITUNES_SEARCH_URL,
+            url=_urls.ITUNES_SEARCH_URL,
             # Apple's search is no Shazam endpoint, so it gets none of its headers.
             params={
                 "term": query,
@@ -387,7 +387,7 @@ class Shazam:
         )
         payload = await self._send(
             search,
-            content_type=service.ITUNES_SEARCH_CONTENT_TYPE,
+            content_type=_urls.ITUNES_SEARCH_CONTENT_TYPE,
         )
         apple_ids = parse_itunes_track_ids(payload)
 
@@ -468,7 +468,7 @@ class Shazam:
         """Search the Shazam database for a signature `shazamio_core` computed."""
         request = Request(
             method=HTTPMethod.POST,
-            url=service.TAG_URL.format(
+            url=_urls.TAG_URL.format(
                 language=self._language,
                 country=self._country,
                 device=self._device.value,
@@ -478,10 +478,10 @@ class Shazam:
                 uuid_2=str(uuid.uuid4()).upper(),
             ),
             headers={
-                **service.headers(self._language),
-                "Content-Type": service.JSON_CONTENT_TYPE,
+                **_requests.headers(self._language),
+                "Content-Type": _urls.JSON_CONTENT_TYPE,
             },
-            body=json.dumps(service.tag_payload(signature)).encode(),
+            body=json.dumps(_requests.tag_payload(signature)).encode(),
         )
 
         payload = await self._send(request)

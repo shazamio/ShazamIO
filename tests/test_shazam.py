@@ -22,8 +22,9 @@ from shazamio import (
     SearchParams,
     Shazam,
     TrackInfo,
+    _requests,
+    _urls,
 )
-from shazamio import _service as service
 from shazamio.testing import MockTransport
 
 # Anchored to this file, so the suite runs from any working directory.
@@ -32,8 +33,8 @@ _TAG_ID: Final[str] = "0B9D4C34-6D3A-4F0B-9A4E-2B1C8E7F6A51"
 _NO_MATCH: Final[ResponseTrack] = ResponseTrack.model_validate({"matches": [], "tagid": _TAG_ID})
 _UUID: Final[re.Pattern[str]] = re.compile(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}")
 _HEADERS: Final[dict[str, str]] = {"X-Shazam-Platform": "IPHONE"}
-_CSV: Final[str] = service.CHART_CONTENT_TYPE
-_JSON: Final[str] = service.JSON_CONTENT_TYPE
+_CSV: Final[str] = _urls.CHART_CONTENT_TYPE
+_JSON: Final[str] = _urls.JSON_CONTENT_TYPE
 _ROUTE: Final[str] = "https://amp.shazam.com/discovery/v5/en-US/GB"
 _GLORIA_TRACK: Final[str] = json.dumps(
     {"key": "53982678", "title": "I Will Survive", "subtitle": "Gloria Gaynor"},
@@ -89,11 +90,11 @@ _TWO_SONGS: Final[str] = json.dumps({"results": [{"trackId": 697195462}, {"track
 
 
 def _content_type_of(url: str) -> str:
-    if url.startswith(service.CHART_URL.partition("{")[0]):
+    if url.startswith(_urls.CHART_URL.partition("{")[0]):
         return _CSV
 
-    if url.startswith(service.ITUNES_SEARCH_URL):
-        return service.ITUNES_SEARCH_CONTENT_TYPE
+    if url.startswith(_urls.ITUNES_SEARCH_URL):
+        return _urls.ITUNES_SEARCH_CONTENT_TYPE
 
     return _JSON
 
@@ -114,7 +115,7 @@ def _answer_every_request(
             text=answers[content_type],
         )
 
-    monkeypatch.setattr(service, "headers", lambda _language: _HEADERS)
+    monkeypatch.setattr(_requests, "headers", lambda _language: _HEADERS)
 
     return MockTransport(answer)
 
@@ -651,7 +652,7 @@ class TestTrackKeysFromAppleIds:
         with pytest.raises(ValueError, match="No Apple ids"):
             await shazam.track_keys_from_apple_ids([])
 
-    # Also pins the path-segment order `service.APPLE_IDS_URL` documents: this
+    # Also pins the path-segment order `_urls.APPLE_IDS_URL` documents: this
     #  test fails as `NotFound` if the two are ever swapped.
     @pytest.mark.vcr
     @pytest.mark.asyncio
@@ -732,7 +733,7 @@ class TestSearchTracksViaItunes:
 
         transport = _answer_every_request(
             monkeypatch,
-            answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+            answers={_urls.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
         )
         shazam = Shazam(transport=transport)
         monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
@@ -763,7 +764,7 @@ class TestSearchTracksViaItunes:
 
         transport = _answer_every_request(
             monkeypatch,
-            answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+            answers={_urls.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
         )
         shazam = Shazam(transport=transport)
         monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
@@ -817,7 +818,7 @@ class TestClient:
             await shazam.top_tracks()
 
         assert (raised.value.url, raised.value.status) == (
-            service.CHART_URL.format(path=service.chart_path()),
+            _urls.CHART_URL.format(path=_urls.chart_path()),
             HTTPStatus.NOT_FOUND,
         )
 

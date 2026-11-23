@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import AliasPath, BaseModel, ConfigDict, Field
 
-from shazamio._service import YOUTUBE_VIDEO_URL
+from shazamio._urls import YOUTUBE_VIDEO_URL
 
 __all__ = [
     "ActionModel",
