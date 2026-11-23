@@ -278,36 +278,6 @@ first one in the list runs outermost:
   Shazam(middleware=[timed, Retry()])
   ```
 
-## 🧩 Endpoints
-
-Every method runs an endpoint from `shazamio.endpoints`, and `await shazam(endpoint)`
-runs any of them, yours included. An `Endpoint` builds its `Request` from the
-client's `Settings` and parses the answer's text; `Shazam` sends it through the
-middleware and checks for `200` and the endpoint's `content_type` in between:
-
-  ```python3
-  from dataclasses import dataclass
-
-  from shazamio import Endpoint, Request, Settings, Shazam, TrackInfo
-  from shazamio.endpoints import TrackAbout
-
-
-  @dataclass(frozen=True, kw_only=True)
-  class RawTrack(Endpoint[str]):
-      track_id: int
-
-      def request(self, settings: Settings) -> Request:
-          return TrackAbout(track_id=self.track_id).request(settings)
-
-      def parse(self, payload: str) -> str:
-          return payload
-
-
-  async with Shazam() as shazam:
-      track: TrackInfo = await shazam(TrackAbout(track_id=549952578))
-      raw: str = await shazam(RawTrack(track_id=549952578))
-  ```
-
 ## 🧪 Testing code that calls Shazam
 
 `shazamio.testing.MockTransport` sends nothing: a function of yours answers
@@ -339,7 +309,7 @@ Every error the library raises about a request is a `ShazamError`:
 
 | Error | Raised when |
 |---|---|
-| `BadResponse` | the service answered with another status or content type than the API answer; `.url`, the URL the endpoint built, and `.status` say which |
+| `BadResponse` | the service answered with another status or content type than the API answer; `.url`, the URL the client built, and `.status` say which |
 | `RateLimited` | a `BadResponse` for a throttled request, status `429`, still there after the retries; back off |
 | `BadPayload` | the answer arrived and fits no model |
 | `NotFound` | a country, city or Apple id the service does not know; also a `LookupError` |
@@ -449,7 +419,7 @@ on those fields should retain the default until they have checked compatibility.
 | `BadAppleIds` for an empty id list | `ValueError`, before any request |
 | `ValueError` for `recognize` data that is neither a path nor bytes | `TypeError` |
 | `GeoService`, `HTTPClient`, `Serialize`, `CountryCode` | gone |
-| `shazamio.exceptions`, `shazamio.enums` and the other submodules | `shazamio` itself; `shazamio.models`, `shazamio.endpoints` and `shazamio.testing` are the only public submodules |
+| `shazamio.exceptions`, `shazamio.enums` and the other submodules | `shazamio` itself; `shazamio.models` and `shazamio.testing` are the only public submodules |
 | the attributes `headers()`, `language`, `endpoint_country`, `http_client`, `geo_service`, `core_recognizer` | gone, the constructor arguments are not exposed |
 | a debug record per attempt on the `shazamio.request` logger | a debug record per retry on the `shazamio._retry` logger |
 | Python 3.10, `aiohttp>=3.8.0`, `aiohttp-retry>=2.3` | Python 3.11, `aiohttp>=3.11`, no `aiohttp-retry` |

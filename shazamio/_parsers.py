@@ -2,7 +2,7 @@ import csv
 import io
 import json
 import logging
-from typing import Final
+from typing import Final, TypeVar
 
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
@@ -10,9 +10,11 @@ from shazamio._exceptions import BadPayload, NotFound
 from shazamio.models import ChartTrack
 
 __all__ = [
+    "Locations",
     "parse_apple_ids",
     "parse_chart",
     "parse_itunes_track_ids",
+    "parse_model",
 ]
 
 logger = logging.getLogger(name=__name__)
@@ -24,6 +26,24 @@ _CHART_HEADER: Final[list[str]] = ["Rank", "Artist", "Title"]
 _APPLE_IDS_ERROR: Final[str] = "error"
 _APPLE_IDS: Final[TypeAdapter[dict[str, str]]] = TypeAdapter(dict[str, str])
 
+# PEP 695 generics need Python 3.12, and the package supports 3.11.
+_Model = TypeVar("_Model", bound=BaseModel)
+
+
+class _City(BaseModel):
+    name: str
+    url_name: str = Field(alias="urlName")
+
+
+class _Country(BaseModel):
+    code: str = Field(alias="id")
+    url_name: str = Field(alias="urlName")
+    cities: list[_City]
+
+
+class Locations(BaseModel):
+    countries: list[_Country]
+
 
 class _Song(BaseModel):
     track_id: int = Field(alias="trackId")
@@ -31,6 +51,18 @@ class _Song(BaseModel):
 
 class _SearchAnswer(BaseModel):
     results: list[_Song]
+
+
+def parse_model(
+    model: type[_Model],
+    *,
+    payload: str,
+) -> _Model:
+    try:
+        return model.model_validate_json(payload)
+    except ValidationError as er:
+        msg = f"Shazam answer is not a `{model.__name__}`: {payload[:200]}"
+        raise BadPayload(msg) from er
 
 
 def parse_chart(payload: str) -> list[ChartTrack]:

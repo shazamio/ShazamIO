@@ -1,6 +1,5 @@
 from shazamio_core.shazamio_core import SearchParams, SignatureError
 
-from ._endpoint import Endpoint, Settings
 from ._enums import Device, GenreMusic
 from ._exceptions import (
     BadPayload,
@@ -23,7 +22,6 @@ __all__ = [
     "CallNext",
     "ChartTrack",
     "Device",
-    "Endpoint",
     "GenreMusic",
     "Middleware",
     "NotFound",
@@ -33,7 +31,6 @@ __all__ = [
     "ResponseTrack",
     "Retry",
     "SearchParams",
-    "Settings",
     "Shazam",
     "ShazamError",
     "SignatureError",
