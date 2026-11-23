@@ -22,8 +22,8 @@ from shazamio import (
     SearchParams,
     Shazam,
     TrackInfo,
-    _requests,
     _urls,
+    client,
 )
 from shazamio.transport import MockTransport
 
@@ -115,7 +115,7 @@ def _answer_every_request(
             text=answers[content_type],
         )
 
-    monkeypatch.setattr(_requests, "headers", lambda _language: _HEADERS)
+    monkeypatch.setattr(client, "_headers", lambda _language: _HEADERS)
 
     return MockTransport(answer)
 

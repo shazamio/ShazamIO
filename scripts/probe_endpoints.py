@@ -1,4 +1,4 @@
-"""Ask every URL the library calls what it answers, one request at a time.
+"""Run every public `Shazam` method against the live service and report what it answered.
 
 A diagnostic, not a test: it talks to a live third-party service, so nothing in CI
 runs it. Run it with `just probe` before a release, or when a user reports an
@@ -7,34 +7,44 @@ empty result, and read the verdict column.
 
 import asyncio
 import enum
-import json
+import inspect
 import sys
-import uuid
+from collections.abc import Awaitable, Sequence
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Final
-from urllib.parse import quote_plus, urlencode
+from typing import Final, Protocol
 
-import aiohttp
 from shazamio_core import Recognizer
 
-from shazamio import Device, _requests, _urls
+from shazamio import (
+    AiohttpTransport,
+    ChartTrack,
+    GenreMusic,
+    Request,
+    Response,
+    ResponseTrack,
+    Shazam,
+    ShazamError,
+    TrackInfo,
+    Transport,
+    YoutubeData,
+)
 
 _LANGUAGE: Final[str] = "en-US"
 _COUNTRY: Final[str] = "GB"
 _SAMPLE: Final[Path] = Path(__file__).parent.parent / "examples" / "data" / "Gloria.ogg"
-_SHOWN_BYTES: Final[int] = 60
+_SHOWN_CHARACTERS: Final[int] = 60
+_SHOWN_ERROR_CHARACTERS: Final[int] = 200
+_NOT_PROBED: Final[frozenset[str]] = frozenset({"close"})
 
-# Sample inputs known to resolve on 2026-10-06. One that stops resolving shows up
+# Sample inputs that resolve live. One that stops resolving shows up
 #  as `UNEXPECTED` on its own row, not as a dead endpoint.
 _TRACK_ID: Final[int] = 549952578
 _APPLE_ID: Final[int] = 1125281672
-_COUNTRY_SLUG: Final[str] = "russia"
-_CITY_SLUG: Final[str] = "moscow"
-_GENRE_SLUG: Final[str] = "pop"
+_CHART_COUNTRY: Final[str] = "RU"
+_CHART_CITY: Final[str] = "Moscow"
 _SEARCH_TERM: Final[str] = "adele"
-_VIDEO_QUERY: Final[str] = 'Gloria Gaynor "I Will Survive"'
 
 
 class Verdict(enum.Enum):
@@ -44,222 +54,267 @@ class Verdict(enum.Enum):
     UNEXPECTED = "UNEXPECTED"
 
 
+class Call(Protocol):
+    def __call__(
+        self,
+        shazam: Shazam,
+        /,
+    ) -> Awaitable[
+        ResponseTrack
+        | TrackInfo
+        | YoutubeData
+        | dict[str, str]
+        | list[TrackInfo]
+        | list[ChartTrack]
+    ]:
+        """Call one public method of `shazam`."""
+
+
 @dataclass(frozen=True, slots=True)
 class Probe:
-    url_name: str
-    url: str
-    content_type: str
+    method: str
+    label: str
+    call: Call
     expected: Verdict = Verdict.LIVE
 
 
 @dataclass(frozen=True, slots=True)
-class Answer:
-    status: int
-    content_type: str
-    body: bytes
+class Exchange:
+    request: Request
+    response: Response
 
 
-def _chart(
-    path: str,
-    *,
-    expected: Verdict = Verdict.LIVE,
-) -> Probe:
-    return Probe(
-        url_name="CHART_URL",
-        url=_urls.CHART_URL.format(path=path),
-        content_type=_urls.CHART_CONTENT_TYPE,
-        expected=expected,
-    )
+@dataclass(frozen=True, slots=True)
+class Outcome:
+    exchanges: Sequence[Exchange]
+    error: ShazamError | None
+
+
+class _Recorder(Transport):
+    """Keeps every raw answer, before `Shazam` checks it."""
+
+    def __init__(self, inner: Transport) -> None:
+        self._inner = inner
+        self._exchanges: list[Exchange] = []
+
+    @property
+    def exchanges(self) -> Sequence[Exchange]:
+        return self._exchanges
+
+    async def send(self, request: Request) -> Response:
+        response = await self._inner.send(request)
+
+        exchange = Exchange(
+            request=request,
+            response=response,
+        )
+        self._exchanges.append(exchange)
+
+        return response
+
+    async def close(self) -> None:
+        """The inner transport is closed by whoever opened it."""
+
+
+async def _youtube_of_a_track(shazam: Shazam) -> YoutubeData:
+    track = await shazam.track_about(_TRACK_ID)
+
+    if track.youtube_link is None:
+        msg: str = f"track {_TRACK_ID} carries no YouTube link"
+        raise ShazamError(msg)
+
+    return await shazam.get_youtube_data(track.youtube_link)
+
+
+async def _recognize_a_signature(shazam: Shazam) -> ResponseTrack:
+    signature = await Recognizer().recognize_path(value=str(_SAMPLE))
+
+    return await shazam.recognize_signature(signature)
 
 
 def probes() -> list[Probe]:
     return [
         Probe(
-            url_name="TAG_URL",
-            url=_urls.TAG_URL.format(
-                language=_LANGUAGE,
-                country=_COUNTRY,
-                device=Device.IPHONE.value,
-                uuid_1=str(uuid.uuid4()).upper(),
-                uuid_2=str(uuid.uuid4()).upper(),
-            ),
-            content_type=_urls.JSON_CONTENT_TYPE,
+            method=Shazam.recognize.__name__,
+            label="recognize(Gloria.ogg)",
+            call=lambda shazam: shazam.recognize(_SAMPLE),
         ),
         Probe(
-            url_name="TRACK_URL",
-            url=_urls.TRACK_URL.format(
-                language=_LANGUAGE,
-                country=_COUNTRY,
-                track_id=_TRACK_ID,
-            ),
-            content_type=_urls.JSON_CONTENT_TYPE,
+            method=Shazam.recognize_signature.__name__,
+            label="recognize_signature(Gloria.ogg)",
+            call=_recognize_a_signature,
         ),
         Probe(
-            url_name="YOUTUBE_VIDEO_URL",
-            url=_urls.YOUTUBE_VIDEO_URL.format(
-                track_id=_TRACK_ID,
-                query=quote_plus(_VIDEO_QUERY),
-            ),
-            content_type=_urls.JSON_CONTENT_TYPE,
+            method=Shazam.track_about.__name__,
+            label=f"track_about({_TRACK_ID})",
+            call=lambda shazam: shazam.track_about(_TRACK_ID),
         ),
         Probe(
-            url_name="LOCATIONS_URL",
-            url=_urls.LOCATIONS_URL,
-            content_type=_urls.JSON_CONTENT_TYPE,
+            method=Shazam.get_youtube_data.__name__,
+            label=f"get_youtube_data(track {_TRACK_ID})",
+            call=_youtube_of_a_track,
         ),
         Probe(
-            url_name="APPLE_IDS_URL",
-            url=_urls.APPLE_IDS_URL.format(
-                country=_COUNTRY,
-                language=_LANGUAGE,
-                apple_ids=_APPLE_ID,
-            ),
-            content_type=_urls.APPLE_IDS_CONTENT_TYPE,
+            method=Shazam.track_keys_from_apple_ids.__name__,
+            label=f"track_keys_from_apple_ids([{_APPLE_ID}])",
+            call=lambda shazam: shazam.track_keys_from_apple_ids([_APPLE_ID]),
         ),
         Probe(
-            url_name="ITUNES_SEARCH_URL",
-            url=_urls.ITUNES_SEARCH_URL
-            + "?"
-            + urlencode(
-                {
-                    "term": _SEARCH_TERM,
-                    "entity": "song",
-                    "limit": 1,
-                    "country": _COUNTRY,
-                },
-            ),
-            content_type=_urls.ITUNES_SEARCH_CONTENT_TYPE,
+            method=Shazam.search_tracks_via_itunes.__name__,
+            label=f"search_tracks_via_itunes({_SEARCH_TERM!r}, limit=1)",
+            call=lambda shazam: shazam.search_tracks_via_itunes(_SEARCH_TERM, limit=1),
         ),
-        _chart(_urls.chart_path()),
-        _chart(_urls.chart_path(genre=_GENRE_SLUG)),
-        _chart(_urls.chart_path(country=_COUNTRY_SLUG)),
-        _chart(
-            _urls.chart_path(
-                country=_COUNTRY_SLUG,
-                genre=_GENRE_SLUG,
-            ),
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label="top_tracks()",
+            call=lambda shazam: shazam.top_tracks(),
         ),
-        _chart(
-            _urls.chart_path(
-                country=_COUNTRY_SLUG,
-                city=_CITY_SLUG,
-            ),
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label="top_tracks(genre=pop)",
+            call=lambda shazam: shazam.top_tracks(genre=GenreMusic.POP),
         ),
-        # An unknown slug is a clean empty `404`, which is the service working.
-        _chart(_urls.chart_path(genre="no-such-genre"), expected=Verdict.BAD_INPUT),
-        _chart(_urls.chart_path(country="no-such-country"), expected=Verdict.BAD_INPUT),
-        _chart(
-            _urls.chart_path(
-                country=_COUNTRY_SLUG,
-                city="no-such-city",
-            ),
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label=f"top_tracks({_CHART_COUNTRY!r})",
+            call=lambda shazam: shazam.top_tracks(_CHART_COUNTRY),
+        ),
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label=f"top_tracks({_CHART_COUNTRY!r}, genre=pop)",
+            call=lambda shazam: shazam.top_tracks(_CHART_COUNTRY, genre=GenreMusic.POP),
+        ),
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label=f"top_tracks({_CHART_COUNTRY!r}, city={_CHART_CITY!r})",
+            call=lambda shazam: shazam.top_tracks(_CHART_COUNTRY, city=_CHART_CITY),
+        ),
+        # A genre the country does not offer is a clean empty `404`, which is the
+        #  service working.
+        Probe(
+            method=Shazam.top_tracks.__name__,
+            label=f"top_tracks({_CHART_COUNTRY!r}, genre=rock)",
+            call=lambda shazam: shazam.top_tracks(_CHART_COUNTRY, genre=GenreMusic.ROCK),
             expected=Verdict.BAD_INPUT,
         ),
     ]
 
 
-def unprobed_url_names(checked: list[Probe]) -> set[str]:
-    declared = {name for name in _urls.__all__ if name.endswith("_URL")}
-    return declared - {probe.url_name for probe in checked}
+def unprobed_methods(checked: list[Probe]) -> set[str]:
+    declared = {
+        name
+        for name, _member in inspect.getmembers(Shazam, inspect.iscoroutinefunction)
+        if not name.startswith("_")
+    }
+
+    return declared - _NOT_PROBED - {probe.method for probe in checked}
 
 
 def classify(
     probe: Probe,
     *,
-    answer: Answer,
+    outcome: Outcome,
 ) -> Verdict:
+    last = outcome.exchanges[-1].response if outcome.exchanges else None
+
     # A retired path answers the website instead, often as `200 text/html`.
-    if answer.content_type == "text/html":
+    if last is not None and last.content_type == "text/html":
         return Verdict.DEAD
 
     if probe.expected is Verdict.BAD_INPUT:
-        is_clean_miss: bool = answer.status == HTTPStatus.NOT_FOUND and not answer.body
+        is_clean_miss: bool = (
+            last is not None and last.status == HTTPStatus.NOT_FOUND and not last.text
+        )
         return Verdict.BAD_INPUT if is_clean_miss else Verdict.UNEXPECTED
 
-    if answer.status != HTTPStatus.OK or answer.content_type != probe.content_type:
-        return Verdict.UNEXPECTED
-
-    # `a2st` reports a bad request in a `200` body, as `parse_apple_ids` says.
-    is_apple_ids: bool = probe.content_type == _urls.APPLE_IDS_CONTENT_TYPE
-    if is_apple_ids and "error" in json.loads(answer.body):
+    if outcome.error is not None:
         return Verdict.UNEXPECTED
 
     return Verdict.LIVE
 
 
-async def _recognition_payload() -> dict[str, Any]:
-    signature = await Recognizer().recognize_path(value=str(_SAMPLE))
-    return _requests.tag_payload(signature)
-
-
-async def _ask(
-    session: aiohttp.ClientSession,
-    *,
+async def _run(
     probe: Probe,
-) -> Answer:
-    headers = _requests.headers(_LANGUAGE)
+    *,
+    transport: Transport,
+) -> Outcome:
+    recorder = _Recorder(transport)
+    shazam = Shazam(
+        language=_LANGUAGE,
+        country=_COUNTRY,
+        transport=recorder,
+        retry=None,
+    )
 
-    if probe.url_name == "TAG_URL":
-        request = session.post(
-            probe.url,
-            headers=headers,
-            json=await _recognition_payload(),
-        )
-    else:
-        request = session.get(
-            probe.url,
-            headers=headers,
-            allow_redirects=False,
+    try:
+        await probe.call(shazam)
+    except ShazamError as er:
+        return Outcome(
+            exchanges=recorder.exchanges,
+            error=er,
         )
 
-    async with request as response:
-        return Answer(
-            status=response.status,
-            content_type=response.content_type,
-            body=await response.read(),
-        )
+    return Outcome(
+        exchanges=recorder.exchanges,
+        error=None,
+    )
 
 
 def _report_line(
     probe: Probe,
     *,
-    answer: Answer,
+    outcome: Outcome,
     verdict: Verdict,
 ) -> str:
     marker = "  " if verdict is probe.expected else "!!"
-    shown = answer.body[:_SHOWN_BYTES]
+    lines = [f"{marker} {verdict.value:<10} {probe.label}"]
 
-    return (
-        f"{marker} {verdict.value:<10} {answer.status} {answer.content_type:<25} "
-        f"{len(answer.body):>9} B  {probe.url_name}  {probe.url}\n"
-        f"{'':14}{shown!r}"
-    )
+    for exchange in outcome.exchanges:
+        response = exchange.response
+        line = (
+            f"{'':14}{response.status} {response.content_type:<25} "
+            f"{len(response.text):>9} chars  {exchange.request.url}"
+        )
+        lines.append(line)
+
+    if outcome.error is not None:
+        lines.append(
+            f"{'':14}{type(outcome.error).__name__}: {outcome.error!s:.{_SHOWN_ERROR_CHARACTERS}}"
+        )
+    elif outcome.exchanges:
+        shown = outcome.exchanges[-1].response.text[:_SHOWN_CHARACTERS]
+        lines.append(f"{'':14}{shown!r}")
+
+    return "\n".join(lines)
 
 
 async def main() -> int:
     all_probes = probes()
-    unprobed = unprobed_url_names(all_probes)
+    unprobed = unprobed_methods(all_probes)
 
     if unprobed:
-        print(f"no probe for _urls.{', _urls.'.join(sorted(unprobed))}", file=sys.stderr)
+        print(f"no probe for Shazam.{', Shazam.'.join(sorted(unprobed))}", file=sys.stderr)
         return 2
 
     surprises: int = 0
+    transport = AiohttpTransport()
 
     # Serially: parallel requests to `www.` make live paths answer the website.
-    async with aiohttp.ClientSession() as session:
+    try:
         for probe in all_probes:
-            answer = await _ask(session, probe=probe)
-            verdict = classify(probe, answer=answer)
+            outcome = await _run(probe, transport=transport)
+            verdict = classify(probe, outcome=outcome)
             surprises += verdict is not probe.expected
 
             print(
                 _report_line(
                     probe,
-                    answer=answer,
+                    outcome=outcome,
                     verdict=verdict,
                 ),
             )
+    finally:
+        await transport.close()
 
     print(f"\n{len(all_probes)} probed, {surprises} not as expected (marked !!)")
     return 1 if surprises else 0

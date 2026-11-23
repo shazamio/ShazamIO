@@ -6,7 +6,7 @@ import pytest
 from aiohttp import ClientSession
 
 from shazamio import ResponseTrack, Shazam, TrackInfo, YoutubeData
-from shazamio._requests import headers
+from shazamio.client import _headers
 
 # The shape Shazam's list endpoints return for a track that has no Spotify
 #  provider: `hub.providers` is absent, so every field mapped onto a path
@@ -228,7 +228,7 @@ async def test_the_built_url_resolves_and_a_dead_key_does_not(shazam: Shazam) ->
 
     assert track.shazam_url == f"https://www.shazam.com/track/{_LIVE_TRACK_ID}"
 
-    async with ClientSession(headers=headers("en-US")) as session:
+    async with ClientSession(headers=_headers("en-US")) as session:
         dead_status = await _status(session, url=_URL_OF_A_DEAD_KEY)
         target = await _redirect_target(session, url=track.shazam_url)
 
