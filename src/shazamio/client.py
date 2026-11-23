@@ -177,13 +177,6 @@ class Shazam:
         if self._owns_transport:
             await self._transport.close()
 
-    def _shazam_get(self, url: str) -> Request:
-        return Request(
-            method=HTTPMethod.GET,
-            url=url,
-            headers=service.headers(self._language),
-        )
-
     async def _send(
         self,
         request: Request,
@@ -207,6 +200,23 @@ class Shazam:
         return _read(
             response,
             url=request.url,
+            content_type=content_type,
+        )
+
+    async def _get(
+        self,
+        url: str,
+        *,
+        content_type: str = service.JSON_CONTENT_TYPE,
+    ) -> str:
+        request = Request(
+            method=HTTPMethod.GET,
+            url=url,
+            headers=service.headers(self._language),
+        )
+
+        return await self._send(
+            request,
             content_type=content_type,
         )
 
@@ -249,14 +259,12 @@ class Shazam:
                 genre_slug=genre_slug,
             )
 
-        request = self._shazam_get(service.CHART_URL.format(path=path))
-
-        return parse_chart(
-            await self._send(
-                request,
-                content_type=service.CHART_CONTENT_TYPE,
-            ),
+        payload = await self._get(
+            service.CHART_URL.format(path=path),
+            content_type=service.CHART_CONTENT_TYPE,
         )
+
+        return parse_chart(payload)
 
     async def _country_path(
         self,
@@ -265,10 +273,8 @@ class Shazam:
         city: str | None,
         genre_slug: str | None,
     ) -> str:
-        locations = parse_model(
-            Locations,
-            payload=await self._send(self._shazam_get(service.LOCATIONS_URL)),
-        )
+        payload = await self._get(service.LOCATIONS_URL)
+        locations = parse_model(Locations, payload=payload)
 
         country = next((entry for entry in locations.countries if entry.code == country_code), None)
         if country is None:
@@ -305,10 +311,9 @@ class Shazam:
             track_id=track_id,
         )
 
-        return parse_model(
-            TrackInfo,
-            payload=await self._send(self._shazam_get(url)),
-        )
+        payload = await self._get(url)
+
+        return parse_model(TrackInfo, payload=payload)
 
     async def track_keys_from_apple_ids(self, apple_ids: Sequence[int | str]) -> dict[str, str]:
         """Map Apple Music track ids to Shazam track keys, in one request.
@@ -337,12 +342,12 @@ class Shazam:
             apple_ids=",".join(str(apple_id) for apple_id in apple_ids),
         )
 
-        return parse_apple_ids(
-            await self._send(
-                self._shazam_get(url),
-                content_type=service.APPLE_IDS_CONTENT_TYPE,
-            ),
+        payload = await self._get(
+            url,
+            content_type=service.APPLE_IDS_CONTENT_TYPE,
         )
+
+        return parse_apple_ids(payload)
 
     async def search_tracks_via_itunes(
         self,
@@ -380,12 +385,11 @@ class Shazam:
                 "country": self._country,
             },
         )
-        apple_ids = parse_itunes_track_ids(
-            await self._send(
-                search,
-                content_type=service.ITUNES_SEARCH_CONTENT_TYPE,
-            ),
+        payload = await self._send(
+            search,
+            content_type=service.ITUNES_SEARCH_CONTENT_TYPE,
         )
+        apple_ids = parse_itunes_track_ids(payload)
 
         # One id per call: a batch keys its entries by the id Shazam stores, which
         #  can be one never sent, so its tracks could not be put in Apple's order.
@@ -405,10 +409,9 @@ class Shazam:
 
         :raises BadPayload: the answer does not fit the model
         """
-        return parse_model(
-            YoutubeData,
-            payload=await self._send(self._shazam_get(link)),
-        )
+        payload = await self._get(link)
+
+        return parse_model(YoutubeData, payload=payload)
 
     async def recognize(
         self,
@@ -481,7 +484,6 @@ class Shazam:
             body=json.dumps(service.tag_payload(signature)).encode(),
         )
 
-        return parse_model(
-            ResponseTrack,
-            payload=await self._send(request),
-        )
+        payload = await self._send(request)
+
+        return parse_model(ResponseTrack, payload=payload)
