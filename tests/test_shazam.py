@@ -135,67 +135,6 @@ def song_bytes() -> bytes:
     return _GLORIA.read_bytes()
 
 
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_recognize_file(shazam: Shazam) -> None:
-    out = await shazam.recognize(data=_GLORIA)
-
-    assert out.track is not None
-    assert out.track.key == 53982678
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_recognize_bytes(
-    song_bytes: bytes,
-    shazam: Shazam,
-) -> None:
-    out = await shazam.recognize(data=song_bytes)
-
-    assert out.track is not None
-    assert out.track.key == 53982678
-
-
-async def test_data_that_is_neither_a_path_nor_bytes_is_rejected(shazam: Shazam) -> None:
-    with pytest.raises(TypeError, match="must be a path or bytes"):
-        await shazam.recognize(42)  # type: ignore[arg-type]
-
-
-@pytest.mark.parametrize(
-    ("seconds", "match"),
-    [
-        pytest.param(10, "clients send a 12 s window", id="core-default"),
-        pytest.param(14, "clients send a 12 s window", id="below-no-match"),
-        pytest.param(15, "returns no matches", id="no-match-floor"),
-    ],
-)
-async def test_a_window_other_than_twelve_warns_at_the_caller(
-    shazam: Shazam,
-    *,
-    seconds: int,
-    match: str,
-) -> None:
-    # A missing file fails in the fingerprinting, after the check and before any request.
-    with pytest.warns(UserWarning, match=match) as record, pytest.raises(SignatureError):
-        await shazam.recognize(
-            "missing.ogg",
-            options=SearchParams(segment_duration_seconds=seconds),
-        )
-
-    assert record[0].filename == __file__
-
-
-async def test_a_twelve_second_window_does_not_warn(shazam: Shazam) -> None:
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-
-        with pytest.raises(SignatureError):
-            await shazam.recognize(
-                "missing.ogg",
-                options=SearchParams(segment_duration_seconds=12),
-            )
-
-
 def _answer(
     *,
     timeskew: float,
@@ -230,163 +169,6 @@ def _answer_with(
     monkeypatch.setattr(shazam, "recognize_signature", send)
 
 
-@pytest.mark.parametrize(
-    ("answer", "max_skew", "rejected"),
-    [
-        pytest.param(
-            _answer(
-                timeskew=-5e-4,
-                frequencyskew=5e-4,
-            ),
-            1e-3,
-            False,
-            id="within",
-        ),
-        pytest.param(
-            _answer(
-                timeskew=1e-3,
-                frequencyskew=0.0,
-            ),
-            1e-3,
-            False,
-            id="at-the-limit",
-        ),
-        pytest.param(
-            _answer(
-                timeskew=-2e-3,
-                frequencyskew=0.0,
-            ),
-            1e-3,
-            True,
-            id="time-beyond",
-        ),
-        pytest.param(
-            _answer(
-                timeskew=0.0,
-                frequencyskew=2e-3,
-            ),
-            1e-3,
-            True,
-            id="frequency-beyond",
-        ),
-        pytest.param(
-            _answer(
-                timeskew=2e-2,
-                frequencyskew=0.0,
-            ),
-            None,
-            False,
-            id="off-by-default",
-        ),
-    ],
-)
-async def test_max_skew_rejects_a_skewed_first_match(
-    monkeypatch: pytest.MonkeyPatch,
-    shazam: Shazam,
-    answer: ResponseTrack,
-    max_skew: float | None,
-    # pytest passes parametrize arguments by keyword, so no call site holds a bare `True`.
-    rejected: bool,  # noqa: FBT001
-) -> None:
-    _answer_with(
-        monkeypatch,
-        shazam=shazam,
-        answer=answer,
-    )
-
-    out = await shazam.recognize(_GLORIA, max_skew=max_skew)
-
-    assert out == (_NO_MATCH if rejected else answer)
-
-
-async def test_max_skew_keeps_a_no_match(
-    monkeypatch: pytest.MonkeyPatch,
-    shazam: Shazam,
-) -> None:
-    _answer_with(
-        monkeypatch,
-        shazam=shazam,
-        answer=_NO_MATCH,
-    )
-
-    out = await shazam.recognize(_GLORIA, max_skew=1e-3)
-
-    assert out == _NO_MATCH
-
-
-@pytest.mark.parametrize(
-    "max_skew",
-    [
-        pytest.param(0.0, id="zero"),
-        pytest.param(-1e-3, id="negative"),
-        pytest.param(float("nan"), id="nan"),
-    ],
-)
-async def test_max_skew_must_be_positive(
-    shazam: Shazam,
-    max_skew: float,
-) -> None:
-    with pytest.raises(ValueError, match="must be above 0"):
-        await shazam.recognize(_GLORIA, max_skew=max_skew)
-
-
-@pytest.mark.parametrize(
-    ("options", "segment"),
-    [
-        pytest.param({}, "iphone", id="default"),
-        pytest.param({"recognition_device": Device.IPHONE}, "iphone", id="iphone"),
-        pytest.param({"recognition_device": Device.ANDROID}, "android", id="android"),
-        pytest.param({"recognition_device": Device.WEB}, "web", id="web"),
-        pytest.param({"recognition_device": "android"}, "android", id="plain-string"),
-    ],
-)
-async def test_the_device_changes_only_the_recognition_route(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    options: dict[str, Any],
-    segment: str,
-) -> None:
-    transport = _answer_every_request(
-        monkeypatch,
-        answers={_JSON: json.dumps({"matches": [], "tagid": _TAG_ID})},
-    )
-
-    async with Shazam(transport=transport, **options) as shazam:
-        await shazam.recognize(_GLORIA)
-
-    assert _sent(transport) == [
-        {
-            "method": "POST",
-            "route": f"{_ROUTE}/{segment}/-/tag/<uuid>/<uuid>",
-            "headers": {**_HEADERS, "Content-Type": _JSON},
-        },
-    ]
-
-
-async def test_the_device_leaves_the_track_lookup_on_iphone(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    transport = _answer_every_request(
-        monkeypatch,
-        answers={_JSON: _GLORIA_TRACK},
-    )
-
-    async with Shazam(
-        transport=transport,
-        recognition_device=Device.ANDROID,
-    ) as shazam:
-        await shazam.track_about(53982678)
-
-    assert _sent(transport) == [
-        {"method": "GET", "route": f"{_ROUTE}/iphone/-/track/53982678", "headers": _HEADERS},
-    ]
-
-
-def test_an_unknown_device_is_rejected() -> None:
-    with pytest.raises(ValueError, match="not a valid Device"):
-        Shazam(recognition_device="unsupported")  # type: ignore[arg-type]
-
-
 class _Lookup(Protocol):
     async def __call__(self, shazam: Shazam) -> None:
         """Ask `shazam` for one answer."""
@@ -402,295 +184,6 @@ async def _youtube(shazam: Shazam) -> None:
 
 async def _recognize(shazam: Shazam) -> None:
     await shazam.recognize(_GLORIA)
-
-
-@pytest.mark.parametrize(
-    ("lookup", "payload"),
-    [
-        pytest.param(_track_about, _UNKNOWN_SECTION, id="track-about"),
-        pytest.param(_youtube, {"caption": "c"}, id="youtube"),
-        pytest.param(_recognize, {"tagid": "x", "track": _UNKNOWN_SECTION}, id="recognize"),
-        pytest.param(_track_about, "<!doctype html>", id="not-json"),
-    ],
-)
-async def test_an_answer_the_model_rejects_raises_bad_payload(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    lookup: _Lookup,
-    payload: dict[str, Any] | str,
-) -> None:
-    body = payload if isinstance(payload, str) else json.dumps(payload)
-    transport = _answer_every_request(monkeypatch, answers={_JSON: body})
-    shazam = Shazam(transport=transport)
-
-    with pytest.raises(BadPayload, match="Shazam answer is not a"):
-        await lookup(shazam)
-
-
-async def test_the_youtube_lookup_sends_the_shazam_headers(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    transport = _answer_every_request(monkeypatch, answers={_JSON: _VIDEO})
-    shazam = Shazam(transport=transport)
-
-    await shazam.get_youtube_data(link=_LINK)
-
-    assert _sent(transport) == [
-        {"method": "GET", "route": "https://video.example/youtube/video", "headers": _HEADERS},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_a_recognized_track_leads_to_its_youtube_video(shazam: Shazam) -> None:
-    track = (await shazam.recognize(data=_GLORIA)).track
-    assert track is not None
-    assert track.youtube_link is not None
-
-    video = await shazam.get_youtube_data(link=track.youtube_link)
-
-    assert video.model_dump() == {
-        "caption": "Gloria Gaynor - I Will Survive",
-        "image": {
-            "dimensions": {"width": 1280, "height": 720},
-            "url": "https://i.ytimg.com/vi/6dYWe1c3OyU/maxresdefault.jpg",
-        },
-        "actions": [
-            {
-                "name": "video:youtube",
-                "type": "webview",
-                "uri": "https://youtu.be/6dYWe1c3OyU?autoplay=1",
-            },
-        ],
-        "uri": "https://youtu.be/6dYWe1c3OyU?autoplay=1",
-    }
-
-
-# The whole list of requests, not the last one: a city chart once fetched the
-#  locations twice, once for the country and once for the city.
-@pytest.mark.parametrize(
-    ("chart", "routes"),
-    [
-        pytest.param({}, [f"{_CHARTS}/csv/top-200/world/"], id="world"),
-        pytest.param(
-            {"genre": GenreMusic.POP},
-            [f"{_CHARTS}/csv/genre/world/pop/"],
-            id="world-genre",
-        ),
-        pytest.param(
-            {"genre": "k-pop"},
-            [f"{_CHARTS}/csv/genre/world/k-pop/"],
-            id="world-genre-string",
-        ),
-        pytest.param(
-            {"country_code": "RU"},
-            [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/top-200/russia/"],
-            id="country",
-        ),
-        pytest.param(
-            {"country_code": "RU", "genre": GenreMusic.ROCK},
-            [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/genre/russia/rock/"],
-            id="country-genre",
-        ),
-        pytest.param(
-            {"country_code": "RU", "city": "Moscow"},
-            [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/top-50/russia/moscow/"],
-            id="city",
-        ),
-    ],
-)
-async def test_the_chart_path_is_built_from_the_location_slugs(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    chart: dict[str, Any],
-    routes: list[str],
-) -> None:
-    transport = _answer_every_request(monkeypatch, answers={_JSON: _LOCATIONS, _CSV: _CHART})
-    shazam = Shazam(transport=transport)
-
-    await shazam.top_tracks(**chart)
-
-    assert [request["route"] for request in _sent(transport)] == routes
-
-
-@pytest.mark.parametrize(
-    ("country_code", "city"),
-    [
-        pytest.param("XX", None, id="unknown-country"),
-        pytest.param("RU", "Minsk", id="unknown-city"),
-    ],
-)
-async def test_an_unknown_location_is_rejected(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    country_code: str,
-    city: str | None,
-) -> None:
-    transport = _answer_every_request(monkeypatch, answers={_JSON: _LOCATIONS, _CSV: _CHART})
-    shazam = Shazam(transport=transport)
-
-    with pytest.raises(NotFound):
-        await shazam.top_tracks(country_code, city=city)
-
-    assert [request["route"] for request in _sent(transport)] == [_LOCATIONS_ROUTE]
-
-
-@pytest.mark.parametrize(
-    ("country_code", "genre", "match"),
-    [
-        pytest.param(None, None, "needs its `country_code`", id="city-without-country"),
-        pytest.param("RU", GenreMusic.POP, "no genre chart for a city", id="city-with-genre"),
-    ],
-)
-async def test_a_city_chart_nobody_publishes_is_refused_before_any_request(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    country_code: str | None,
-    genre: GenreMusic | None,
-    match: str,
-) -> None:
-    transport = _answer_every_request(monkeypatch, answers={})
-    shazam = Shazam(transport=transport)
-
-    with pytest.raises(ValueError, match=match):
-        await shazam.top_tracks(
-            country_code,
-            city="Moscow",
-            genre=genre,
-        )
-
-    assert _sent(transport) == []
-
-
-async def test_an_unknown_genre_is_refused_before_any_request(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    transport = _answer_every_request(monkeypatch, answers={})
-    shazam = Shazam(transport=transport)
-
-    with pytest.raises(ValueError, match="not a valid GenreMusic"):
-        await shazam.top_tracks("RU", genre="no-such-genre")
-
-    assert _sent(transport) == []
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_the_world_chart_carries_two_hundred_ranked_entries(
-    caplog: pytest.LogCaptureFixture,
-    shazam: Shazam,
-) -> None:
-    tracks = await shazam.top_tracks()
-
-    assert len(tracks) == 200
-    assert [track.rank for track in tracks[:3]] == [1, 2, 3]
-
-    # The library skips an odd row, but a live re-record has to fail on one,
-    #  or the `cassettes` workflow never uploads the answer that holds it.
-    assert "parse_chart.skip" not in caplog.messages
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_a_city_chart_resolves_its_country_and_city_slugs(
-    caplog: pytest.LogCaptureFixture,
-    shazam: Shazam,
-) -> None:
-    tracks = await shazam.top_tracks("RU", city="Moscow")
-
-    assert [track.rank for track in tracks[:5]] == [1, 2, 3, 4, 5]
-    assert "parse_chart.skip" not in caplog.messages
-
-
-# Parametrized rather than sampled: a genre Shazam renames stops having a chart
-#  and answers `404`, which is how `regional-mexicano` left the enum.
-@pytest.mark.vcr
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "genre",
-    [pytest.param(genre, id=genre.value) for genre in GenreMusic],
-)
-async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
-    caplog: pytest.LogCaptureFixture,
-    genre: GenreMusic,
-    shazam: Shazam,
-) -> None:
-    tracks = await shazam.top_tracks(genre=genre)
-
-    assert [track.rank for track in tracks[:5]] == [1, 2, 3, 4, 5]
-    assert "parse_chart.skip" not in caplog.messages
-
-
-@pytest.mark.asyncio
-async def test_no_ids_is_refused_before_anything_is_requested(shazam: Shazam) -> None:
-    with pytest.raises(ValueError, match="No Apple ids"):
-        await shazam.track_keys_from_apple_ids([])
-
-
-# Also pins the path-segment order `service.APPLE_IDS_URL` documents: this
-#  test fails as `NotFound` if the two are ever swapped.
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_an_apple_id_resolves_to_a_shazam_track_key(shazam: Shazam) -> None:
-    keys = await shazam.track_keys_from_apple_ids([_GOOD_APPLE_ID])
-
-    assert list(keys) == [str(_GOOD_APPLE_ID)]
-    assert keys[str(_GOOD_APPLE_ID)].isdigit()
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_the_map_is_keyed_by_the_ids_shazam_stores(shazam: Shazam) -> None:
-    keys = await shazam.track_keys_from_apple_ids([_GOOD_APPLE_ID, _CANONICALIZED_APPLE_ID])
-
-    assert len(keys) == 2
-    assert str(_CANONICALIZED_APPLE_ID) not in keys
-
-
-# Each of these resolves on its own to `56670613`, keyed by itself; together they
-#  answer one entry, keyed by `6781023657`, which is neither of them.
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_ids_sharing_one_track_collapse_into_a_single_entry(shazam: Shazam) -> None:
-    keys = await shazam.track_keys_from_apple_ids([6781027645, 6781024437])
-
-    assert len(keys) == 1
-    assert "6781027645" not in keys
-    assert "6781024437" not in keys
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_an_id_the_service_cannot_resolve_at_all_is_reported(shazam: Shazam) -> None:
-    with pytest.raises(NotFound, match="Could not fetch ids"):
-        await shazam.track_keys_from_apple_ids([0])
-
-
-@pytest.mark.vcr
-@pytest.mark.asyncio
-async def test_songs_sharing_a_shazam_track_come_back_once(shazam: Shazam) -> None:
-    tracks = await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS)
-    track_keys = [track.key for track in tracks]
-
-    assert 0 < len(track_keys) < 5
-    assert len(set(track_keys)) == len(track_keys)
-
-
-@pytest.mark.parametrize(
-    "limit",
-    [
-        pytest.param(0, id="zero"),
-        pytest.param(201, id="above-apple-maximum"),
-    ],
-)
-@pytest.mark.asyncio
-async def test_a_limit_apple_does_not_serve_is_rejected(
-    shazam: Shazam,
-    limit: int,
-) -> None:
-    # Apple answers `limit=0` with 20 songs, so without the check this returns tracks.
-    with pytest.raises(ValueError, match="limit"):
-        await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=limit)
 
 
 class _FailFirstWaitSecond:
@@ -717,146 +210,11 @@ class _FailFirstWaitSecond:
             raise
 
 
-@pytest.mark.asyncio
-async def test_a_failed_mapping_cancels_the_other_mappings(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    call = _FailFirstWaitSecond(first=697195462)
-
-    async def track_keys(apple_ids: list[int]) -> dict[str, str]:
-        await call(apple_ids[0])
-        return {}
-
-    transport = _answer_every_request(
-        monkeypatch,
-        answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
-    )
-    shazam = Shazam(transport=transport)
-    monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
-
-    with pytest.raises(NotFound):
-        await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
-
-    assert call.cancelled
-
-
-@pytest.mark.asyncio
-async def test_a_failed_track_cancels_the_other_tracks(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    call = _FailFirstWaitSecond(first=1)
-    track_key_by_apple_id: dict[int, str] = {697195462: "1", 697402071: "2"}
-
-    async def track_keys(apple_ids: list[int]) -> dict[str, str]:
-        return {str(apple_ids[0]): track_key_by_apple_id[apple_ids[0]]}
-
-    async def track_about(track_id: int) -> TrackInfo:
-        await call(track_id)
-        return TrackInfo(
-            key=track_id,
-            title="",
-            subtitle="",
-        )
-
-    transport = _answer_every_request(
-        monkeypatch,
-        answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
-    )
-    shazam = Shazam(transport=transport)
-    monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
-    monkeypatch.setattr(shazam, "track_about", track_about)
-
-    with pytest.raises(NotFound):
-        await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
-
-    assert call.cancelled
-
-
 def _answering_once(response: Response) -> MockTransport:
     def answer(_request: Request) -> Response:
         return response
 
     return MockTransport(answer)
-
-
-@pytest.mark.asyncio
-async def test_a_chart_that_is_not_published_names_its_status() -> None:
-    shazam = Shazam(
-        transport=_answering_once(
-            Response(
-                status=HTTPStatus.NOT_FOUND,
-                content_type="text/html",
-                text="",
-            ),
-        ),
-    )
-
-    with pytest.raises(BadResponse, match="404") as raised:
-        await shazam.top_tracks()
-
-    assert (raised.value.url, raised.value.status) == (
-        service.CHART_URL.format(path=service.chart_path()),
-        HTTPStatus.NOT_FOUND,
-    )
-
-
-@pytest.mark.asyncio
-async def test_a_path_answered_by_the_website_names_the_content_type() -> None:
-    shazam = Shazam(
-        transport=_answering_once(
-            Response(
-                status=HTTPStatus.OK,
-                content_type="text/html",
-                text="<html></html>",
-            ),
-        ),
-    )
-
-    with pytest.raises(BadResponse, match="text/html") as raised:
-        await shazam.top_tracks()
-
-    assert not isinstance(raised.value, RateLimited)
-
-
-# Both answers are `text/html`, and only the throttled one is a rate limit:
-#  the test above is the control that a guard firing on every HTML body fails.
-@pytest.mark.asyncio
-async def test_a_throttled_request_names_the_rate_limit() -> None:
-    transport = _answering_once(
-        Response(
-            status=HTTPStatus.TOO_MANY_REQUESTS,
-            content_type="text/html",
-            text="<html></html>",
-        ),
-    )
-    shazam = Shazam(
-        transport=transport,
-        retry=None,
-    )
-
-    with pytest.raises(RateLimited, match="rate limited") as raised:
-        await shazam.track_about(1)
-
-    assert raised.value.status == HTTPStatus.TOO_MANY_REQUESTS
-    assert len(transport.requests) == 1
-
-
-@pytest.mark.asyncio
-async def test_a_client_retries_by_default() -> None:
-    transport = _answering_once(
-        Response(
-            status=HTTPStatus.SERVICE_UNAVAILABLE,
-            content_type="text/html",
-            text="",
-            headers={"Retry-After": "0"},
-        ),
-    )
-    shazam = Shazam(transport=transport)
-
-    with pytest.raises(BadResponse, match="503"):
-        await shazam.track_about(1)
-
-    assert len(transport.requests) == 20
 
 
 # A transport may define `__len__`, a queue of canned answers for one, and an
@@ -866,38 +224,690 @@ class _EmptyQueueTransport(MockTransport):
         return 0
 
 
-@pytest.mark.asyncio
-async def test_a_falsy_transport_still_carries_the_requests() -> None:
-    def answer(_request: Request) -> Response:
-        return Response(
-            status=HTTPStatus.OK,
-            content_type=_JSON,
-            text=_GLORIA_TRACK,
+class TestRecognize:
+    """`Shazam.recognize` and `Shazam.recognize_signature`."""
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_recognize_file(self, shazam: Shazam) -> None:
+        out = await shazam.recognize(data=_GLORIA)
+
+        assert out.track is not None
+        assert out.track.key == 53982678
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_recognize_bytes(
+        self,
+        song_bytes: bytes,
+        shazam: Shazam,
+    ) -> None:
+        out = await shazam.recognize(data=song_bytes)
+
+        assert out.track is not None
+        assert out.track.key == 53982678
+
+    async def test_data_that_is_neither_a_path_nor_bytes_is_rejected(self, shazam: Shazam) -> None:
+        with pytest.raises(TypeError, match="must be a path or bytes"):
+            await shazam.recognize(42)  # type: ignore[arg-type]
+
+    @pytest.mark.parametrize(
+        ("seconds", "match"),
+        [
+            pytest.param(10, "clients send a 12 s window", id="core-default"),
+            pytest.param(14, "clients send a 12 s window", id="below-no-match"),
+            pytest.param(15, "returns no matches", id="no-match-floor"),
+        ],
+    )
+    async def test_a_window_other_than_twelve_warns_at_the_caller(
+        self,
+        shazam: Shazam,
+        *,
+        seconds: int,
+        match: str,
+    ) -> None:
+        # A missing file fails in the fingerprinting, after the check and before any request.
+        with pytest.warns(UserWarning, match=match) as record, pytest.raises(SignatureError):
+            await shazam.recognize(
+                "missing.ogg",
+                options=SearchParams(segment_duration_seconds=seconds),
+            )
+
+        assert record[0].filename == __file__
+
+    async def test_a_twelve_second_window_does_not_warn(self, shazam: Shazam) -> None:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+
+            with pytest.raises(SignatureError):
+                await shazam.recognize(
+                    "missing.ogg",
+                    options=SearchParams(segment_duration_seconds=12),
+                )
+
+    @pytest.mark.parametrize(
+        ("answer", "max_skew", "rejected"),
+        [
+            pytest.param(
+                _answer(
+                    timeskew=-5e-4,
+                    frequencyskew=5e-4,
+                ),
+                1e-3,
+                False,
+                id="within",
+            ),
+            pytest.param(
+                _answer(
+                    timeskew=1e-3,
+                    frequencyskew=0.0,
+                ),
+                1e-3,
+                False,
+                id="at-the-limit",
+            ),
+            pytest.param(
+                _answer(
+                    timeskew=-2e-3,
+                    frequencyskew=0.0,
+                ),
+                1e-3,
+                True,
+                id="time-beyond",
+            ),
+            pytest.param(
+                _answer(
+                    timeskew=0.0,
+                    frequencyskew=2e-3,
+                ),
+                1e-3,
+                True,
+                id="frequency-beyond",
+            ),
+            pytest.param(
+                _answer(
+                    timeskew=2e-2,
+                    frequencyskew=0.0,
+                ),
+                None,
+                False,
+                id="off-by-default",
+            ),
+        ],
+    )
+    async def test_max_skew_rejects_a_skewed_first_match(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        shazam: Shazam,
+        answer: ResponseTrack,
+        max_skew: float | None,
+        # pytest passes parametrize arguments by keyword, so no call site holds a bare `True`.
+        rejected: bool,  # noqa: FBT001
+    ) -> None:
+        _answer_with(
+            monkeypatch,
+            shazam=shazam,
+            answer=answer,
         )
 
-    transport = _EmptyQueueTransport(answer)
+        out = await shazam.recognize(_GLORIA, max_skew=max_skew)
 
-    async with Shazam(transport=transport) as shazam:
-        await shazam.track_about(53982678)
+        assert out == (_NO_MATCH if rejected else answer)
 
-    assert len(transport.requests) == 1
+    async def test_max_skew_keeps_a_no_match(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        shazam: Shazam,
+    ) -> None:
+        _answer_with(
+            monkeypatch,
+            shazam=shazam,
+            answer=_NO_MATCH,
+        )
 
+        out = await shazam.recognize(_GLORIA, max_skew=1e-3)
 
-# `MockTransport` has no closed state of its own, so only the client's guard
-#  can refuse here.
-@pytest.mark.asyncio
-async def test_a_request_after_shazam_is_closed_is_refused() -> None:
-    transport = _answering_once(
-        Response(
-            status=HTTPStatus.OK,
-            content_type=_JSON,
-            text=_GLORIA_TRACK,
-        ),
+        assert out == _NO_MATCH
+
+    @pytest.mark.parametrize(
+        "max_skew",
+        [
+            pytest.param(0.0, id="zero"),
+            pytest.param(-1e-3, id="negative"),
+            pytest.param(float("nan"), id="nan"),
+        ],
     )
-    shazam = Shazam(transport=transport)
-    await shazam.close()
+    async def test_max_skew_must_be_positive(
+        self,
+        shazam: Shazam,
+        max_skew: float,
+    ) -> None:
+        with pytest.raises(ValueError, match="must be above 0"):
+            await shazam.recognize(_GLORIA, max_skew=max_skew)
 
-    with pytest.raises(RuntimeError, match="Shazam is closed"):
-        await shazam.track_about(53982678)
+    @pytest.mark.parametrize(
+        ("options", "segment"),
+        [
+            pytest.param({}, "iphone", id="default"),
+            pytest.param({"recognition_device": Device.IPHONE}, "iphone", id="iphone"),
+            pytest.param({"recognition_device": Device.ANDROID}, "android", id="android"),
+            pytest.param({"recognition_device": Device.WEB}, "web", id="web"),
+            pytest.param({"recognition_device": "android"}, "android", id="plain-string"),
+        ],
+    )
+    async def test_the_device_changes_only_the_recognition_route(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        options: dict[str, Any],
+        segment: str,
+    ) -> None:
+        transport = _answer_every_request(
+            monkeypatch,
+            answers={_JSON: json.dumps({"matches": [], "tagid": _TAG_ID})},
+        )
 
-    assert transport.requests == []
+        async with Shazam(transport=transport, **options) as shazam:
+            await shazam.recognize(_GLORIA)
+
+        assert _sent(transport) == [
+            {
+                "method": "POST",
+                "route": f"{_ROUTE}/{segment}/-/tag/<uuid>/<uuid>",
+                "headers": {**_HEADERS, "Content-Type": _JSON},
+            },
+        ]
+
+    async def test_the_device_leaves_the_track_lookup_on_iphone(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        transport = _answer_every_request(
+            monkeypatch,
+            answers={_JSON: _GLORIA_TRACK},
+        )
+
+        async with Shazam(
+            transport=transport,
+            recognition_device=Device.ANDROID,
+        ) as shazam:
+            await shazam.track_about(53982678)
+
+        assert _sent(transport) == [
+            {"method": "GET", "route": f"{_ROUTE}/iphone/-/track/53982678", "headers": _HEADERS},
+        ]
+
+    def test_an_unknown_device_is_rejected(self) -> None:
+        with pytest.raises(ValueError, match="not a valid Device"):
+            Shazam(recognition_device="unsupported")  # type: ignore[arg-type]
+
+
+class TestYoutubeData:
+    """`Shazam.get_youtube_data`."""
+
+    async def test_the_youtube_lookup_sends_the_shazam_headers(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        transport = _answer_every_request(monkeypatch, answers={_JSON: _VIDEO})
+        shazam = Shazam(transport=transport)
+
+        await shazam.get_youtube_data(link=_LINK)
+
+        assert _sent(transport) == [
+            {"method": "GET", "route": "https://video.example/youtube/video", "headers": _HEADERS},
+        ]
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_a_recognized_track_leads_to_its_youtube_video(self, shazam: Shazam) -> None:
+        track = (await shazam.recognize(data=_GLORIA)).track
+        assert track is not None
+        assert track.youtube_link is not None
+
+        video = await shazam.get_youtube_data(link=track.youtube_link)
+
+        assert video.model_dump() == {
+            "caption": "Gloria Gaynor - I Will Survive",
+            "image": {
+                "dimensions": {"width": 1280, "height": 720},
+                "url": "https://i.ytimg.com/vi/6dYWe1c3OyU/maxresdefault.jpg",
+            },
+            "actions": [
+                {
+                    "name": "video:youtube",
+                    "type": "webview",
+                    "uri": "https://youtu.be/6dYWe1c3OyU?autoplay=1",
+                },
+            ],
+            "uri": "https://youtu.be/6dYWe1c3OyU?autoplay=1",
+        }
+
+
+class TestTopTracks:
+    """`Shazam.top_tracks`."""
+
+    # The whole list of requests, not the last one: a city chart once fetched the
+    #  locations twice, once for the country and once for the city.
+    @pytest.mark.parametrize(
+        ("chart", "routes"),
+        [
+            pytest.param({}, [f"{_CHARTS}/csv/top-200/world/"], id="world"),
+            pytest.param(
+                {"genre": GenreMusic.POP},
+                [f"{_CHARTS}/csv/genre/world/pop/"],
+                id="world-genre",
+            ),
+            pytest.param(
+                {"genre": "k-pop"},
+                [f"{_CHARTS}/csv/genre/world/k-pop/"],
+                id="world-genre-string",
+            ),
+            pytest.param(
+                {"country_code": "RU"},
+                [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/top-200/russia/"],
+                id="country",
+            ),
+            pytest.param(
+                {"country_code": "RU", "genre": GenreMusic.ROCK},
+                [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/genre/russia/rock/"],
+                id="country-genre",
+            ),
+            pytest.param(
+                {"country_code": "RU", "city": "Moscow"},
+                [_LOCATIONS_ROUTE, f"{_CHARTS}/csv/top-50/russia/moscow/"],
+                id="city",
+            ),
+        ],
+    )
+    async def test_the_chart_path_is_built_from_the_location_slugs(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        chart: dict[str, Any],
+        routes: list[str],
+    ) -> None:
+        transport = _answer_every_request(monkeypatch, answers={_JSON: _LOCATIONS, _CSV: _CHART})
+        shazam = Shazam(transport=transport)
+
+        await shazam.top_tracks(**chart)
+
+        assert [request["route"] for request in _sent(transport)] == routes
+
+    @pytest.mark.parametrize(
+        ("country_code", "city"),
+        [
+            pytest.param("XX", None, id="unknown-country"),
+            pytest.param("RU", "Minsk", id="unknown-city"),
+        ],
+    )
+    async def test_an_unknown_location_is_rejected(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        country_code: str,
+        city: str | None,
+    ) -> None:
+        transport = _answer_every_request(monkeypatch, answers={_JSON: _LOCATIONS, _CSV: _CHART})
+        shazam = Shazam(transport=transport)
+
+        with pytest.raises(NotFound):
+            await shazam.top_tracks(country_code, city=city)
+
+        assert [request["route"] for request in _sent(transport)] == [_LOCATIONS_ROUTE]
+
+    @pytest.mark.parametrize(
+        ("country_code", "genre", "match"),
+        [
+            pytest.param(None, None, "needs its `country_code`", id="city-without-country"),
+            pytest.param("RU", GenreMusic.POP, "no genre chart for a city", id="city-with-genre"),
+        ],
+    )
+    async def test_a_city_chart_nobody_publishes_is_refused_before_any_request(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        country_code: str | None,
+        genre: GenreMusic | None,
+        match: str,
+    ) -> None:
+        transport = _answer_every_request(monkeypatch, answers={})
+        shazam = Shazam(transport=transport)
+
+        with pytest.raises(ValueError, match=match):
+            await shazam.top_tracks(
+                country_code,
+                city="Moscow",
+                genre=genre,
+            )
+
+        assert _sent(transport) == []
+
+    async def test_an_unknown_genre_is_refused_before_any_request(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        transport = _answer_every_request(monkeypatch, answers={})
+        shazam = Shazam(transport=transport)
+
+        with pytest.raises(ValueError, match="not a valid GenreMusic"):
+            await shazam.top_tracks("RU", genre="no-such-genre")
+
+        assert _sent(transport) == []
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_the_world_chart_carries_two_hundred_ranked_entries(
+        self,
+        caplog: pytest.LogCaptureFixture,
+        shazam: Shazam,
+    ) -> None:
+        tracks = await shazam.top_tracks()
+
+        assert len(tracks) == 200
+        assert [track.rank for track in tracks[:3]] == [1, 2, 3]
+
+        # The library skips an odd row, but a live re-record has to fail on one,
+        #  or the `cassettes` workflow never uploads the answer that holds it.
+        assert "parse_chart.skip" not in caplog.messages
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_a_city_chart_resolves_its_country_and_city_slugs(
+        self,
+        caplog: pytest.LogCaptureFixture,
+        shazam: Shazam,
+    ) -> None:
+        tracks = await shazam.top_tracks("RU", city="Moscow")
+
+        assert [track.rank for track in tracks[:5]] == [1, 2, 3, 4, 5]
+        assert "parse_chart.skip" not in caplog.messages
+
+    # Parametrized rather than sampled: a genre Shazam renames stops having a chart
+    #  and answers `404`, which is how `regional-mexicano` left the enum.
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "genre",
+        [pytest.param(genre, id=genre.value) for genre in GenreMusic],
+    )
+    async def test_a_world_genre_chart_answers_for_every_genre_the_enum_carries(
+        self,
+        caplog: pytest.LogCaptureFixture,
+        genre: GenreMusic,
+        shazam: Shazam,
+    ) -> None:
+        tracks = await shazam.top_tracks(genre=genre)
+
+        assert [track.rank for track in tracks[:5]] == [1, 2, 3, 4, 5]
+        assert "parse_chart.skip" not in caplog.messages
+
+
+class TestTrackKeysFromAppleIds:
+    """`Shazam.track_keys_from_apple_ids`."""
+
+    @pytest.mark.asyncio
+    async def test_no_ids_is_refused_before_anything_is_requested(self, shazam: Shazam) -> None:
+        with pytest.raises(ValueError, match="No Apple ids"):
+            await shazam.track_keys_from_apple_ids([])
+
+    # Also pins the path-segment order `service.APPLE_IDS_URL` documents: this
+    #  test fails as `NotFound` if the two are ever swapped.
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_an_apple_id_resolves_to_a_shazam_track_key(self, shazam: Shazam) -> None:
+        keys = await shazam.track_keys_from_apple_ids([_GOOD_APPLE_ID])
+
+        assert list(keys) == [str(_GOOD_APPLE_ID)]
+        assert keys[str(_GOOD_APPLE_ID)].isdigit()
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_the_map_is_keyed_by_the_ids_shazam_stores(self, shazam: Shazam) -> None:
+        keys = await shazam.track_keys_from_apple_ids([_GOOD_APPLE_ID, _CANONICALIZED_APPLE_ID])
+
+        assert len(keys) == 2
+        assert str(_CANONICALIZED_APPLE_ID) not in keys
+
+    # Each of these resolves on its own to `56670613`, keyed by itself; together they
+    #  answer one entry, keyed by `6781023657`, which is neither of them.
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_ids_sharing_one_track_collapse_into_a_single_entry(self, shazam: Shazam) -> None:
+        keys = await shazam.track_keys_from_apple_ids([6781027645, 6781024437])
+
+        assert len(keys) == 1
+        assert "6781027645" not in keys
+        assert "6781024437" not in keys
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_an_id_the_service_cannot_resolve_at_all_is_reported(
+        self,
+        shazam: Shazam,
+    ) -> None:
+        with pytest.raises(NotFound, match="Could not fetch ids"):
+            await shazam.track_keys_from_apple_ids([0])
+
+
+class TestSearchTracksViaItunes:
+    """`Shazam.search_tracks_via_itunes`."""
+
+    @pytest.mark.vcr
+    @pytest.mark.asyncio
+    async def test_songs_sharing_a_shazam_track_come_back_once(self, shazam: Shazam) -> None:
+        tracks = await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS)
+        track_keys = [track.key for track in tracks]
+
+        assert 0 < len(track_keys) < 5
+        assert len(set(track_keys)) == len(track_keys)
+
+    @pytest.mark.parametrize(
+        "limit",
+        [
+            pytest.param(0, id="zero"),
+            pytest.param(201, id="above-apple-maximum"),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_a_limit_apple_does_not_serve_is_rejected(
+        self,
+        shazam: Shazam,
+        limit: int,
+    ) -> None:
+        # Apple answers `limit=0` with 20 songs, so without the check this returns tracks.
+        with pytest.raises(ValueError, match="limit"):
+            await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=limit)
+
+    @pytest.mark.asyncio
+    async def test_a_failed_mapping_cancels_the_other_mappings(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        call = _FailFirstWaitSecond(first=697195462)
+
+        async def track_keys(apple_ids: list[int]) -> dict[str, str]:
+            await call(apple_ids[0])
+            return {}
+
+        transport = _answer_every_request(
+            monkeypatch,
+            answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+        )
+        shazam = Shazam(transport=transport)
+        monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
+
+        with pytest.raises(NotFound):
+            await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
+
+        assert call.cancelled
+
+    @pytest.mark.asyncio
+    async def test_a_failed_track_cancels_the_other_tracks(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        call = _FailFirstWaitSecond(first=1)
+        track_key_by_apple_id: dict[int, str] = {697195462: "1", 697402071: "2"}
+
+        async def track_keys(apple_ids: list[int]) -> dict[str, str]:
+            return {str(apple_ids[0]): track_key_by_apple_id[apple_ids[0]]}
+
+        async def track_about(track_id: int) -> TrackInfo:
+            await call(track_id)
+            return TrackInfo(
+                key=track_id,
+                title="",
+                subtitle="",
+            )
+
+        transport = _answer_every_request(
+            monkeypatch,
+            answers={service.ITUNES_SEARCH_CONTENT_TYPE: _TWO_SONGS},
+        )
+        shazam = Shazam(transport=transport)
+        monkeypatch.setattr(shazam, "track_keys_from_apple_ids", track_keys)
+        monkeypatch.setattr(shazam, "track_about", track_about)
+
+        with pytest.raises(NotFound):
+            await shazam.search_tracks_via_itunes(_QUERY_WITH_SHARED_TRACKS, limit=2)
+
+        assert call.cancelled
+
+
+class TestClient:
+    """What every call shares: the checks, the retry, the transport and `close()`."""
+
+    @pytest.mark.parametrize(
+        ("lookup", "payload"),
+        [
+            pytest.param(_track_about, _UNKNOWN_SECTION, id="track-about"),
+            pytest.param(_youtube, {"caption": "c"}, id="youtube"),
+            pytest.param(_recognize, {"tagid": "x", "track": _UNKNOWN_SECTION}, id="recognize"),
+            pytest.param(_track_about, "<!doctype html>", id="not-json"),
+        ],
+    )
+    async def test_an_answer_the_model_rejects_raises_bad_payload(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        lookup: _Lookup,
+        payload: dict[str, Any] | str,
+    ) -> None:
+        body = payload if isinstance(payload, str) else json.dumps(payload)
+        transport = _answer_every_request(monkeypatch, answers={_JSON: body})
+        shazam = Shazam(transport=transport)
+
+        with pytest.raises(BadPayload, match="Shazam answer is not a"):
+            await lookup(shazam)
+
+    @pytest.mark.asyncio
+    async def test_a_chart_that_is_not_published_names_its_status(self) -> None:
+        shazam = Shazam(
+            transport=_answering_once(
+                Response(
+                    status=HTTPStatus.NOT_FOUND,
+                    content_type="text/html",
+                    text="",
+                ),
+            ),
+        )
+
+        with pytest.raises(BadResponse, match="404") as raised:
+            await shazam.top_tracks()
+
+        assert (raised.value.url, raised.value.status) == (
+            service.CHART_URL.format(path=service.chart_path()),
+            HTTPStatus.NOT_FOUND,
+        )
+
+    @pytest.mark.asyncio
+    async def test_a_path_answered_by_the_website_names_the_content_type(self) -> None:
+        shazam = Shazam(
+            transport=_answering_once(
+                Response(
+                    status=HTTPStatus.OK,
+                    content_type="text/html",
+                    text="<html></html>",
+                ),
+            ),
+        )
+
+        with pytest.raises(BadResponse, match="text/html") as raised:
+            await shazam.top_tracks()
+
+        assert not isinstance(raised.value, RateLimited)
+
+    # Both answers are `text/html`, and only the throttled one is a rate limit:
+    #  the test above is the control that a guard firing on every HTML body fails.
+    @pytest.mark.asyncio
+    async def test_a_throttled_request_names_the_rate_limit(self) -> None:
+        transport = _answering_once(
+            Response(
+                status=HTTPStatus.TOO_MANY_REQUESTS,
+                content_type="text/html",
+                text="<html></html>",
+            ),
+        )
+        shazam = Shazam(
+            transport=transport,
+            retry=None,
+        )
+
+        with pytest.raises(RateLimited, match="rate limited") as raised:
+            await shazam.track_about(1)
+
+        assert raised.value.status == HTTPStatus.TOO_MANY_REQUESTS
+        assert len(transport.requests) == 1
+
+    @pytest.mark.asyncio
+    async def test_a_client_retries_by_default(self) -> None:
+        transport = _answering_once(
+            Response(
+                status=HTTPStatus.SERVICE_UNAVAILABLE,
+                content_type="text/html",
+                text="",
+                headers={"Retry-After": "0"},
+            ),
+        )
+        shazam = Shazam(transport=transport)
+
+        with pytest.raises(BadResponse, match="503"):
+            await shazam.track_about(1)
+
+        assert len(transport.requests) == 20
+
+    @pytest.mark.asyncio
+    async def test_a_falsy_transport_still_carries_the_requests(self) -> None:
+        def answer(_request: Request) -> Response:
+            return Response(
+                status=HTTPStatus.OK,
+                content_type=_JSON,
+                text=_GLORIA_TRACK,
+            )
+
+        transport = _EmptyQueueTransport(answer)
+
+        async with Shazam(transport=transport) as shazam:
+            await shazam.track_about(53982678)
+
+        assert len(transport.requests) == 1
+
+    # `MockTransport` has no closed state of its own, so only the client's guard
+    #  can refuse here.
+    @pytest.mark.asyncio
+    async def test_a_request_after_shazam_is_closed_is_refused(self) -> None:
+        transport = _answering_once(
+            Response(
+                status=HTTPStatus.OK,
+                content_type=_JSON,
+                text=_GLORIA_TRACK,
+            ),
+        )
+        shazam = Shazam(transport=transport)
+        await shazam.close()
+
+        with pytest.raises(RuntimeError, match="Shazam is closed"):
+            await shazam.track_about(53982678)
+
+        assert transport.requests == []
