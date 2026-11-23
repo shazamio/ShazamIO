@@ -13,7 +13,6 @@ from shazamio_core import Recognizer, SearchParams, Signature
 from shazamio import _service as service
 from shazamio._enums import Device, GenreMusic
 from shazamio._exceptions import BadResponse, NotFound, RateLimited
-from shazamio._middleware import Middleware, chain
 from shazamio._parsers import (
     Locations,
     parse_apple_ids,
@@ -21,7 +20,7 @@ from shazamio._parsers import (
     parse_itunes_track_ids,
     parse_model,
 )
-from shazamio._retry import Retry
+from shazamio._retry import Retry, send_with_retry
 from shazamio._transport import AiohttpTransport, Request, Response, Transport
 from shazamio.models import ChartTrack, ResponseTrack, TrackInfo, YoutubeData
 
@@ -37,6 +36,7 @@ WINDOW_SECONDS: Final[int] = 12
 # Shazam answers `matches: []` from 15 s up, for any track:
 #  https://github.com/shazamio/ShazamIO/issues/150
 _NO_MATCH_WINDOW_SECONDS: Final[int] = 15
+_DEFAULT_RETRY: Final[Retry] = Retry()
 
 # PEP 695 generics need Python 3.12, and the package supports 3.11.
 _Result = TypeVar("_Result")
@@ -137,9 +137,8 @@ async def _gather_or_cancel(calls: Iterable[Coroutine[Any, Any, _Result]]) -> li
 class Shazam:
     """Async client for the Shazam API.
 
-    `transport` sends the requests, `AiohttpTransport()` unless given. Every request
-    passes through `middleware` on its way, the first one outermost; `(Retry(),)`
-    unless given, and `()` sends each request once. `close()` closes the transport.
+    `transport` sends the requests, `AiohttpTransport()` unless given. `retry` repeats
+    a failed one, and `None` sends each request once. `close()` closes the transport.
     """
 
     __module__ = "shazamio"
@@ -150,7 +149,7 @@ class Shazam:
         language: str = "en-US",
         country: str = "GB",
         transport: Transport | None = None,
-        middleware: Sequence[Middleware] | None = None,
+        retry: Retry | None = _DEFAULT_RETRY,
         recognition_device: Device = Device.IPHONE,
     ) -> None:
         self._language = language
@@ -159,10 +158,7 @@ class Shazam:
         self._recognizer = Recognizer(segment_duration_seconds=WINDOW_SECONDS)
         self._transport: Transport = transport if transport is not None else AiohttpTransport()
         self._owns_transport: bool = transport is None
-        self._call_next = chain(
-            (Retry(),) if middleware is None else middleware,
-            transport=self._transport,
-        )
+        self._retry = retry
         self._closed: bool = False
 
     async def __aenter__(self) -> Self:
@@ -200,7 +196,15 @@ class Shazam:
             msg: str = "Shazam is closed"
             raise RuntimeError(msg)
 
-        response = await self._call_next(request)
+        response = (
+            await self._transport.send(request)
+            if self._retry is None
+            else await send_with_retry(
+                request,
+                transport=self._transport,
+                retry=self._retry,
+            )
+        )
 
         return _read(
             response,

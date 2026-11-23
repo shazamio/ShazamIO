@@ -8,7 +8,7 @@ from typing import Final
 import pytest
 
 from shazamio import Request, Response, Retry, TransportError
-from shazamio._retry import _delay
+from shazamio._retry import _delay, send_with_retry
 from shazamio.testing import MockTransport
 
 _REQUEST: Final[Request] = Request(
@@ -179,9 +179,10 @@ async def test_a_retry_waits_the_schedule_between_attempts(
 
     monkeypatch.setattr(asyncio, "sleep", sleep)
 
-    await Retry()(
+    await send_with_retry(
         _REQUEST,
-        call_next=MockTransport(lambda _request: remaining.pop(0)).send,
+        transport=MockTransport(lambda _request: remaining.pop(0)),
+        retry=Retry(),
     )
 
     assert slept == pytest.approx(waits)
@@ -202,9 +203,10 @@ async def test_a_failing_status_is_sent_twenty_times_and_the_last_answer_returne
 ) -> None:
     transport = _answers([status])
 
-    response = await _NO_WAIT(
+    response = await send_with_retry(
         _REQUEST,
-        call_next=transport.send,
+        transport=transport,
+        retry=_NO_WAIT,
     )
 
     assert (len(transport.requests), response.status) == (20, status)
@@ -214,9 +216,10 @@ async def test_a_failing_status_is_sent_twenty_times_and_the_last_answer_returne
 async def test_a_retry_stops_at_the_first_answer_outside_the_statuses() -> None:
     transport = _answers([HTTPStatus.SERVICE_UNAVAILABLE, HTTPStatus.OK])
 
-    response = await _NO_WAIT(
+    response = await send_with_retry(
         _REQUEST,
-        call_next=transport.send,
+        transport=transport,
+        retry=_NO_WAIT,
     )
 
     assert (len(transport.requests), response.status) == (2, HTTPStatus.OK)
@@ -233,9 +236,10 @@ async def test_a_retry_stops_at_the_first_answer_outside_the_statuses() -> None:
 async def test_a_client_error_is_sent_once(status: HTTPStatus) -> None:
     transport = _answers([status])
 
-    await _NO_WAIT(
+    await send_with_retry(
         _REQUEST,
-        call_next=transport.send,
+        transport=transport,
+        retry=_NO_WAIT,
     )
 
     assert len(transport.requests) == 1
@@ -272,9 +276,10 @@ async def test_a_transport_error_is_raised_at_once_by_default() -> None:
     transport = _Unreachable(failures=1)
 
     with pytest.raises(TransportError, match="refused"):
-        await _NO_WAIT(
+        await send_with_retry(
             _REQUEST,
-            call_next=transport.send,
+            transport=transport,
+            retry=_NO_WAIT,
         )
 
     assert transport.calls == 1
@@ -285,9 +290,10 @@ async def test_a_transport_error_is_retried_when_asked() -> None:
     transport = _Unreachable(failures=2)
     retry = dataclasses.replace(_NO_WAIT, on_transport_error=True)
 
-    response = await retry(
+    response = await send_with_retry(
         _REQUEST,
-        call_next=transport.send,
+        transport=transport,
+        retry=retry,
     )
 
     assert (transport.calls, response.status) == (3, HTTPStatus.OK)
@@ -303,9 +309,10 @@ async def test_the_last_transport_error_is_raised_after_every_attempt() -> None:
     )
 
     with pytest.raises(TransportError, match="refused"):
-        await retry(
+        await send_with_retry(
             _REQUEST,
-            call_next=transport.send,
+            transport=transport,
+            retry=retry,
         )
 
     assert transport.calls == 3

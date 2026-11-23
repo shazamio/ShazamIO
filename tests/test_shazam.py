@@ -831,7 +831,7 @@ async def test_a_throttled_request_names_the_rate_limit() -> None:
     )
     shazam = Shazam(
         transport=transport,
-        middleware=(),
+        retry=None,
     )
 
     with pytest.raises(RateLimited, match="rate limited") as raised:
@@ -839,6 +839,24 @@ async def test_a_throttled_request_names_the_rate_limit() -> None:
 
     assert raised.value.status == HTTPStatus.TOO_MANY_REQUESTS
     assert len(transport.requests) == 1
+
+
+@pytest.mark.asyncio
+async def test_a_client_retries_by_default() -> None:
+    transport = _answering_once(
+        Response(
+            status=HTTPStatus.SERVICE_UNAVAILABLE,
+            content_type="text/html",
+            text="",
+            headers={"Retry-After": "0"},
+        ),
+    )
+    shazam = Shazam(transport=transport)
+
+    with pytest.raises(BadResponse, match="503"):
+        await shazam.track_about(1)
+
+    assert len(transport.requests) == 20
 
 
 # A transport may define `__len__`, a queue of canned answers for one, and an

@@ -47,9 +47,8 @@ class Response:
 class Transport(abc.ABC):
     """Sends the requests of one `Shazam`.
 
-    It only moves bytes: the middleware of `Shazam` retries, and `Shazam` checks
-    the status and the content type and parses the answer, so every transport
-    gets the same errors.
+    It only moves bytes: `Shazam` retries, checks the status and the content
+    type and parses the answer, so every transport gets the same errors.
     """
 
     __module__ = "shazamio"

@@ -230,52 +230,54 @@ retries and the errors below.
 Another HTTP library plugs in as a subclass of `Transport` with two methods:
 `send(request)`, which sends a `Request` once and returns a `Response` whatever
 its status, or raises `TransportError` when no answer came, and `close()`.
-`Shazam` does the rest, middleware, status checks and parsing included. A
+`Shazam` does the rest, retries, status checks and parsing included. A
 transport you pass stays yours to close, so one can serve several `Shazam`
 clients in turn.
 
-## 🔁 Retries and middleware
+## 🔁 Retries
 
-Every request passes through the client's middleware on its way to the
-transport, `[Retry()]` unless you pass your own list. `Retry` sends a request
-answered `429` or any `5xx` again, by default until it has gone out 20 times,
-with an exponential backoff from 0.2 s capped at 60 s. A `Retry-After` given in
-seconds replaces the backoff, under the same cap. Here three attempts on a
-`429` alone, and on a request that got no answer:
+`Shazam(retry=...)` repeats a failed request, `Retry()` unless you pass your
+own. `Retry` sends a request answered `429` or any `5xx` again, by default until
+it has gone out 20 times, with an exponential backoff from 0.2 s capped at
+60 s. A `Retry-After` given in seconds replaces the backoff, under the same cap.
+Here three attempts on a `429` alone, and on a request that got no answer:
 
   ```python3
   from shazamio import Retry, Shazam
 
-  Shazam(
-      middleware=[
-          Retry(attempts=3, statuses=frozenset({429}), on_transport_error=True),
-      ],
-  )
+  Shazam(retry=Retry(attempts=3, statuses=frozenset({429}), on_transport_error=True))
   ```
 
 Without `on_transport_error=True` a `TransportError` is raised at once.
-`middleware=[]` sends every request once. Each retry is logged at debug level
-on the `shazamio._retry` logger.
+`retry=None` sends every request once. Each retry is logged at debug level on
+the `shazamio._retry` logger.
 
-A middleware is an async callable taking the `Request` and `call_next`; it may
-change the request, answer it itself, or read the response on its way back. The
-first one in the list runs outermost:
+Anything else every request should pass through, a log line, a cache or a rate
+limit, is a `Transport` wrapping another one. The retries run outside it, so it
+sees every attempt:
 
   ```python3
   import time
 
-  from shazamio import CallNext, Request, Response, Retry, Shazam
+  from shazamio import AiohttpTransport, Request, Response, Shazam, Transport
 
 
-  async def timed(request: Request, *, call_next: CallNext) -> Response:
-      started = time.monotonic()
-      response = await call_next(request)
-      print(request.url, response.status, time.monotonic() - started)
+  class Timed(Transport):
+      def __init__(self, inner: Transport) -> None:
+          self._inner = inner
 
-      return response
+      async def send(self, request: Request) -> Response:
+          started = time.monotonic()
+          response = await self._inner.send(request)
+          print(request.url, response.status, time.monotonic() - started)
+
+          return response
+
+      async def close(self) -> None:
+          await self._inner.close()
 
 
-  Shazam(middleware=[timed, Retry()])
+  Shazam(transport=Timed(AiohttpTransport()))
   ```
 
 ## 🧪 Testing code that calls Shazam
@@ -296,12 +298,11 @@ every request, and the transport keeps each one in `requests`:
       )
 
 
-  shazam = Shazam(transport=MockTransport(answer), middleware=[])
+  shazam = Shazam(transport=MockTransport(answer), retry=None)
   ```
 
-The answers go through the same middleware and checks as the service's, so
-this one raises `RateLimited`; `middleware=[]` skips the waits the default
-retries would add.
+The answers go through the same checks as the service's, so this one raises
+`RateLimited`; `retry=None` skips the waits the default retries would add.
 
 ## 🚨 Errors
 
@@ -406,7 +407,7 @@ on those fields should retain the default until they have checked compatibility.
 | `Serialize.track(payload)`, `Serialize.full_track(payload)`, `Serialize.youtube(payload)` | `TrackInfo.model_validate(payload)`, `ResponseTrack.model_validate(payload)`, `YoutubeData.model_validate(payload)` |
 | `proxy=` on every method, positional in `recognize(data, proxy)` and `track_about(track_id, proxy)` | a session of yours: `ClientSession(proxy=...)` passed as `Shazam(transport=AiohttpTransport(session=...))`, closed by you |
 | a subclass of `HTTPClientInterface`, for SOCKS or anything else | `AiohttpTransport(session=...)` on the connector you need, or a `Transport` subclass for another HTTP library |
-| `Shazam(http_client=HTTPClient(retry_options=ExponentialRetry(...)))` | `Shazam(middleware=[Retry(...)])`, whose `start_delay` and `max_delay` are `start_timeout` and `max_timeout`; `statuses` is now the whole set retried, so `statuses=S` with the default `retry_all_server_errors=True` becomes `statuses=frozenset(S) \| set(range(500, 600))`; `exceptions=` becomes `on_transport_error=True`, which retries every `TransportError`; `evaluate_response_callback=` and the other retry classes become a middleware of yours |
+| `Shazam(http_client=HTTPClient(retry_options=ExponentialRetry(...)))` | `Shazam(retry=Retry(...))`, whose `start_delay` and `max_delay` are `start_timeout` and `max_timeout`; `statuses` is now the whole set retried, so `statuses=S` with the default `retry_all_server_errors=True` becomes `statuses=frozenset(S) \| set(range(500, 600))`; `exceptions=` becomes `on_transport_error=True`, which retries every `TransportError`; `evaluate_response_callback=` and the other retry classes become a `Transport` of yours wrapping `AiohttpTransport` |
 | `Shazam(endpoint_country="GB")` | `Shazam(country="GB")`, every argument by keyword |
 | `Shazam(segment_duration_seconds=n)` | `recognize(..., options=SearchParams(segment_duration_seconds=n))` |
 | `recognize(data, proxy, options)`, `options` positional | `recognize(data, options=...)`, `options` and `max_skew` by keyword |

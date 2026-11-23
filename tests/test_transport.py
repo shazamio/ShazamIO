@@ -364,7 +364,7 @@ async def test_shazam_retries_with_the_options_it_was_given(
     async with ClientSession() as session:
         shazam = Shazam(
             transport=AiohttpTransport(session=session if given_session else None),
-            middleware=[Retry(attempts=2)],
+            retry=Retry(attempts=2),
         )
 
         # The default options retry twenty times, so ignoring the given ones

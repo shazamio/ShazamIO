@@ -9,7 +9,6 @@ from ._exceptions import (
     ShazamError,
     TransportError,
 )
-from ._middleware import CallNext, Middleware
 from ._retry import Retry
 from ._shazam import Shazam
 from ._transport import AiohttpTransport, Request, Response, Transport
@@ -19,11 +18,9 @@ __all__ = [
     "AiohttpTransport",
     "BadPayload",
     "BadResponse",
-    "CallNext",
     "ChartTrack",
     "Device",
     "GenreMusic",
-    "Middleware",
     "NotFound",
     "RateLimited",
     "Request",

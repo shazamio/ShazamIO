@@ -5,11 +5,11 @@ from http import HTTPStatus
 from typing import Final
 
 from shazamio._exceptions import TransportError
-from shazamio._middleware import CallNext
-from shazamio._transport import Request, Response
+from shazamio._transport import Request, Response, Transport
 
 __all__ = [
     "Retry",
+    "send_with_retry",
 ]
 
 logger = logging.getLogger(name=__name__)
@@ -22,7 +22,7 @@ _RETRIED_STATUSES: Final[frozenset[int]] = frozenset(
 
 @dataclass(frozen=True, kw_only=True)
 class Retry:
-    """The middleware repeating a request answered with a status in `statuses`.
+    """How `Shazam` repeats a request answered with a status in `statuses`.
 
     With `on_transport_error`, a request that raised `TransportError` is repeated
     too. After attempt `n` it waits `min(start_delay * factor ** n, max_delay)`
@@ -45,50 +45,56 @@ class Retry:
             msg = f"attempts={self.attempts}: a request is sent at least once"
             raise ValueError(msg)
 
-    async def __call__(
-        self,
-        request: Request,
-        *,
-        call_next: CallNext,
-    ) -> Response:
-        for attempt in range(1, self.attempts):
-            response = await self._answer(request, call_next=call_next)
 
-            if response is not None and response.status not in self.statuses:
-                return response
+async def send_with_retry(
+    request: Request,
+    *,
+    transport: Transport,
+    retry: Retry,
+) -> Response:
+    for attempt in range(1, retry.attempts):
+        response = await _answer(
+            request,
+            transport=transport,
+            retry=retry,
+        )
 
-            delay = _delay(
-                self,
-                attempt=attempt,
-                response=response,
-            )
+        if response is not None and response.status not in retry.statuses:
+            return response
 
-            logging_extra = {
-                "url": request.url,
-                "status": None if response is None else response.status,
-                "attempt": attempt,
-                "delay": delay,
-            }
-            logger.debug("Retry.call.retry", extra=logging_extra)
+        delay = _delay(
+            retry,
+            attempt=attempt,
+            response=response,
+        )
 
-            await asyncio.sleep(delay)
+        logging_extra = {
+            "url": request.url,
+            "status": None if response is None else response.status,
+            "attempt": attempt,
+            "delay": delay,
+        }
+        logger.debug("send_with_retry.retry", extra=logging_extra)
 
-        return await call_next(request)
+        await asyncio.sleep(delay)
 
-    async def _answer(
-        self,
-        request: Request,
-        *,
-        call_next: CallNext,
-    ) -> Response | None:
-        """The response, or `None` for a `TransportError` this retry repeats."""
-        try:
-            return await call_next(request)
-        except TransportError:
-            if not self.on_transport_error:
-                raise
+    return await transport.send(request)
 
-            return None
+
+async def _answer(
+    request: Request,
+    *,
+    transport: Transport,
+    retry: Retry,
+) -> Response | None:
+    """The response, or `None` for a `TransportError` `retry` repeats."""
+    try:
+        return await transport.send(request)
+    except TransportError:
+        if not retry.on_transport_error:
+            raise
+
+        return None
 
 
 def _delay(
