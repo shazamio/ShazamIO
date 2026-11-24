@@ -1,77 +1,112 @@
+from http import HTTPMethod
 from typing import Final
 
 import pytest
 
-from scripts.probe_endpoints import Answer, Probe, Verdict, classify, probes, unprobed_url_names
-from shazamio.apple import APPLE_TO_SHAZAM_CONTENT_TYPE
-from shazamio.charts import CHART_CONTENT_TYPE
+from scripts.probe_endpoints import (
+    Exchange,
+    Outcome,
+    Probe,
+    Verdict,
+    classify,
+    probes,
+    unprobed_methods,
+)
+from shazamio import NotFound, Request, Response, Shazam
 
 _CHART: Final[Probe] = Probe(
-    url_name="TOP_WORLD_TRACKS",
-    url="https://example.com/chart",
-    content_type=CHART_CONTENT_TYPE,
+    method=Shazam.top_tracks.__name__,
+    label="top_tracks()",
+    call=Shazam.top_tracks,
 )
-_UNKNOWN_SLUG: Final[Probe] = Probe(
-    url_name="TOP_WORLD_GENRE_TRACKS",
-    url="https://example.com/chart/no-such-genre",
-    content_type=CHART_CONTENT_TYPE,
+_UNOFFERED_GENRE: Final[Probe] = Probe(
+    method=Shazam.top_tracks.__name__,
+    label="top_tracks('RU', genre=rock)",
+    call=Shazam.top_tracks,
     expected=Verdict.BAD_INPUT,
 )
-_A2ST: Final[Probe] = Probe(
-    url_name="APPLE_IDS_TO_TRACK_KEYS",
-    url="https://example.com/a2st",
-    content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
+_REQUEST: Final[Request] = Request(
+    method=HTTPMethod.GET,
+    url="https://example.com/chart",
 )
-_WEBSITE: Final[Answer] = Answer(
+
+
+def _answered(
+    *,
+    status: int,
+    content_type: str,
+    text: str,
+    error: NotFound | None = None,
+) -> Outcome:
+    response = Response(
+        status=status,
+        content_type=content_type,
+        text=text,
+    )
+    exchange = Exchange(
+        request=_REQUEST,
+        response=response,
+    )
+
+    return Outcome(
+        exchanges=[exchange],
+        error=error,
+    )
+
+
+_CSV: Final[Outcome] = _answered(
+    status=200,
+    content_type="text/csv",
+    text="1,Artist,Title",
+)
+_WEBSITE: Final[Outcome] = _answered(
     status=200,
     content_type="text/html",
-    body=b"<!doctype html>",
+    text="<!doctype html>",
+    error=NotFound("the website answered"),
 )
-_CLEAN_MISS: Final[Answer] = Answer(
+_CLEAN_MISS: Final[Outcome] = _answered(
     status=404,
     content_type="application/octet-stream",
-    body=b"",
+    text="",
+    error=NotFound("answered 404"),
 )
-_CSV: Final[Answer] = Answer(
-    status=200,
-    content_type=CHART_CONTENT_TYPE,
-    body=b"1,Artist,Title",
+_NO_CONTENT: Final[Outcome] = _answered(
+    status=204,
+    content_type="application/octet-stream",
+    text="",
+    error=NotFound("answered 204"),
 )
 
 
-def test_every_url_the_library_calls_has_a_probe() -> None:
-    assert unprobed_url_names(probes()) == set()
+def test_every_public_method_has_a_probe() -> None:
+    assert unprobed_methods(probes()) == set()
 
 
 @pytest.mark.parametrize(
-    ("probe", "answer", "expected"),
+    ("probe", "outcome", "expected"),
     [
         pytest.param(_CHART, _CSV, Verdict.LIVE, id="live"),
         pytest.param(_CHART, _WEBSITE, Verdict.DEAD, id="website-shell"),
-        pytest.param(_UNKNOWN_SLUG, _WEBSITE, Verdict.DEAD, id="website-shell-on-bad-input"),
-        pytest.param(_UNKNOWN_SLUG, _CLEAN_MISS, Verdict.BAD_INPUT, id="clean-miss"),
-        pytest.param(_UNKNOWN_SLUG, _CSV, Verdict.UNEXPECTED, id="bad-input-answered"),
+        pytest.param(_UNOFFERED_GENRE, _WEBSITE, Verdict.DEAD, id="website-shell-on-bad-input"),
+        pytest.param(_UNOFFERED_GENRE, _CLEAN_MISS, Verdict.BAD_INPUT, id="clean-miss"),
+        pytest.param(_UNOFFERED_GENRE, _CSV, Verdict.UNEXPECTED, id="bad-input-answered"),
+        pytest.param(_CHART, _NO_CONTENT, Verdict.UNEXPECTED, id="no-content"),
         pytest.param(
             _CHART,
-            Answer(
-                status=204,
-                content_type="application/octet-stream",
-                body=b"",
+            Outcome(
+                exchanges=[],
+                error=NotFound("no request sent"),
             ),
             Verdict.UNEXPECTED,
-            id="no-content",
-        ),
-        pytest.param(
-            _A2ST,
-            Answer(
-                status=200,
-                content_type=APPLE_TO_SHAZAM_CONTENT_TYPE,
-                body=b'{"error":{"msg":"Could not fetch ids"}}',
-            ),
-            Verdict.UNEXPECTED,
-            id="a2st-error-body",
+            id="raised-before-sending",
         ),
     ],
 )
-def test_classify(probe: Probe, *, answer: Answer, expected: Verdict) -> None:
-    assert classify(probe, answer=answer) is expected
+def test_classify(
+    probe: Probe,
+    *,
+    outcome: Outcome,
+    expected: Verdict,
+) -> None:
+    assert classify(probe, outcome=outcome) is expected

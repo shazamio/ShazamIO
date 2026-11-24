@@ -1,6 +1,6 @@
 [project]
 name = "shazamio"
-version = "0.9.0"
+version = "0.10.0"
 description = "An asynchronous framework for the reverse engineered Shazam API, written in Python with asyncio and aiohttp."
 authors = [{ name = "dotX12" }]
 license = "MIT"
@@ -24,12 +24,10 @@ classifiers = [
 #  library's upper caps conflict with everything else in a consumer's
 #  environment, so a cap needs a reason.
 dependencies = [
-    # Oldest release with CPython 3.11 wheels; 3.8.2 is yanked, and 3.8.1 ships
-    #  none and fails to build there: `fatal error: longintrepr.h: No such file
-    #  or directory`.
-    "aiohttp>=3.8.3",
-    # `RetryOptionsBase` is first exported in 2.3: 2.2 fails at import.
-    "aiohttp-retry>=2.3",
+    # `ClientSession(proxy=...)`, the proxy route the README shows, is new in
+    #  3.11: 3.10.11 raises `TypeError: ClientSession.__init__() got an
+    #  unexpected keyword argument 'proxy'`.
+    "aiohttp>=3.11",
     # The suite passes down to 2.0.3, but `Field(union_mode="left_to_right")` on
     #  the artist union is silently ignored before 2.2.0, so the union parses in
     #  smart mode there.
@@ -93,12 +91,6 @@ exclude-newer-package = { shazamio-core = false }
 requires = ["uv_build>=0.13.0,<0.14"]
 build-backend = "uv_build"
 
-# The package is a flat `shazamio/` directory, not the `src/` layout the backend
-#  expects by default.
-#  https://docs.astral.sh/uv/concepts/build-backend/#modules
-[tool.uv.build-backend]
-module-root = ""
-
 [tool.pytest.ini_options]
 # `-ra` prints the reason beside every non-passing test. Without it a skip is
 #  a bare `1 skipped` count, and a live test that skips itself where the
@@ -138,20 +130,13 @@ ignore = [
     "D205",    # Legacy docstrings have no summary-line structure to enforce
     "D401",    # Same: rewording legacy docstrings is not lint's job
 
-    # `Any` is the honest annotation in all 6 places this fires: the `**kwargs`
-    #  both HTTP clients forward to `aiohttp`, pydantic's own
-    #  `model_post_init(self, _context: Any)` hook, and `validate_json`, which
-    #  returns whatever the endpoint sent. The rest of `ANN` is enforced.
+    # `Any` is the honest annotation in both places this fires: pydantic's own
+    #  `model_post_init(self, _context: Any)` hook. The rest of `ANN` is enforced.
     "ANN401",  # `Any` in an argument or return annotation
 
-    # Public exception classes have carried these names since 0.0.x; renaming
-    #  them to `*Error` is a breaking change, not a lint fix.
+    # The exceptions are named for what happened (`NotFound`, `BadPayload`); the
+    #  `ShazamError` base already says they are errors.
     "N818",
-
-    # The exception classes are plain `Exception` subclasses that take a message
-    #  at the raise site; moving every message into a custom class is a redesign
-    #  of the (public) exception surface, not a lint fix.
-    "TRY003",
 ]
 
 [tool.ruff.lint.flake8-type-checking]
@@ -159,12 +144,7 @@ ignore = [
 #  into `if TYPE_CHECKING:` raises `PydanticUndefinedAnnotation` when the model
 #  is built.
 #  https://docs.astral.sh/ruff/settings/#lint_flake8-type-checking_runtime-evaluated-base-classes
-#  `ruff` cannot follow the chain across modules, so the project's own pydantic
-#  base needs listing too.
-runtime-evaluated-base-classes = [
-    "pydantic.BaseModel",
-    "shazamio.schemas.base.BaseHrefNext",
-]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [tool.ruff.lint.per-file-ignores]
 "examples/*" = [

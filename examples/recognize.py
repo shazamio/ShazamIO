@@ -3,9 +3,7 @@ import logging
 from pathlib import Path
 from typing import Final
 
-from aiohttp_retry import ExponentialRetry
-
-from shazamio import HTTPClient, Shazam
+from shazamio import Retry, Shazam
 
 logger = logging.getLogger(__name__)
 
@@ -20,17 +18,12 @@ logging.basicConfig(
 
 
 async def main() -> None:
-    # A client you build is a client you close: `Shazam` closes only the one it
-    #  builds itself, so this one gets its own block.
-    async with HTTPClient(
-        retry_options=ExponentialRetry(
+    async with Shazam(
+        retry=Retry(
             attempts=12,
-            max_timeout=204.8,
-            statuses={500, 502, 503, 504, 429},
+            max_delay=204.8,
         ),
-    ) as http_client:
-        shazam = Shazam(http_client=http_client)
-
+    ) as shazam:
         # pass path
         out = await shazam.recognize(SAMPLE)
         print(out)

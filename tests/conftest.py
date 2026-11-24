@@ -13,10 +13,14 @@ from shazamio import Shazam
 #  never equals the replayed one and `vcrpy`'s own `path` matcher finds nothing.
 _UUID: Final[re.Pattern[str]] = re.compile(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}")
 
-_HEADERS_READ: Final[frozenset[str]] = frozenset({"content-type", "location"})
+_HEADERS_READ: Final[frozenset[str]] = frozenset({"content-type", "location", "retry-after"})
 
 
-def _path_without_uuids(recorded: Request, replayed: Request, /) -> None:
+def _path_without_uuids(
+    recorded: Request,
+    replayed: Request,
+    /,
+) -> None:
     expected = _UUID.sub("<uuid>", recorded.path)
     actual = _UUID.sub("<uuid>", replayed.path)
     if expected != actual:

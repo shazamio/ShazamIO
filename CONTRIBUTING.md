@@ -50,7 +50,7 @@ says why:
 
 - Request headers are dropped, so nothing a request carries is committed.
 - Response headers are kept only where the library reads them
-  (`Content-Type`, `Location`). The rest are CDN details that change on every
+  (`Content-Type`, `Location`, `Retry-After`). The rest are CDN details that change on every
   recording, and some name the edge nearest to whoever recorded.
 - HTML bodies are emptied; the library reads only their status and headers.
 - `429` responses are left out, so replay does not sleep through retries.
@@ -68,9 +68,10 @@ the library, re-record, and commit both.
 
 ## When a method returns nothing
 
-Shazam's API is undocumented and moves without notice. `just probe` asks every
-URL the library calls what it answers, one request at a time, and marks each one
-that does not answer as expected. Paste its output into the issue.
+Shazam's API is undocumented and moves without notice. `just probe` runs every
+public `Shazam` method against the live service, one request at a time, prints
+each raw answer and marks each call that does not answer as expected. Paste its
+output into the issue.
 
 ## Dependency constraints
 
